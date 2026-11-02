@@ -1025,7 +1025,7 @@ R.talk=function(){const G=t().g2,GG=GTX(),k=S.tk;
   ${panel}<div class="chat">${msgs}${k.typing?`<div class="bub2 them typing">${GG.theirTurn}</div>`:''}</div>
   <div class="row" style="flex-wrap:nowrap"><input id="tkin" placeholder="${G.tkPh}" value="${esc(S.tkDraft)}"><button type="button" class="btn pri sm" data-act="tksend">${G.tkSend}</button></div></section>`};
 const TALK_REPLIES={pt:['Sério? Eu também tava com vontade… 😏','Adorei você ter falado. Hoje à noite?','Hmm, fiquei curioso. Me conta mais…','Combinado. Vou separar uma almofada 😉'],es:['¿En serio? Yo también tenía ganas… 😏','Me encanta que lo hayas dicho. ¿Esta noche?','Mmm, me dio curiosidad. Cuéntame más…','Hecho. Voy a buscar un cojín 😉']};
-function talkReply(){S.tk.typing=true;render();setTimeout(()=>{S.tk.typing=false;const n=S.tk.msgs.filter(m=>m.who==='them').length;S.tk.msgs.push({who:'them',kind:'text',text:TALK_REPLIES[lang][n%4]});if(S.screen==='talk')render()},1500)}
+function talkReply(){if(window.REAL){render();return}S.tk.typing=true;render();setTimeout(()=>{S.tk.typing=false;const n=S.tk.msgs.filter(m=>m.who==='them').length;S.tk.msgs.push({who:'them',kind:'text',text:TALK_REPLIES[lang][n%4]});if(S.screen==='talk')render()},1500)}
 R.diary=function(){const G=t().g2,ids=['mine','shared'];const pn=id=>{const x=POS.find(p=>p.id===id);return x?x[lang][0]:id};
   const stars=(id,v,edit)=>`<span class="stars">${[1,2,3,4,5].map(i=>edit?`<button type="button" class="star ${i<=v?'on':''}" data-star="${i}" data-id="${id}" aria-label="${i}">★</button>`:`<i class="star ${i<=v?'on':''}">★</i>`).join('')}</span>`;
   const tabs=G.dyTabs.map((n,i)=>`<button type="button" class="seg-b" data-dt="${ids[i]}" aria-pressed="${S.dtab===ids[i]}">${n}</button>`).join('');
