@@ -83,7 +83,13 @@ label{display:block;font-size:13px;color:var(--muted);margin:0 0 4px}
 (function(){
 const sb=window.supabase.createClient(ENV.SUPABASE_URL,ENV.SUPABASE_ANON,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'en_admin_auth'}});
 const app=document.getElementById('app');
-const A={tab:'painel',days:30,search:'',data:{},busy:false,open:null};
+let MK='ALL';try{MK=localStorage.getItem('en_admin_mk')||'ALL'}catch(_){}
+const A={tab:'painel',days:30,search:'',data:{},busy:false,open:null,mk:MK};
+const MARKETS=[['ALL','🌎','Todos os países'],['BR','🇧🇷','Brasil'],['ES','🇪🇸','Espanha'],['CO','🇨🇴','Colômbia'],['AR','🇦🇷','Argentina'],['DE','🇩🇪','Alemanha'],['OUT','🌐','Outros países']];
+const mkName=k=>(MARKETS.find(m=>m[0]===k)||MARKETS[0]);
+const cash=(v,c)=>{try{return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:c&&c!=='?'?c:'BRL'})}catch(_){return (c||'')+' '+Number(v||0).toFixed(2)}};
+const cashList=(arr,cls)=>arr&&arr.length?arr.map(x=>`<div class="n ${cls||''}">${cash(x.v,x.cur)}</div>`).join(''):`<div class="n">${cash(0,A.mk==='ES'||A.mk==='DE'?'EUR':A.mk==='CO'?'COP':A.mk==='AR'?'ARS':'BRL')}</div>`;
+const INV=new URLSearchParams(location.search).get('convite');
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const dt=d=>d?new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
@@ -91,35 +97,60 @@ const ago=d=>{const h=Math.floor((Date.now()-new Date(d))/36e5);return h<24?`há
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3200)}
 const SUB={trial:'Acesso de teste',active:'Assinatura ativa',canceled:'Cancelada',expired:'Vencida'};
 const AUD={f:'Mulheres',m:'Homens',b:'Todos'};
-const TABS=[['painel','Painel'],['fin','Financeiro'],['users','Usuários'],['com','Comunidade'],['con','Consultoria'],['msg','Mensagens']];
+const TABS=[['painel','Painel'],['fin','Financeiro'],['users','Usuários'],['com','Comunidade'],['con','Consultoria'],['msg','Mensagens'],['team','Equipe']];
 const site=location.origin;
 
-// ---------- entrar ----------
-function loginView(msg){app.innerHTML=`<div class="login"><div class="mark">Entre <b>Nós</b><small>gerenciador</small></div>
-  <h1 style="margin-top:18px">Entrar</h1><p class="lead">Use o e-mail e a senha da sua conta de administradora.</p>
+// ---------- entrar / criar conta com convite ----------
+function loginView(msg,mode){mode=mode||(INV?'new':'login');
+  app.innerHTML=`<div class="login"><div class="mark">Entre <b>Nós</b><small>gerenciador</small></div>
+  ${INV?`<p class="tag gold" style="margin-top:16px">Você foi convidada(o) pra equipe do Entre Nós</p>`:''}
+  <h1 style="margin-top:14px">${mode==='new'?'Criar sua conta':'Entrar'}</h1>
+  <p class="lead">${mode==='new'?'Crie seu acesso ao gerenciador.':INV?'Entre com sua conta pra aceitar o convite.':'Use o e-mail e a senha da sua conta de administradora.'}</p>
   ${msg?`<p class="tag bad" style="margin-bottom:12px">${esc(msg)}</p>`:''}
-  <form id="lf"><div class="field"><label for="le">E-mail</label><input id="le" type="email" autocomplete="email"></div>
-  <div class="field"><label for="lp">Senha</label><input id="lp" type="password" autocomplete="current-password"></div>
-  <button class="btn pri" style="width:100%;padding:11px">Entrar</button></form></div>`;
-  document.getElementById('lf').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;
-    const {error}=await sb.auth.signInWithPassword({email:document.getElementById('le').value.trim().toLowerCase(),password:document.getElementById('lp').value});
-    b.disabled=false;if(error){loginView('E-mail ou senha incorretos.');return}start()}}
+  <form id="lf">${mode==='new'?`<div class="field"><label for="ln">Seu nome</label><input id="ln" autocomplete="name"></div>`:''}
+  <div class="field"><label for="le">E-mail</label><input id="le" type="email" autocomplete="email"></div>
+  <div class="field"><label for="lp">Senha${mode==='new'?' (mínimo 6 caracteres)':''}</label><input id="lp" type="password" autocomplete="${mode==='new'?'new-password':'current-password'}"></div>
+  <button class="btn pri" style="width:100%;padding:11px">${mode==='new'?'Criar conta e entrar':'Entrar'}</button></form>
+  ${INV?`<p class="hint" style="text-align:center;margin-top:14px"><button class="btn sm" data-lm="${mode==='new'?'login':'new'}">${mode==='new'?'Já tenho conta':'Não tenho conta, criar'}</button></p>`
+     :`<p class="hint" style="margin-top:16px">Pra fazer parte da equipe, peça um link de convite à dona do Entre Nós.</p>`}</div>`;
+  const sw=app.querySelector('[data-lm]');if(sw)sw.onclick=()=>loginView('',sw.dataset.lm);
+  document.getElementById('lf').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');
+    const em=document.getElementById('le').value.trim().toLowerCase(),pw=document.getElementById('lp').value,nm=mode==='new'?document.getElementById('ln').value.trim():'';
+    if(!em||!pw||(mode==='new'&&(!nm||pw.length<6))){loginView('Preencha tudo (a senha precisa de 6 caracteres).',mode);return}
+    b.disabled=true;
+    const r=mode==='new'?await sb.auth.signUp({email:em,password:pw}):await sb.auth.signInWithPassword({email:em,password:pw});
+    b.disabled=false;
+    if(r.error){loginView(/already|registered/i.test(r.error.message)?'Este e-mail já tem conta. Toque em “Já tenho conta”.':mode==='new'?'Não deu certo: '+r.error.message:'E-mail ou senha incorretos.',mode);return}
+    if(mode==='new'&&!(r.data&&r.data.session)){loginView('Conta criada. Confirme o e-mail e depois entre.', 'login');return}
+    A.newName=nm;start()}}
 
 async function start(){const {data:{session}}=await sb.auth.getSession();if(!session){loginView();return}
+  if(INV){const {error}=await sb.rpc('admin_accept_invite',{p_code:INV,p_name:A.newName||null});
+    history.replaceState(null,'',location.pathname);
+    if(error){await sb.auth.signOut();loginView(/vencido|inválido/.test(error.message)?'Este convite não vale mais. Peça um novo à dona.':'Não deu certo: '+error.message,'login');return}
+    toast('Bem-vinda(o) à equipe ✓')}
   const {data:ok}=await sb.rpc('is_admin');
-  if(!ok){await sb.auth.signOut();loginView('Esta conta não tem acesso ao gerenciador.');return}
-  A.email=session.user.email;shell();load()}
+  if(!ok){await sb.auth.signOut();loginView('Esta conta não tem acesso ao gerenciador.','login');return}
+  A.email=session.user.email;
+  let picked=false;try{picked=!!localStorage.getItem('en_admin_mk')}catch(_){}
+  shell();if(!picked)pickView();else load()}
+
+// tela de escolher o painel financeiro (país)
+function pickView(){const m=main();document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed','false'));
+  m.innerHTML=`<h1>Qual painel você quer ver?</h1><p class="lead">O financeiro fica separado por país, cada um na sua moeda. Dá pra trocar a qualquer hora no topo.</p>
+  <div class="grid">${MARKETS.map(([k,f,n])=>`<button class="card stat" data-mk="${k}" style="text-align:left;cursor:pointer${A.mk===k?';border-color:var(--honey)':''}"><div class="n">${f}</div><div class="l" style="color:var(--cream);font-size:15px;font-weight:600">${n}</div></button>`).join('')}</div>`}
 
 function shell(){app.innerHTML=`<header class="top"><div class="top-in"><div class="mark">Entre <b>Nós</b><small>gerenciador</small></div><div class="sp"></div>
-  <span class="meta">${esc(A.email)}</span><a class="btn sm" href="/" target="_blank" rel="noopener">Abrir o app</a><button class="btn sm" data-a="logout">Sair</button></div>
+  <button class="btn sm" data-a="pick" title="Trocar país">${mkName(A.mk)[1]} ${mkName(A.mk)[2]}</button><span class="meta">${esc(A.email)}</span><a class="btn sm" href="/" target="_blank" rel="noopener">Abrir o app</a><button class="btn sm" data-a="logout">Sair</button></div>
   <nav class="tabs">${TABS.map(([k,n])=>`<button class="btn sm" data-tab="${k}" aria-pressed="${A.tab===k}">${n}</button>`).join('')}</nav></header><main id="main"></main>`}
 const main=()=>document.getElementById('main');
 
 // ---------- carregar dados de cada aba ----------
 async function load(){const m=main();if(!m)return;m.innerHTML='<p class="empty">Carregando…</p>';
   try{
-    if(A.tab==='painel'||A.tab==='fin'){const [s,q,r,c]=await Promise.all([sb.rpc('admin_stats',{p_days:A.days}),sb.rpc('admin_stale_questions'),sb.rpc('admin_reports'),sb.rpc('admin_concierge')]);
-      if(s.error)throw s.error;A.data.stats=s.data;A.data.stale=q.data||[];A.data.reports=r.data||[];A.data.con=c.data||[]}
+    if(A.tab==='painel'||A.tab==='fin'){const [s,q,r,c,f]=await Promise.all([sb.rpc('admin_stats',{p_days:A.days}),sb.rpc('admin_stale_questions'),sb.rpc('admin_reports'),sb.rpc('admin_concierge'),sb.rpc('admin_finance',{p_days:A.days,p_country:A.mk})]);
+      if(s.error)throw s.error;A.data.stats=s.data;A.data.stale=q.data||[];A.data.reports=r.data||[];A.data.con=c.data||[];A.data.fin=f.error?null:f.data}
+    if(A.tab==='team'){const {data,error}=await sb.rpc('admin_team');if(error)throw error;A.data.team=data}
     if(A.tab==='users'){const {data,error}=await sb.rpc('admin_users',{p_search:A.search});if(error)throw error;A.data.users=data}
     if(A.tab==='com'){const [q,r]=await Promise.all([sb.rpc('admin_stale_questions'),sb.rpc('admin_reports')]);if(q.error)throw q.error;A.data.stale=q.data||[];A.data.reports=r.data||[]}
     if(A.tab==='con'){const {data,error}=await sb.rpc('admin_concierge');if(error)throw error;A.data.con=data||[]}
@@ -129,7 +160,7 @@ async function load(){const m=main();if(!m)return;m.innerHTML='<p class="empty">
 
 function draw(){const m=main();if(!m)return;
   document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===A.tab));
-  m.innerHTML=({painel:vPainel,fin:vFin,users:vUsers,com:vCom,con:vCon,msg:vMsg})[A.tab]()}
+  m.innerHTML=({painel:vPainel,fin:vFin,users:vUsers,com:vCom,con:vCon,msg:vMsg,team:vTeam})[A.tab]()}
 
 const period=()=>`<div class="row" style="margin-bottom:16px">${[7,15,30,60,90].map(d=>`<button class="btn sm" data-days="${d}" aria-pressed="${A.days===d}">${d} dias</button>`).join('')}</div>`;
 const stat=(n,l,cls='')=>`<div class="card stat ${cls}"><div class="n">${n}</div><div class="l">${l}</div></div>`;
@@ -147,16 +178,23 @@ function vPainel(){const s=A.data.stats||{},stale=A.data.stale.length,rep=A.data
   <h2>Jogo grátis</h2><div class="grid">
     ${stat(s.free_users||0,'pessoas só no jogo grátis')}${stat(s.free_games||0,'jogos grátis jogados a dois')}${stat(s.free_to_paid||0,'do grátis que viraram assinantes')}</div>
   <h2>Comunidade</h2><div class="grid">${stat(s.questions||0,'perguntas feitas')}</div>
-  <h2>Dinheiro</h2><div class="grid">${stat(money(s.revenue),'faturamento','money')}${stat(s.sales||0,'vendas')}</div>`}
+  <h2>Dinheiro · ${mkName(A.mk)[1]} ${mkName(A.mk)[2]}</h2>${A.data.fin?`<div class="grid"><div class="card stat money">${cashList(A.data.fin.net)}<div class="l">o que é seu (já sem as taxas)</div></div>${stat(A.data.fin.sales||0,'vendas novas')}${stat(A.data.fin.renewals||0,'renovações')}</div>`:'<p class="hint">Rode o arquivo 009 no Supabase pra ver o financeiro por país.</p>'}`}
 
 // ---------- Financeiro ----------
-function vFin(){const s=A.data.stats||{},days=s.by_day||[];const mx=Math.max(1,...days.map(d=>+d.v));
-  return `<h1>Financeiro</h1><p class="lead">Vendas, renovações, cancelamentos e reembolsos.</p>${period()}
-  <div class="grid">${stat(money(s.revenue),'faturamento','money')}${stat(s.sales||0,'vendas novas')}${stat(s.renewals||0,'renovações')}
-    ${stat(s.cancels||0,'cancelamentos')}${stat(s.refunds||0,'reembolsos e estornos')}${stat(money(s.refunds_amt),'valor devolvido')}
-    ${stat(s.sales?money((+s.revenue)/(s.sales+s.renewals)):money(0),'valor médio por pagamento')}</div>
-  <h2>Faturamento por dia</h2><div class="card">${days.length?`<div class="bars">${days.map(d=>`<div style="height:${Math.round(+d.v/mx*100)}%" data-t="${new Date(d.d+'T12:00').toLocaleDateString('pt-BR')}: ${money(d.v)}"></div>`).join('')}</div>`
-    :'<p class="empty" style="padding:8px 0">Nenhum pagamento ainda. Os números aparecem aqui sozinhos quando a Hotmart for conectada.</p>'}</div>`}
+function vFin(){const F=A.data.fin;const mk=mkName(A.mk);
+  const chips=`<div class="row" style="margin-bottom:10px">${MARKETS.map(([k,f,n])=>`<button class="btn sm" data-mk="${k}" aria-pressed="${A.mk===k}">${f} ${n}</button>`).join('')}</div>`;
+  if(!F)return `<h1>Financeiro</h1>${chips}<p class="empty">Falta rodar o arquivo 009 no Supabase pra o financeiro por país funcionar.</p>`;
+  const days=F.by_day||[];const curs=[...new Set(days.map(d=>d.cur))];
+  const bars=curs.map(c=>{const ds=days.filter(d=>d.cur===c),mx=Math.max(1,...ds.map(d=>+d.v));
+    return `<p class="meta" style="margin:0">${c}</p><div class="bars">${ds.map(d=>`<div style="height:${Math.round(+d.v/mx*100)}%" data-t="${new Date(d.d+'T12:00').toLocaleDateString('pt-BR')}: ${cash(d.v,c)}"></div>`).join('')}</div>`}).join('<div style="height:14px"></div>');
+  return `<h1>Financeiro · ${mk[1]} ${mk[2]}</h1><p class="lead">Valores da Hotmart: o que o cliente pagou, o que a Hotmart descontou e o que é seu de verdade.</p>${chips}${period()}
+  <div class="grid"><div class="card stat money">${cashList(F.net)}<div class="l"><strong style="color:var(--cream)">Você recebe</strong> (já sem as taxas)</div></div>
+    <div class="card stat">${cashList(F.gross)}<div class="l">os clientes pagaram (bruto)</div></div>
+    <div class="card stat">${cashList(F.fees)}<div class="l">taxas da Hotmart</div></div></div>
+  <div class="grid" style="margin-top:10px">${stat(F.sales||0,'vendas novas')}${stat(F.renewals||0,'renovações (mensalidades)')}${stat(F.cancels||0,'cancelamentos')}${stat(F.refunds||0,'reembolsos e estornos')}</div>
+  <h2>O que é seu, por dia</h2><div class="card">${days.length?bars:'<p class="empty" style="padding:8px 0">Nenhuma venda neste período. Os números aparecem aqui sozinhos quando a Hotmart estiver conectada.</p>'}</div>
+  ${(F.countries||[]).length?`<h2>Vendas por país (desde o começo)</h2><div class="row">${F.countries.map(c=>`<span class="tag">${esc(c.c)} · ${c.n}</span>`).join('')}</div>`:''}
+  <p class="hint" style="margin-top:18px">Se o cliente paga numa moeda e a Hotmart te paga em outra, a taxa não aparece separada, mas o “Você recebe” continua certo.</p>`}
 
 // ---------- Usuários ----------
 function person(p,label,coupleId){if(!p)return `<div><div class="who">${label}</div><p class="meta">Ainda não entrou</p></div>`;
@@ -221,11 +259,22 @@ function vMsg(){const ms=A.data.msg;
     <div class="row" style="margin-top:10px"><button class="btn sm" data-a="act" data-id="${x.id}" data-v="${x.active?0:1}">${x.active?'Desligar':'Ligar de novo'}</button></div></div>`).join('')
     :'<p class="empty">Nenhuma mensagem ainda.</p>'}</div>`}
 
+// ---------- Equipe ----------
+function vTeam(){const T=A.data.team||{admins:[],invites:[]};
+  return `<h1>Equipe</h1><p class="lead">Quem pode entrar neste gerenciador.${T.owner?' Só você, como dona, pode convidar ou tirar pessoas.':''}</p>
+  <div class="list">${T.admins.map(a=>`<div class="item"><div class="row"><h3>${esc(a.name||'—')}</h3>${a.owner?'<span class="tag gold">dona</span>':'<span class="tag">administrador(a)</span>'}${a.id===T.me?'<span class="tag ok">você</span>':''}<div class="sp"></div>
+    ${T.owner&&!a.owner?`<button class="btn sm" data-a="rm" data-id="${a.id}" data-n="${esc(a.name||a.email)}">Tirar da equipe</button>`:''}</div><div class="meta em">${esc(a.email)}</div></div>`).join('')}</div>
+  ${T.owner?`<h2>Convidar alguém</h2><div class="card"><p style="margin-top:0">Crie um link e mande pra pessoa. Ela abre, cria a conta dela e já entra como administrador(a). O link vale por 7 dias e só funciona uma vez.</p>
+    <button class="btn pri" data-a="inv">Criar link de convite</button>
+    ${T.invites.length?`<h3 style="margin:18px 0 8px;font-size:14px">Links ainda não usados</h3><div class="list">${T.invites.map(i=>`<div class="row"><code style="flex:1;min-width:0;word-break:break-all;color:var(--muted)">${site}/admin?convite=${i.code}</code>
+      <button class="btn sm" data-a="copy" data-t="${site}/admin?convite=${i.code}">Copiar</button><button class="btn sm" data-a="invx" data-id="${i.code}">Cancelar</button></div>`).join('')}</div>`:''}</div>`:''}`}
+
 // ---------- ações ----------
 async function rpc(name,args,okMsg){const {data,error}=await sb.rpc(name,args);if(error){toast('Não deu certo: '+error.message);return null}if(okMsg)toast(okMsg);return data===null?true:data}
 document.addEventListener('click',async e=>{
   const t=e.target.closest('[data-tab]');if(t){A.tab=t.dataset.tab;A.open=null;load();return}
   const d=e.target.closest('[data-days]');if(d){A.days=+d.dataset.days;load();return}
+  const mk=e.target.closest('[data-mk]');if(mk){A.mk=mk.dataset.mk;try{localStorage.setItem('en_admin_mk',A.mk)}catch(_){}shell();if(A.tab!=='fin'&&A.tab!=='painel')A.tab='fin';load();return}
   const b=e.target.closest('[data-a]');if(!b||b.tagName==='SELECT')return;const a=b.dataset.a;
   if(a==='logout'){await sb.auth.signOut();loginView();return}
   if(a==='copy'){try{await navigator.clipboard.writeText(b.dataset.t);toast('Copiado ✓')}catch(_){prompt('Copie:',b.dataset.t)}return}
@@ -235,6 +284,10 @@ document.addEventListener('click',async e=>{
   if(a==='block'){const blk=b.dataset.b==='1';if(!confirm(blk?'Bloquear esta pessoa? Ela não vai conseguir entrar mais.':'Desbloquear esta pessoa?'))return;
     if(await rpc('admin_block',{p_user:b.dataset.id,p_block:blk},blk?'Bloqueado ✓':'Desbloqueado ✓'))load();return}
   if(a==='swap'){A.open=b.dataset.id;draw();return}
+  if(a==='pick'){pickView();return}
+  if(a==='inv'){const code=await rpc('admin_new_invite',{});if(code){const link=`${site}/admin?convite=${code}`;try{await navigator.clipboard.writeText(link);toast('Link criado e copiado ✓')}catch(_){toast('Link criado ✓')}load()}return}
+  if(a==='invx'){if(await rpc('admin_cancel_invite',{p_code:b.dataset.id},'Convite cancelado ✓'))load();return}
+  if(a==='rm'){if(!confirm(`Tirar ${b.dataset.n} da equipe? A pessoa não vai mais conseguir entrar no gerenciador.`))return;if(await rpc('admin_remove',{p_user:b.dataset.id},'Retirado(a) da equipe ✓'))load();return}
   if(a==='swapx'){A.open=null;draw();return}
   if(a==='hide'){if(await rpc('admin_hide',{p_target:b.dataset.t,p_id:b.dataset.id,p_hidden:b.dataset.h==='1'},b.dataset.h==='1'?'Ocultado ✓':'Visível de novo ✓'))load();return}
   if(a==='done'){if(await rpc('admin_concierge_done',{p_id:b.dataset.id,p_done:b.dataset.d==='1'},'Atualizado ✓'))load();return}
