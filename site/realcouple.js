@@ -121,8 +121,8 @@ function decorateHome(){if(bellNew&&new Date(bellNew.shown_at).getTime()<=seenAt
   if(anchor&&anchor.parentNode===sec)anchor.after(d);else sec.prepend(d)}
 const _rb=window.render;window.render=function(){_rb();if(S.screen==='home'&&S.uid)decorateHome()};
 document.addEventListener('click',e=>{if(e.target.closest('[data-act="bell"]'))bellNew=null},true);
-setInterval(()=>{if(S.uid&&!S.isFree&&S.screen==='home')checkBell()},60000);
+setInterval(()=>{if(S.uid&&S.screen==='home')checkBell()},60000);
 
 // carregar ao entrar nas telas
-const _go=window.go;window.go=function(s,o){const r=_go(s,o);if(S.uid){if(s==='home'&&!S.isFree)checkBell();if(s==='chal')loadChal();if(s==='love')loadLove();if(s==='bdsm')loadLimits()}return r};
+const _go=window.go;window.go=function(s,o){const r=_go(s,o);if(S.uid){if(s==='home')checkBell();if(s==='chal')loadChal();if(s==='love')loadLove();if(s==='bdsm')loadLimits()}return r};
 })();

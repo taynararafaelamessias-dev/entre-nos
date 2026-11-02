@@ -117,7 +117,7 @@ document.addEventListener('submit',async e=>{const id=e.target.id;if(!['f2','f3'
      await finishPending();S.pinStage=1;S.skipTour=false;go('pin')}
    else if(id==='f4'){const em=v('lem').trim().toLowerCase(),pw=v('lpw');if(!em||!pw){toast(E.lg_err);return}
      const {error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;
-     await finishPending();const ok=await loadAccount();if(ok==='noprofile'){go('mgame',{reset:true});return}if(S.isFree){go('mgame',{reset:true});return}
+     await finishPending();const ok=await loadAccount();if(ok==='noprofile'){go('mgame',{reset:true});return}if(S.isFree){go('home',{reset:true});return}
      S.pinStage=1;S.skipTour=true;go('pin')}
    else if(id==='f5'){const pw=v('fpw');if(!pw){toast(E.fp_err);return}
      const {error}=await sb.auth.signInWithPassword({email:S.email,password:pw});if(error)throw error;
@@ -171,7 +171,7 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='f6')return;e.prev
   const {error}=await sb.auth.updateUser({password:a});btn.disabled=false;
   if(error){toast(errMsg(error));return}
   toast(NP[lang].ok);const ok=await loadAccount();
-  if(ok==='noprofile'||S.isFree){go('mgame',{reset:true});return}
+  if(ok==='noprofile'){go('mgame',{reset:true});return}if(S.isFree){go('home',{reset:true});return}
   S.pinStage=1;S.skipTour=true;go('pin',{reset:true})},true);
 
 // ---------- início ----------
@@ -186,7 +186,7 @@ async function boot(){
   if(RECOVERY&&session){history.replaceState(null,'',location.pathname);await loadAccount().catch(()=>{});go('newpw',{reset:true});return}
   if(session){const {data:u,error:ue}=await sb.auth.getUser();if(ue||!u||!u.user){await sb.auth.signOut().catch(()=>{});session=null}}
   if(session){await finishPending().catch(()=>{});const ok=await loadAccount();
-    if(ok===true&&S.isFree){go('mgame',{reset:true});return}
+    if(ok===true&&S.isFree){go('home',{reset:true});return}
     if(ok===true){if(getPin(S.uid)){S.pin='';go('lock',{reset:true})}else{S.pinStage=1;S.skipTour=true;go('pin',{reset:true})}return}}
   clearDemo();go('welcome',{reset:true})}
 boot().catch(()=>{clearDemo();go('welcome',{reset:true})});

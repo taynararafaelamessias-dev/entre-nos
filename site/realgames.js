@@ -274,12 +274,14 @@ const _home=R.home;R.home=function(){let h=_home();if(S.call){const X=R2(),g=GTX
   h=h.replace('<div class="sec-t">',`<button type="button" class="wkban" data-rgcall="1"><span class="tagc gold">${ic('games',14)} ${X.call(esc(S.pname||(lang==='pt'?'Seu amor':'Tu amor')))}</span><strong>${g?g[0]:''}</strong><span>${X.callGo}</span></button><div class="sec-t">`)}return h};
 document.addEventListener('click',e=>{const c=e.target.closest('[data-rgcall]');if(!c)return;e.stopImmediatePropagation();const id=S.call.id;S.call=null;enterRoom(id)},true);
 
+document.addEventListener('click',async e=>{if(!e.target.closest('[data-rgout]'))return;e.stopImmediatePropagation();
+  try{await sb.auth.signOut()}catch(_){}S.uid=null;S.hasProfile=false;S.isFree=false;S.isPaid=false;S.openRooms=[];S.email='';if(S.mf)S.mf.mode='old';go('welcome',{reset:true})},true);
 // ---------- início: link de jogo e conta ----------
 (async()=>{
   const q=new URLSearchParams(location.search),code=q.get('jogo');
   let {data:{session}}=await sb.auth.getSession();
   if(session){const {data:u,error:ue}=await sb.auth.getUser();if(ue||!u||!u.user){await sb.auth.signOut().catch(()=>{});session=null;S.uid=null;S.hasProfile=false}}
-  if(session){S.uid=session.user.id;await refreshFree();
+  if(session){S.uid=session.user.id;S.email=S.email||session.user.email;await refreshFree();
     if(!S.hasProfile){let pend=null;try{pend=JSON.parse(localStorage.getItem('en_free_pending')||'null')}catch(_){}
       if(pend){const r=await sb.rpc('register_free',{p_nickname:pend.nm,p_gender:pend.g,p_lang:lang,p_adult:true,p_sensitive:true});if(!r.error){try{localStorage.removeItem('en_free_pending')}catch(_){}await refreshFree();if(!code)setTimeout(()=>go('mgame',{reset:true}),400)}}}
     watchCalls()}
@@ -292,6 +294,6 @@ document.addEventListener('click',e=>{const c=e.target.closest('[data-rgcall]');
     S.pendingRoom={code,info:inf,go:false};S.mf.mode='new';setTimeout(()=>go('mgame',{reset:true}),300)}
 })();
 // ao entrar no "Jogar grátis", carrega quantos jogos restam
-const FREE_OK=['newpw','welcome','signup','login','checkmail','mgame','groom','partner','psignup'];
-const _go=window.go;window.go=function(s,o){if(S.uid&&S.isFree&&!FREE_OK.includes(s)){toast(R2().locked);s='mgame';o={reset:true}}if(s==='mgame'&&S.uid)refreshFree().then(()=>{if(S.screen==='mgame')render()});return _go(s,o)};
+const FREE_OK=['newpw','welcome','signup','login','checkmail','mgame','groom','partner','psignup','home','account','inbox','pin','lock','tour'];
+const _go=window.go;window.go=function(s,o){if(S.uid&&S.isFree&&!FREE_OK.includes(s)){if(s==='games'){s='mgame';o={reset:false}}else{if(window.openLock)openLock(s);else toast(R2().locked);return}}if(s==='mgame'&&S.uid)refreshFree().then(()=>{if(S.screen==='mgame')render()});return _go(s,o)};
 })();
