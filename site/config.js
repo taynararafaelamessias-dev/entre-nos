@@ -1,5 +1,5 @@
-// Chaves PÚBLICAS do Supabase (a "anon / publishable"). Nunca coloque aqui a service_role.
+// Chaves PÚBLICAS do Supabase (a "publishable"). Nunca coloque aqui a secret / service_role.
 window.ENV = {
-  SUPABASE_URL: '',
-  SUPABASE_ANON: ''
+  SUPABASE_URL: 'https://rtizmiuqqwacrpfviykv.supabase.co',
+  SUPABASE_ANON: 'sb_publishable_O4vcyILdpe6wvnyG0tcjkg_5pLtUT2a'
 };
