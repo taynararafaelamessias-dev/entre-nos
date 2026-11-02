@@ -14,7 +14,7 @@ const NX={
    bdsm_limits:n=>`${n} preencheu os limites do BDSM. Já dá pra ver o resultado`,game_inv:n=>`${n} te chamou pra jogar`,game_tease:n=>`${n} te mandou uma provocação no jogo`,talk_love:n=>`${n} te mandou uma mensagem com amor 💗`,
    inv_fire:n=>`${n} te convidou pra Sequência de fogo 🔥`,inv_hold:n=>`${n} te desafiou: Quem segura mais`,inv_care:n=>`${n} te convidou pra Semana do cuidado 💗`,
    acc_fire:n=>`${n} aceitou a Sequência de fogo 🔥`,acc_hold:n=>`${n} aceitou o Quem segura mais`,acc_care:n=>`${n} aceitou a Semana do cuidado`,
-   mk_fire_done:(n,r)=>`${n} marcou o dia ${r} da Sequência de fogo 🔥`,mk_hold_count:n=>`${n} já colocou o resultado do Quem segura mais`,mk_care_care:n=>`${n} fez o cuidado de hoje 💗`,mk_care_heart:n=>`${n} devolveu um ❤️ no seu cuidado`,
+   mk_fire_done:(n,r)=>`${n} marcou o dia ${r} da Sequência de fogo 🔥`,mk_hold_hit:n=>`${n} já colocou o resultado do Quem segura mais`,mk_care_care:n=>`${n} fez o cuidado de hoje 💗`,mk_care_heart:n=>`${n} devolveu um ❤️ no seu cuidado`,
    end_fire_done:()=>'Sequência de fogo completa! 🔥',end_fire_broken:()=>'A Sequência de fogo quebrou',end_hold_done:()=>'Saiu o resultado do Quem segura mais 🏆',end_care_done:()=>'A Semana do cuidado terminou 💗',week_end:()=>'Fechou a semana! Veja quem ganhou o pódio 🏆'},
   you:'Seu amor',edit:'Editar',edited:'editada · Editar',editT:'Editar mensagem',save:'Salvar',cancel:'Cancelar',sending:'Enviando…'},
  es:{title:'Novedades',all:n=>`Ver todas (${n})`,less:'Ver menos',
@@ -26,7 +26,7 @@ const NX={
    bdsm_limits:n=>`${n} completó los límites de BDSM. Ya pueden ver el resultado`,game_inv:n=>`${n} te invitó a jugar`,game_tease:n=>`${n} te mandó una provocación en el juego`,talk_love:n=>`${n} te mandó un mensaje con amor 💗`,
    inv_fire:n=>`${n} te invitó a la Racha de fuego 🔥`,inv_hold:n=>`${n} te retó: Quién aguanta más`,inv_care:n=>`${n} te invitó a la Semana del cuidado 💗`,
    acc_fire:n=>`${n} aceptó la Racha de fuego 🔥`,acc_hold:n=>`${n} aceptó Quién aguanta más`,acc_care:n=>`${n} aceptó la Semana del cuidado`,
-   mk_fire_done:(n,r)=>`${n} marcó el día ${r} de la Racha de fuego 🔥`,mk_hold_count:n=>`${n} ya puso su resultado en Quién aguanta más`,mk_care_care:n=>`${n} hizo el cuidado de hoy 💗`,mk_care_heart:n=>`${n} te devolvió un ❤️`,
+   mk_fire_done:(n,r)=>`${n} marcó el día ${r} de la Racha de fuego 🔥`,mk_hold_hit:n=>`${n} ya puso su resultado en Quién aguanta más`,mk_care_care:n=>`${n} hizo el cuidado de hoy 💗`,mk_care_heart:n=>`${n} te devolvió un ❤️`,
    end_fire_done:()=>'¡Racha de fuego completa! 🔥',end_fire_broken:()=>'La Racha de fuego se rompió',end_hold_done:()=>'Salió el resultado de Quién aguanta más 🏆',end_care_done:()=>'La Semana del cuidado terminó 💗',week_end:()=>'¡Terminó la semana! Mira quién ganó el podio 🏆'},
   you:'Tu amor',edit:'Editar',edited:'editado · Editar',editT:'Editar mensaje',save:'Guardar',cancel:'Cancelar',sending:'Enviando…'}};
 const N=()=>NX[lang];

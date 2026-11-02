@@ -23,7 +23,7 @@ create table if not exists public.challenge_runs (
   type        text not null check (type in ('fire','hold','care')),
   created_by  uuid not null default auth.uid() references public.profiles(id) on delete cascade,
   status      text not null default 'invited' check (status in ('invited','active','done','broken','declined','canceled')),
-  config      jsonb not null default '{}'::jsonb,      -- fire: {"days":3} · care: {"resp":"<user id>"}
+  config      jsonb not null default '{}'::jsonb,      -- fire: {"days":3} · hold: {"meta":{"<user>":5}} · care: {"resp":"<user>","days":[1,2,3]}
   start_date  date,
   created_at  timestamptz not null default now(),
   accepted_at timestamptz,
@@ -34,7 +34,7 @@ create table if not exists public.challenge_marks (
   run_id     uuid not null references public.challenge_runs(id) on delete cascade,
   user_id    uuid not null default auth.uid() references public.profiles(id) on delete cascade,
   day_no     smallint not null default 1 check (day_no between 1 and 7),
-  kind       text not null check (kind in ('done','fire','count','care','heart')),
+  kind       text not null check (kind in ('done','fire','count','hit','care','heart')),
   value      int,
   note       text check (char_length(note) <= 300),
   created_at timestamptz not null default now(),
@@ -71,7 +71,7 @@ begin
     end loop;
     update challenge_runs set status = 'done', ended_at = now() where id = r.id;
   elsif r.type = 'hold' then
-    select count(distinct user_id) into users from challenge_marks where run_id = r.id and kind = 'count';
+    select count(distinct user_id) into users from challenge_marks where run_id = r.id and kind = 'hit';
     if users >= 2 then update challenge_runs set status = 'done', ended_at = now() where id = r.id; end if;
   elsif r.type = 'care' then
     if today > r.start_date + 7 then update challenge_runs set status = 'done', ended_at = now() where id = r.id; end if;
@@ -90,9 +90,10 @@ begin
   return v;
 end $$;
 
-create or replace function public.ch_answer(p_run uuid, p_accept boolean) returns void
+drop function if exists public.ch_answer(uuid, boolean);
+create or replace function public.ch_answer(p_run uuid, p_accept boolean, p_config jsonb default null) returns void
 language plpgsql security definer set search_path = public as $$
-declare r challenge_runs;
+declare r challenge_runs; cfg jsonb;
 begin
   select * into r from challenge_runs where id = p_run and couple_id = public.my_couple() for update;
   if r.id is null or r.status <> 'invited' then raise exception 'convite não encontrado'; end if;
@@ -100,8 +101,24 @@ begin
     if not p_accept then update challenge_runs set status = 'canceled', ended_at = now() where id = r.id; return; end if;
     raise exception 'quem aceita é o seu par';
   end if;
-  if p_accept then update challenge_runs set status = 'active', accepted_at = now(), start_date = public.ch_today() where id = r.id;
+  if p_accept then
+    cfg := r.config;
+    -- quem segura mais: quem aceita define a meta de quem convidou
+    if r.type = 'hold' and p_config ? 'meta' then cfg := jsonb_set(cfg, '{meta}', coalesce(cfg->'meta','{}'::jsonb) || (p_config->'meta')); end if;
+    update challenge_runs set status = 'active', accepted_at = now(), start_date = public.ch_today(), config = cfg where id = r.id;
   else update challenge_runs set status = 'declined', ended_at = now() where id = r.id; end if;
+end $$;
+
+-- semana do cuidado: o responsável escolhe os dias da semana em que vai fazer
+create or replace function public.ch_set_days(p_run uuid, p_days int[]) returns void
+language plpgsql security definer set search_path = public as $$
+declare r challenge_runs;
+begin
+  select * into r from challenge_runs where id = p_run and couple_id = public.my_couple() for update;
+  if r.id is null or r.type <> 'care' or r.status not in ('invited','active') then raise exception 'desafio não encontrado'; end if;
+  if (r.config->>'resp')::uuid <> auth.uid() then raise exception 'quem escolhe os dias é o responsável'; end if;
+  if p_days is null or array_length(p_days,1) is null or exists (select 1 from unnest(p_days) d where d not between 1 and 7) then raise exception 'escolha pelo menos um dia'; end if;
+  update challenge_runs set config = jsonb_set(config, '{days}', to_jsonb((select array_agg(distinct d order by d) from unnest(p_days) d))) where id = r.id;
 end $$;
 
 create or replace function public.ch_mark(p_run uuid, p_day int, p_kind text, p_value int, p_note text) returns void
@@ -118,13 +135,16 @@ begin
     if p_kind = 'fire' and not exists (select 1 from challenge_marks where run_id = r.id and day_no = p_day and kind = 'done') then raise exception 'marque o dia primeiro'; end if;
     if p_kind = 'fire' and (p_value is null or p_value not between 1 and 5) then raise exception 'nota de 1 a 5'; end if;
   elsif r.type = 'hold' then
-    if p_kind <> 'count' or p_value is null or p_value not between 0 and 99 then raise exception 'número inválido'; end if;
+    if p_kind = 'hit' then if p_value is null or p_value not in (0,1) then raise exception 'marque se alcançou'; end if;
+    elsif p_kind = 'count' then if p_value is null or p_value not between 0 and 99 then raise exception 'número inválido'; end if;
+    else raise exception 'marca inválida'; end if;
     p_day := 1;
   elsif r.type = 'care' then
     resp := (r.config->>'resp')::uuid;
     if p_kind = 'care' then
       if auth.uid() <> resp then raise exception 'quem marca o cuidado é o responsável da semana'; end if;
-      if p_day <> today_no then raise exception 'marque o cuidado de hoje'; end if;
+      if p_day < 1 or p_day > least(today_no, 7) then raise exception 'esse dia ainda não chegou'; end if;
+      if r.config ? 'days' and not (r.config->'days') @> to_jsonb(p_day) then raise exception 'esse dia não foi escolhido'; end if;
     elsif p_kind = 'heart' then
       if auth.uid() = resp then raise exception 'o coração é do outro'; end if;
       if not exists (select 1 from challenge_marks where run_id = r.id and day_no = p_day and kind = 'care') then raise exception 'ainda não tem cuidado nesse dia'; end if;
@@ -165,12 +185,10 @@ language sql stable security definer set search_path = public as $$
     union all select u.uid, 3, r.ended_at from challenge_runs r, c,
        lateral (select owner_id uid from couples where id = c.id union select partner_id from couples where id = c.id) u
      where r.couple_id = c.id and r.type = 'fire' and r.status = 'done' and u.uid is not null
-    -- quem segura mais: 3 pro vencedor, 1 pro outro, 2 a 2 no empate
-    union all select m.user_id,
-       case when m.value > o.value then 3 when m.value = o.value then 2 else 1 end, r.ended_at
-     from challenge_marks m join challenge_runs r on r.id = m.run_id
-     join challenge_marks o on o.run_id = m.run_id and o.kind = 'count' and o.user_id <> m.user_id, c
-     where r.couple_id = c.id and r.type = 'hold' and r.status = 'done' and m.kind = 'count'
+    -- quem segura mais: alcançou a meta = 3, não alcançou = 1 (por participar)
+    union all select m.user_id, case when m.value = 1 then 3 else 1 end, r.ended_at
+     from challenge_marks m join challenge_runs r on r.id = m.run_id, c
+     where r.couple_id = c.id and r.type = 'hold' and r.status = 'done' and m.kind = 'hit'
     -- semana do cuidado: 1 por dia pro responsável (+3 nos 7 dias) e 1 por coração pro outro
     union all select m.user_id, 1, m.created_at from challenge_marks m join challenge_runs r on r.id = m.run_id, c
      where r.couple_id = c.id and r.type = 'care' and m.kind in ('care','heart')
@@ -229,7 +247,7 @@ begin
     union all select 'heat', 'inv_' || r.type, r.id::text, r.created_at from challenge_runs r where r.couple_id = c and r.created_by = p and r.status = 'invited'
     union all select 'heat', 'acc_' || r.type, r.id::text, r.accepted_at from challenge_runs r where r.couple_id = c and r.created_by = me and r.accepted_at is not null
     union all select 'heat', 'mk_' || r.type || '_' || m.kind, m.day_no::text, m.created_at from challenge_marks m join challenge_runs r on r.id = m.run_id
-      where r.couple_id = c and m.user_id = p and m.kind in ('done','care','heart','count')
+      where r.couple_id = c and m.user_id = p and m.kind in ('done','care','heart','hit')
     union all select 'heat', 'end_' || r.type || '_' || r.status, r.id::text, r.ended_at from challenge_runs r
       where r.couple_id = c and r.status in ('done','broken') and r.ended_at is not null
     union all select 'heat', 'week_end', '', wk where exists (select 1 from public.couple_points(wk - interval '7 days') x left join public.couple_points(wk) y on y.user_id = x.user_id where x.pts - coalesce(y.pts,0) > 0)
@@ -241,7 +259,7 @@ end $$;
 
 do $$ declare f record; begin
   for f in select p.oid::regprocedure as sig from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-           where n.nspname = 'public' and p.proname in ('my_news','ch_refresh','ch_invite','ch_answer','ch_mark','ch_state','couple_points','couple_podium') loop
+           where n.nspname = 'public' and p.proname in ('my_news','ch_refresh','ch_invite','ch_answer','ch_set_days','ch_mark','ch_state','couple_points','couple_podium') loop
     execute format('revoke execute on function %s from public, anon', f.sig);
     execute format('grant execute on function %s to authenticated', f.sig);
   end loop;
