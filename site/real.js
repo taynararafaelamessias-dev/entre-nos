@@ -6,6 +6,7 @@
 const ENVC=window.ENV||{};
 if(!ENVC.SUPABASE_URL||!ENVC.SUPABASE_ANON||!window.supabase){window.REAL=false;return}
 window.REAL=true;
+const RECOVERY=/type=recovery/.test(location.hash);
 const sb=window.supabase.createClient(ENVC.SUPABASE_URL,ENVC.SUPABASE_ANON,{auth:{persistSession:true,autoRefreshToken:true}});
 window.sb=sb;
 document.documentElement.classList.add('real');
@@ -21,6 +22,7 @@ const RX={
   saved:'Guardado ✓',offline:'Sin conexión. Inténtalo de nuevo.',logout:'Cerrar sesión'}};
 const RT=()=>RX[lang];
 const errMsg=e=>{const m=(e&&(e.message||e.error_description))||'';if(/not confirmed/i.test(m))return lang==='pt'?'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link.':'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace.';if(/Invalid login/i.test(m))return RT().errAuth;if(/already registered|already exists/i.test(m))return RT().errExists;
+  if(/banned/i.test(m))return lang==='pt'?'Esta conta está bloqueada. Fale com a equipe Entre Nós.':'Esta cuenta está bloqueada. Habla con el equipo Entre Nosotros.';if(/rate limit|security purposes/i.test(m))return lang==='pt'?'Muitas tentativas. Espere alguns minutos e tente de novo.':'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.';
   if(/outro e-mail/.test(m))return RT().wrongEmail;if(/não encontrado|já usado/.test(m))return RT().invalidInvite;return m||RT().errGeneric};
 
 // ---------- estado vazio (tira os exemplos do protótipo) ----------
@@ -145,6 +147,29 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-cm]'
   if(b.dataset.cm==='resend'){const {error}=await sb.auth.resend({type:'signup',email:S.cmEmail});toast(error?RT().errGeneric:CM[lang].sent);return}
   if(S.cmNext==='mgame'){S.mf.mode='old';go('mgame',{reset:true})}else go('login',{reset:true})});
 
+// ---------- esqueci a senha (link por e-mail) e criar senha nova ----------
+const NP={pt:{t:'Crie uma <em>senha nova</em>',l:'Escolha uma senha com pelo menos 6 caracteres.',ph:'Senha nova',ph2:'Repita a senha',btn:'Salvar senha nova',err:'As senhas precisam ser iguais e ter pelo menos 6 caracteres.',ok:'Senha trocada ✓',need:'Digite seu e-mail no campo acima e toque de novo em “Esqueci a senha”.'},
+ es:{t:'Crea una <em>contraseña nueva</em>',l:'Elige una contraseña de al menos 6 caracteres.',ph:'Contraseña nueva',ph2:'Repite la contraseña',btn:'Guardar contraseña nueva',err:'Las contraseñas deben ser iguales y tener al menos 6 caracteres.',ok:'Contraseña cambiada ✓',need:'Escribe tu correo en el campo de arriba y toca otra vez “Olvidé la contraseña”.'}};
+R.newpw=function(){const N=NP[lang];return `<section class="screen"><div class="bigic">${ic('lock',38)}</div><h2>${N.t}</h2><p>${N.l}</p>
+  <form id="f6" novalidate class="btns" style="gap:14px"><div class="field"><label for="np1">${N.ph}</label><input id="np1" type="password" autocomplete="new-password"></div>
+  <div class="field"><label for="np2">${N.ph2}</label><input id="np2" type="password" autocomplete="new-password"></div>
+  <button class="btn pri" type="submit">${N.btn}</button></form></section>`};
+try{NARROW.push('newpw')}catch(_){}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-en="pwsent"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();
+  const f=document.getElementById('lem');const em=((f&&f.value)||S.email||'').trim().toLowerCase();
+  if(!em){toast(NP[lang].need);return}
+  b.disabled=true;const {error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin+'/'});b.disabled=false;
+  toast(error?errMsg(error):ENT().lg_pwSent)},true);
+document.addEventListener('submit',async e=>{if(e.target.id!=='f6')return;e.preventDefault();e.stopImmediatePropagation();
+  const a=(document.getElementById('np1')||{}).value||'',b2=(document.getElementById('np2')||{}).value||'';
+  if(a.length<6||a!==b2){toast(NP[lang].err);return}
+  const btn=e.target.querySelector('button');btn.disabled=true;
+  const {error}=await sb.auth.updateUser({password:a});btn.disabled=false;
+  if(error){toast(errMsg(error));return}
+  toast(NP[lang].ok);const ok=await loadAccount();
+  if(ok==='noprofile'||S.isFree){go('mgame',{reset:true});return}
+  S.pinStage=1;S.skipTour=true;go('pin',{reset:true})},true);
+
 // ---------- início ----------
 async function boot(){
   const q=new URLSearchParams(location.search);const code=q.get('convite');
@@ -154,6 +179,7 @@ async function boot(){
       history.replaceState(null,'',location.pathname);go('partner',{reset:true});return}
     toast(RT().invalidInvite)}
   let {data:{session}}=await sb.auth.getSession();
+  if(RECOVERY&&session){history.replaceState(null,'',location.pathname);await loadAccount().catch(()=>{});go('newpw',{reset:true});return}
   if(session){const {data:u,error:ue}=await sb.auth.getUser();if(ue||!u||!u.user){await sb.auth.signOut().catch(()=>{});session=null}}
   if(session){await finishPending().catch(()=>{});const ok=await loadAccount();
     if(ok===true&&S.isFree){go('mgame',{reset:true});return}

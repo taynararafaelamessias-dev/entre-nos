@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Gerenciador Entre Nós</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{--night:#0D0A0A;--night-2:#191414;--night-3:#221b1b;--line:#352B2B;--blush:#A01E2B;--honey:#C8A15A;--cream:#F2EBE5;--muted:#A69C99;--ok:#6FB58A;
+  --display:"Bodoni Moda",Didot,Georgia,serif;--body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--night);color:var(--cream);font-family:var(--body);font-size:15px;line-height:1.5}
+a{color:var(--honey)}
+.top{position:sticky;top:0;z-index:5;background:rgba(13,10,10,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mark{font-family:var(--display);font-style:italic;font-size:20px}
+.mark b{color:var(--honey)}
+.mark small{font-family:var(--body);font-style:normal;font-size:12px;color:var(--muted);margin-left:6px;letter-spacing:.08em;text-transform:uppercase}
+.sp{flex:1}
+.tabs{max-width:1100px;margin:0 auto;padding:0 16px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs button{flex:none}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 80px}
+h1{font-family:var(--display);font-weight:500;font-size:30px;margin:0 0 4px}
+h1 em{color:var(--honey)}
+h2{font-family:var(--display);font-weight:500;font-size:22px;margin:28px 0 10px}
+.lead{color:var(--muted);margin:0 0 18px}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--night-2);border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px;white-space:nowrap}
+.btn:hover{border-color:var(--honey)}
+.btn.pri{background:var(--blush);border-color:var(--blush)}
+.btn.gold{background:var(--honey);border-color:var(--honey);color:var(--night)}
+.btn.sm{padding:5px 11px;font-size:13px}
+.btn[aria-pressed=true]{background:var(--honey);color:var(--night);border-color:var(--honey)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--honey);outline-offset:2px}
+input,select,textarea{background:var(--night);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+textarea{resize:vertical;min-height:80px}
+label{display:block;font-size:13px;color:var(--muted);margin:0 0 4px}
+.field{margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.card{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-size:30px;line-height:1.1}
+.stat .l{color:var(--muted);font-size:13px}
+.stat.alert{border-color:var(--blush)}
+.stat.alert .n{color:#e46b76}
+.stat.money .n{color:var(--honey)}
+.list{display:flex;flex-direction:column;gap:10px}
+.item{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.item h3{margin:0;font-size:15px;font-weight:700}
+.meta{color:var(--muted);font-size:13px}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:12px;color:var(--muted)}
+.tag.ok{border-color:var(--ok);color:var(--ok)}
+.tag.bad{border-color:var(--blush);color:#e46b76}
+.tag.gold{border-color:var(--honey);color:var(--honey)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.pair>div{background:var(--night-3);border-radius:10px;padding:10px 12px;min-width:0}
+.pair .who{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.pair .em{word-break:break-all}
+.quote{font-family:var(--display);font-style:italic;font-size:17px;margin:6px 0 10px}
+.empty{color:var(--muted);padding:20px 0}
+.box{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+.bars{display:flex;align-items:flex-end;gap:3px;height:140px;padding-top:10px}
+.bars div{flex:1;background:var(--honey);border-radius:3px 3px 0 0;min-height:2px;position:relative}
+.bars div:hover::after{content:attr(data-t);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--night-3);border:1px solid var(--line);padding:2px 6px;border-radius:6px;font-size:12px;white-space:nowrap;margin-bottom:4px}
+.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--cream);color:var(--night);padding:10px 16px;border-radius:12px;font-weight:600;z-index:20;max-width:calc(100% - 32px)}
+.hint{color:var(--muted);font-size:13px}
+.chk{display:flex;gap:8px;align-items:center;color:var(--cream);font-size:14px}
+.chk input{width:auto}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.pair,.two{grid-template-columns:1fr}h1{font-size:26px}}
+</style>
+</head>
+<body>
+<div id="app"><div class="login"><p class="hint">Carregando…</p></div></div>
+<div id="toast" class="toast" hidden></div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+const sb=window.supabase.createClient(ENV.SUPABASE_URL,ENV.SUPABASE_ANON,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'en_admin_auth'}});
+const app=document.getElementById('app');
+const A={tab:'painel',days:30,search:'',data:{},busy:false,open:null};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const dt=d=>d?new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+const ago=d=>{const h=Math.floor((Date.now()-new Date(d))/36e5);return h<24?`há ${h}h`:`há ${Math.floor(h/24)} dia${h>=48?'s':''}`};
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3200)}
+const SUB={trial:'Acesso de teste',active:'Assinatura ativa',canceled:'Cancelada',expired:'Vencida'};
+const AUD={f:'Mulheres',m:'Homens',b:'Todos'};
+const TABS=[['painel','Painel'],['fin','Financeiro'],['users','Usuários'],['com','Comunidade'],['con','Consultoria'],['msg','Mensagens']];
+const site=location.origin;
+
+// ---------- entrar ----------
+function loginView(msg){app.innerHTML=`<div class="login"><div class="mark">Entre <b>Nós</b><small>gerenciador</small></div>
+  <h1 style="margin-top:18px">Entrar</h1><p class="lead">Use o e-mail e a senha da sua conta de administradora.</p>
+  ${msg?`<p class="tag bad" style="margin-bottom:12px">${esc(msg)}</p>`:''}
+  <form id="lf"><div class="field"><label for="le">E-mail</label><input id="le" type="email" autocomplete="email"></div>
+  <div class="field"><label for="lp">Senha</label><input id="lp" type="password" autocomplete="current-password"></div>
+  <button class="btn pri" style="width:100%;padding:11px">Entrar</button></form></div>`;
+  document.getElementById('lf').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;
+    const {error}=await sb.auth.signInWithPassword({email:document.getElementById('le').value.trim().toLowerCase(),password:document.getElementById('lp').value});
+    b.disabled=false;if(error){loginView('E-mail ou senha incorretos.');return}start()}}
+
+async function start(){const {data:{session}}=await sb.auth.getSession();if(!session){loginView();return}
+  const {data:ok}=await sb.rpc('is_admin');
+  if(!ok){await sb.auth.signOut();loginView('Esta conta não tem acesso ao gerenciador.');return}
+  A.email=session.user.email;shell();load()}
+
+function shell(){app.innerHTML=`<header class="top"><div class="top-in"><div class="mark">Entre <b>Nós</b><small>gerenciador</small></div><div class="sp"></div>
+  <span class="meta">${esc(A.email)}</span><a class="btn sm" href="/" target="_blank" rel="noopener">Abrir o app</a><button class="btn sm" data-a="logout">Sair</button></div>
+  <nav class="tabs">${TABS.map(([k,n])=>`<button class="btn sm" data-tab="${k}" aria-pressed="${A.tab===k}">${n}</button>`).join('')}</nav></header><main id="main"></main>`}
+const main=()=>document.getElementById('main');
+
+// ---------- carregar dados de cada aba ----------
+async function load(){const m=main();if(!m)return;m.innerHTML='<p class="empty">Carregando…</p>';
+  try{
+    if(A.tab==='painel'||A.tab==='fin'){const [s,q,r,c]=await Promise.all([sb.rpc('admin_stats',{p_days:A.days}),sb.rpc('admin_stale_questions'),sb.rpc('admin_reports'),sb.rpc('admin_concierge')]);
+      if(s.error)throw s.error;A.data.stats=s.data;A.data.stale=q.data||[];A.data.reports=r.data||[];A.data.con=c.data||[]}
+    if(A.tab==='users'){const {data,error}=await sb.rpc('admin_users',{p_search:A.search});if(error)throw error;A.data.users=data}
+    if(A.tab==='com'){const [q,r]=await Promise.all([sb.rpc('admin_stale_questions'),sb.rpc('admin_reports')]);if(q.error)throw q.error;A.data.stale=q.data||[];A.data.reports=r.data||[]}
+    if(A.tab==='con'){const {data,error}=await sb.rpc('admin_concierge');if(error)throw error;A.data.con=data||[]}
+    if(A.tab==='msg'){const {data,error}=await sb.from('announcements').select('*').order('send_at',{ascending:false});if(error)throw error;A.data.msg=data||[]}
+    draw();
+  }catch(e){m.innerHTML=`<p class="empty">Não consegui carregar: ${esc(e.message||e)}</p>`}}
+
+function draw(){const m=main();if(!m)return;
+  document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===A.tab));
+  m.innerHTML=({painel:vPainel,fin:vFin,users:vUsers,com:vCom,con:vCon,msg:vMsg})[A.tab]()}
+
+const period=()=>`<div class="row" style="margin-bottom:16px">${[7,15,30,60,90].map(d=>`<button class="btn sm" data-days="${d}" aria-pressed="${A.days===d}">${d} dias</button>`).join('')}</div>`;
+const stat=(n,l,cls='')=>`<div class="card stat ${cls}"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+
+// ---------- Painel ----------
+function vPainel(){const s=A.data.stats||{},stale=A.data.stale.length,rep=A.data.reports.filter(r=>!r.hidden).length,con=A.data.con.filter(c=>!c.handled_at).length;
+  return `<h1>Painel</h1><p class="lead">Como o app está indo no período escolhido.</p>${period()}
+  ${stale||rep||con?`<h2 style="margin-top:0">Precisa de você</h2><div class="grid">
+    ${stale?`<button class="card stat alert" data-tab="com" style="text-align:left;cursor:pointer"><div class="n">${stale}</div><div class="l">pergunta${stale>1?'s':''} sem resposta há mais de 24h</div></button>`:''}
+    ${rep?`<button class="card stat alert" data-tab="com" style="text-align:left;cursor:pointer"><div class="n">${rep}</div><div class="l">denúncia${rep>1?'s':''} pra olhar</div></button>`:''}
+    ${con?`<button class="card stat alert" data-tab="con" style="text-align:left;cursor:pointer"><div class="n">${con}</div><div class="l">pedido${con>1?'s':''} de consultoria</div></button>`:''}</div>`:''}
+  <h2>Pessoas</h2><div class="grid">
+    ${stat(s.signups||0,'cadastros novos')}${stat(s.couples||0,'casais novos (assinantes)')}${stat(s.partners_in||0,'pares que já entraram')}
+    ${stat(s.active_subs||0,'acessos liberados agora (total)')}</div>
+  <h2>Jogo grátis</h2><div class="grid">
+    ${stat(s.free_users||0,'pessoas só no jogo grátis')}${stat(s.free_games||0,'jogos grátis jogados a dois')}${stat(s.free_to_paid||0,'do grátis que viraram assinantes')}</div>
+  <h2>Comunidade</h2><div class="grid">${stat(s.questions||0,'perguntas feitas')}</div>
+  <h2>Dinheiro</h2><div class="grid">${stat(money(s.revenue),'faturamento','money')}${stat(s.sales||0,'vendas')}</div>`}
+
+// ---------- Financeiro ----------
+function vFin(){const s=A.data.stats||{},days=s.by_day||[];const mx=Math.max(1,...days.map(d=>+d.v));
+  return `<h1>Financeiro</h1><p class="lead">Vendas, renovações, cancelamentos e reembolsos.</p>${period()}
+  <div class="grid">${stat(money(s.revenue),'faturamento','money')}${stat(s.sales||0,'vendas novas')}${stat(s.renewals||0,'renovações')}
+    ${stat(s.cancels||0,'cancelamentos')}${stat(s.refunds||0,'reembolsos e estornos')}${stat(money(s.refunds_amt),'valor devolvido')}
+    ${stat(s.sales?money((+s.revenue)/(s.sales+s.renewals)):money(0),'valor médio por pagamento')}</div>
+  <h2>Faturamento por dia</h2><div class="card">${days.length?`<div class="bars">${days.map(d=>`<div style="height:${Math.round(+d.v/mx*100)}%" data-t="${new Date(d.d+'T12:00').toLocaleDateString('pt-BR')}: ${money(d.v)}"></div>`).join('')}</div>`
+    :'<p class="empty" style="padding:8px 0">Nenhum pagamento ainda. Os números aparecem aqui sozinhos quando a Hotmart for conectada.</p>'}</div>`}
+
+// ---------- Usuários ----------
+function person(p,label,coupleId){if(!p)return `<div><div class="who">${label}</div><p class="meta">Ainda não entrou</p></div>`;
+  return `<div><div class="who">${label}</div><div><strong>${esc(p.nick)}</strong> ${p.blocked?'<span class="tag bad">bloqueado</span>':''}</div><div class="meta em">${esc(p.email)}</div>
+  <div class="row" style="margin-top:8px"><button class="btn sm" data-a="pw" data-email="${esc(p.email)}">Mandar link de senha nova</button>
+  <button class="btn sm" data-a="block" data-id="${p.id}" data-b="${p.blocked?0:1}">${p.blocked?'Desbloquear':'Bloquear'}</button></div></div>`}
+function vUsers(){const u=A.data.users||{couples:[],free:[]};
+  return `<h1>Usuários</h1><p class="lead">Aqui aparecem só nome, e-mail e situação. O que cada um faz dentro do app é privado.</p>
+  <form id="sf" class="row" style="margin-bottom:18px"><input id="sq" placeholder="Buscar por nome ou e-mail" value="${esc(A.search)}" style="flex:1;min-width:200px"><button class="btn">Buscar</button></form>
+  <h2 style="margin-top:0">Casais (${u.couples.length})</h2>
+  <div class="list">${u.couples.length?u.couples.map(c=>`<div class="item">
+    <div class="row"><h3>${esc(c.owner.nick)}${c.partner?' & '+esc(c.partner.nick):''}</h3><span class="tag ${c.sub_status==='active'?'ok':c.sub_status==='trial'?'gold':'bad'}">${SUB[c.sub_status]||c.sub_status}</span><div class="sp"></div><span class="meta">desde ${dt(c.created_at)}</span></div>
+    <div class="pair">${person(c.owner,'Quem assinou')}${c.partner?person(c.partner,'Par'):`<div><div class="who">Par (convidado)</div><div class="meta em">${esc(c.partner_email)}</div><p class="meta" style="margin:4px 0 0">Ainda não aceitou o convite</p>
+      <div class="row" style="margin-top:8px"><button class="btn sm" data-a="copy" data-t="${site}/?convite=${esc(c.invite_code)}">Copiar link do convite</button></div></div>`}</div>
+    <div class="row" style="margin-top:10px"><label style="margin:0">Situação:</label><select data-a="sub" data-id="${c.id}" style="width:auto">${Object.entries(SUB).map(([k,n])=>`<option value="${k}" ${k===c.sub_status?'selected':''}>${n}</option>`).join('')}</select>
+      <button class="btn sm" data-a="swap" data-id="${c.id}">Trocar o par</button></div>
+    ${A.open===c.id?`<form class="box" data-swap="${c.id}"><p class="meta" style="margin-top:0">O par atual perde o acesso na hora e o que estava compartilhado entre os dois some. Um convite novo é criado pro e-mail abaixo.</p>
+      <div class="two"><div class="field"><label>E-mail do novo par</label><input name="em" type="email" required></div><div class="field"><label>O novo par é</label><select name="g"><option value="m">Homem</option><option value="f">Mulher</option></select></div></div>
+      <div class="row"><button class="btn pri sm">Trocar e criar convite</button><button type="button" class="btn sm" data-a="swapx">Cancelar</button></div></form>`:''}
+  </div>`).join(''):'<p class="empty">Nenhum casal encontrado.</p>'}</div>
+  <h2>Só no jogo grátis (${u.free.length})</h2>
+  <div class="list">${u.free.length?u.free.map(f=>`<div class="item"><div class="row"><h3>${esc(f.nick||'—')}</h3>${f.blocked?'<span class="tag bad">bloqueado</span>':''}<span class="tag">${f.used||0} de 3 jogos grátis usados</span><div class="sp"></div><span class="meta">desde ${dt(f.created_at)}</span></div>
+    <div class="meta em">${esc(f.email)}</div><div class="row" style="margin-top:8px"><button class="btn sm" data-a="pw" data-email="${esc(f.email)}">Mandar link de senha nova</button><button class="btn sm" data-a="block" data-id="${f.id}" data-b="${f.blocked?0:1}">${f.blocked?'Desbloquear':'Bloquear'}</button></div></div>`).join(''):'<p class="empty">Ninguém por aqui.</p>'}</div>`}
+
+// ---------- Comunidade ----------
+function vCom(){const st=A.data.stale,rp=A.data.reports;
+  return `<h1>Comunidade</h1><p class="lead">Perguntas que ninguém respondeu em 24 horas. Sua resposta aparece com o selo “Equipe Entre Nós”.</p>
+  <div class="list">${st.length?st.map(q=>`<div class="item"><div class="row"><span class="tag">pra ${AUD[q.audience]||q.audience}</span><span class="meta">${ago(q.created_at)} · ${q.answers} de 3 respostas</span></div>
+    <p class="quote">“${esc(q.body)}”</p><form data-ans="${q.id}"><textarea name="t" placeholder="Escreva a resposta da equipe…"></textarea><div class="row" style="margin-top:8px"><button class="btn pri sm">Responder como Equipe Entre Nós</button></div></form></div>`).join('')
+    :'<p class="empty">Nenhuma pergunta esperando. Tudo em dia ✓</p>'}</div>
+  <h2>Denúncias</h2><div class="list">${rp.length?rp.map(r=>`<div class="item"><div class="row"><span class="tag ${r.hidden?'':'bad'}">${r.hidden?'oculto':'visível'}</span><span class="meta">${r.target==='question'?'pergunta':r.target==='answer'?'resposta':r.target} · ${ago(r.created_at)}</span></div>
+    <p class="quote">“${esc(r.content||'(conteúdo apagado)')}”</p>${r.reason?`<p class="meta">Motivo: ${esc(r.reason)}</p>`:''}
+    ${r.target==='question'||r.target==='answer'?`<button class="btn sm" data-a="hide" data-t="${r.target}" data-id="${r.target_id}" data-h="${r.hidden?0:1}">${r.hidden?'Mostrar de novo':'Ocultar do app'}</button>`:''}</div>`).join('')
+    :'<p class="empty">Nenhuma denúncia.</p>'}</div>`}
+
+// ---------- Consultoria ----------
+function vCon(){const c=A.data.con;
+  return `<h1>Consultoria</h1><p class="lead">Pedidos de orçamento feitos na Consultoria discreta.</p>
+  <div class="list">${c.length?c.map(x=>`<div class="item"><div class="row"><h3>${esc(x.nick)}</h3><span class="tag ${x.handled_at?'ok':'bad'}">${x.handled_at?'atendido':'pendente'}</span><div class="sp"></div><span class="meta">${dt(x.created_at)}</span></div>
+    <p style="margin:8px 0 4px"><strong>Contato (${esc(x.contact_type)}):</strong> ${esc(x.contact)}</p>
+    ${(x.toys||[]).length?`<p class="meta" style="margin:0">Interesse: ${x.toys.map(esc).join(', ')}</p>`:''}${x.message?`<p style="margin:6px 0 0">${esc(x.message)}</p>`:''}
+    <div class="row" style="margin-top:10px"><button class="btn sm" data-a="copy" data-t="${esc(x.contact)}">Copiar contato</button><button class="btn sm ${x.handled_at?'':'gold'}" data-a="done" data-id="${x.id}" data-d="${x.handled_at?0:1}">${x.handled_at?'Marcar como pendente':'Marcar como atendido'}</button></div></div>`).join('')
+    :'<p class="empty">Nenhum pedido ainda.</p>'}</div>`}
+
+// ---------- Mensagens ----------
+const AUDM={all:'Todo mundo',paid:'Só assinantes',free:'Só quem está no jogo grátis'};
+function localNow(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
+function vMsg(){const ms=A.data.msg;
+  return `<h1>Mensagens</h1><p class="lead">Aparecem no sininho do app. Em espanhol é opcional: quem usa o app em espanhol vê a versão em português se você deixar em branco.</p>
+  <form id="mf" class="card"><div class="two"><div><div class="field"><label>Título (português)</label><input name="tp" required maxlength="80" placeholder="Hoje é sexta! 🔥"></div>
+    <div class="field"><label>Texto (português)</label><textarea name="bp" required maxlength="400" placeholder="Que tal abrir o Plano da noite com seu amor?"></textarea></div></div>
+    <div><div class="field"><label>Título (espanhol)</label><input name="te" maxlength="80" placeholder="¡Hoy es viernes! 🔥"></div>
+    <div class="field"><label>Texto (espanhol)</label><textarea name="be" maxlength="400"></textarea></div></div></div>
+    <div class="two"><div class="field"><label>Pra quem</label><select name="au">${Object.entries(AUDM).map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select></div>
+    <div class="field"><label>Quando aparece</label><input name="at" type="datetime-local" value="${localNow()}"></div></div>
+    <label class="chk"><input name="wk" type="checkbox"> Repetir toda semana neste mesmo dia e horário</label>
+    <div class="row" style="margin-top:12px"><button class="btn pri">Programar mensagem</button></div></form>
+  <h2>Programadas e enviadas</h2><div class="list">${ms.length?ms.map(x=>`<div class="item"><div class="row"><h3>${esc(x.title_pt)}</h3>
+    <span class="tag ${x.active?'ok':''}">${x.active?'ativa':'desligada'}</span>${x.repeat_weekly?'<span class="tag gold">toda semana</span>':''}<span class="tag">${AUDM[x.audience]}</span><div class="sp"></div>
+    <span class="meta">${new Date(x.send_at)>new Date()?'aparece em ':'desde '}${dt(x.send_at)}</span></div><p style="margin:6px 0 0">${esc(x.body_pt)}</p>
+    ${x.title_es?`<p class="meta" style="margin:6px 0 0">ES: ${esc(x.title_es)} · ${esc(x.body_es||'')}</p>`:''}
+    <div class="row" style="margin-top:10px"><button class="btn sm" data-a="act" data-id="${x.id}" data-v="${x.active?0:1}">${x.active?'Desligar':'Ligar de novo'}</button></div></div>`).join('')
+    :'<p class="empty">Nenhuma mensagem ainda.</p>'}</div>`}
+
+// ---------- ações ----------
+async function rpc(name,args,okMsg){const {data,error}=await sb.rpc(name,args);if(error){toast('Não deu certo: '+error.message);return null}if(okMsg)toast(okMsg);return data===null?true:data}
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('[data-tab]');if(t){A.tab=t.dataset.tab;A.open=null;load();return}
+  const d=e.target.closest('[data-days]');if(d){A.days=+d.dataset.days;load();return}
+  const b=e.target.closest('[data-a]');if(!b||b.tagName==='SELECT')return;const a=b.dataset.a;
+  if(a==='logout'){await sb.auth.signOut();loginView();return}
+  if(a==='copy'){try{await navigator.clipboard.writeText(b.dataset.t);toast('Copiado ✓')}catch(_){prompt('Copie:',b.dataset.t)}return}
+  if(a==='pw'){if(!confirm(`Mandar pra ${b.dataset.email} um e-mail com link pra criar uma senha nova?`))return;b.disabled=true;
+    const {error}=await sb.auth.resetPasswordForEmail(b.dataset.email,{redirectTo:site+'/'});b.disabled=false;
+    toast(error?(/rate|security/i.test(error.message)?'Limite de e-mails atingido. Tente daqui a pouco.':'Não deu certo: '+error.message):'Link enviado ✓');return}
+  if(a==='block'){const blk=b.dataset.b==='1';if(!confirm(blk?'Bloquear esta pessoa? Ela não vai conseguir entrar mais.':'Desbloquear esta pessoa?'))return;
+    if(await rpc('admin_block',{p_user:b.dataset.id,p_block:blk},blk?'Bloqueado ✓':'Desbloqueado ✓'))load();return}
+  if(a==='swap'){A.open=b.dataset.id;draw();return}
+  if(a==='swapx'){A.open=null;draw();return}
+  if(a==='hide'){if(await rpc('admin_hide',{p_target:b.dataset.t,p_id:b.dataset.id,p_hidden:b.dataset.h==='1'},b.dataset.h==='1'?'Ocultado ✓':'Visível de novo ✓'))load();return}
+  if(a==='done'){if(await rpc('admin_concierge_done',{p_id:b.dataset.id,p_done:b.dataset.d==='1'},'Atualizado ✓'))load();return}
+  if(a==='act'){const {error}=await sb.from('announcements').update({active:b.dataset.v==='1'}).eq('id',b.dataset.id);toast(error?'Não deu certo':'Atualizado ✓');load();return}
+});
+document.addEventListener('change',async e=>{const s=e.target.closest('select[data-a="sub"]');if(!s)return;
+  if(!confirm(`Mudar a situação deste casal para “${SUB[s.value]}”?`)){load();return}
+  if(await rpc('admin_set_sub',{p_couple:s.dataset.id,p_status:s.value},'Situação atualizada ✓'))load()});
+document.addEventListener('submit',async e=>{const f=e.target;
+  if(f.id==='sf'){e.preventDefault();A.search=document.getElementById('sq').value.trim();load();return}
+  if(f.dataset.swap){e.preventDefault();const em=f.em.value.trim().toLowerCase();if(!em)return;
+    if(!confirm(`Tirar o par atual e mandar convite novo para ${em}?`))return;
+    const code=await rpc('admin_change_partner',{p_couple:f.dataset.swap,p_email:em,p_gender:f.g.value});
+    if(code){A.open=null;const link=`${site}/?convite=${code}`;try{await navigator.clipboard.writeText(link);toast('Par trocado ✓ Link do convite novo copiado.')}catch(_){prompt('Par trocado. Link do convite novo:',link)}load()}return}
+  if(f.dataset.ans){e.preventDefault();const tx=f.t.value.trim();if(tx.length<2){toast('Escreva a resposta.');return}
+    if(await rpc('admin_answer',{p_question:f.dataset.ans,p_body:tx},'Resposta publicada ✓'))load();return}
+  if(f.id==='mf'){e.preventDefault();const at=f.at.value?new Date(f.at.value):new Date();
+    const row={title_pt:f.tp.value.trim(),body_pt:f.bp.value.trim(),title_es:f.te.value.trim()||null,body_es:f.be.value.trim()||null,audience:f.au.value,send_at:at.toISOString(),repeat_weekly:f.wk.checked};
+    if(!row.title_pt||!row.body_pt){toast('Preencha título e texto em português.');return}
+    const {error}=await sb.from('announcements').insert(row);if(error){toast('Não deu certo: '+error.message);return}
+    toast(at>new Date()?'Mensagem programada ✓':'Mensagem enviada ✓');load();return}
+});
+start().catch(()=>loginView());
+})();
+</script>
+</body>
+</html>

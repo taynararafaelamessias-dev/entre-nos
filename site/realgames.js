@@ -292,6 +292,6 @@ document.addEventListener('click',e=>{const c=e.target.closest('[data-rgcall]');
     S.pendingRoom={code,info:inf,go:false};S.mf.mode='new';setTimeout(()=>go('mgame',{reset:true}),300)}
 })();
 // ao entrar no "Jogar grátis", carrega quantos jogos restam
-const FREE_OK=['welcome','signup','login','checkmail','mgame','groom','partner','psignup'];
+const FREE_OK=['newpw','welcome','signup','login','checkmail','mgame','groom','partner','psignup'];
 const _go=window.go;window.go=function(s,o){if(S.uid&&S.isFree&&!FREE_OK.includes(s)){toast(R2().locked);s='mgame';o={reset:true}}if(s==='mgame'&&S.uid)refreshFree().then(()=>{if(S.screen==='mgame')render()});return _go(s,o)};
 })();
