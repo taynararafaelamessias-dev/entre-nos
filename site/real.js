@@ -135,6 +135,7 @@ window.realLogout=async()=>{await sb.auth.signOut();clearDemo();S.uid=null;go('w
 // ---------- início ----------
 async function boot(){
   const q=new URLSearchParams(location.search);const code=q.get('convite');
+  if(q.get('jogo')){const {data:{session}}=await sb.auth.getSession();if(session)await loadAccount().catch(()=>{});return}
   if(code){const {data}=await sb.rpc('invite_info',{p_code:code});const r=data&&data[0];
     if(r&&!r.already_used){S.inviteCode=code;S.name=r.inviter_nickname;S.gender=r.inviter_gender;S.pemail=r.partner_email;S.pgender=r.partner_gender;
       history.replaceState(null,'',location.pathname);go('partner',{reset:true});return}
