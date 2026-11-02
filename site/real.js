@@ -20,7 +20,7 @@ const RX={
   pinBad:'PIN incorrecto.',invalidInvite:'Esta invitación no existe o ya se usó.',wrongEmail:'Esta invitación es para otro correo.',
   saved:'Guardado ✓',offline:'Sin conexión. Inténtalo de nuevo.',logout:'Cerrar sesión'}};
 const RT=()=>RX[lang];
-const errMsg=e=>{const m=(e&&(e.message||e.error_description))||'';if(/Invalid login/i.test(m))return RT().errAuth;if(/already registered|already exists/i.test(m))return RT().errExists;
+const errMsg=e=>{const m=(e&&(e.message||e.error_description))||'';if(/not confirmed/i.test(m))return lang==='pt'?'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link.':'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace.';if(/Invalid login/i.test(m))return RT().errAuth;if(/already registered|already exists/i.test(m))return RT().errExists;
   if(/outro e-mail/.test(m))return RT().wrongEmail;if(/não encontrado|já usado/.test(m))return RT().invalidInvite;return m||RT().errGeneric};
 
 // ---------- estado vazio (tira os exemplos do protótipo) ----------

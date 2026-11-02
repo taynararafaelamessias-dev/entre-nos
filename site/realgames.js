@@ -21,7 +21,7 @@ const RG={
   planWait:n=>`Esperando ${n} enviar…`,planMine:'Você já enviou. Assim que a outra pessoa enviar, aparece o que deu match.',
   todWait:n=>`${n} está escolhendo…`,todTheirs:(n,k)=>`${n} escolheu ${k}:`,answer:'Responder',teaseNone:'Nenhuma provocação ainda.',
   call:n=>`${n} te chamou pra jogar`,callGo:'Entrar no jogo',endAsk:'Encerrar o jogo',paywall:'Você usou seus 3 jogos grátis. Assine o Entre Nós pra jogar sem limite.',subscribe:'Conhecer o Entre Nós',
-  err:'Algo deu errado. Tente de novo.'},
+  err:'Algo deu errado. Tente de novo.',notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
  es:{signT:'Antes de jugar, crea tu acceso',signLead:'Es rapidito y sirve para tus 3 juegos gratis. Nadie ve tus datos.',haveAcc:'Ya tengo cuenta',noAcc:'Crear cuenta',
   nick:'Tu apodo',nickPh:'Como te conoce la otra persona',email:'Tu correo',pass:'Contraseña',passPh:'Mínimo 6 caracteres',iam:'Soy',w:'Mujer',m:'Hombre',
   age:'Tengo 18 años o más y acepto los <a href="#" data-en="terms">términos de uso</a> y la <a href="#" data-en="terms">política de privacidad</a>.',
@@ -36,7 +36,7 @@ const RG={
   planWait:n=>`Esperando a que ${n} envíe…`,planMine:'Ya enviaste. En cuanto la otra persona envíe, aparece el match.',
   todWait:n=>`${n} está eligiendo…`,todTheirs:(n,k)=>`${n} eligió ${k}:`,answer:'Responder',teaseNone:'Todavía no hay provocaciones.',
   call:n=>`${n} te invitó a jugar`,callGo:'Entrar al juego',endAsk:'Terminar el juego',paywall:'Usaste tus 3 juegos gratis. Suscríbete a Entre Nosotros para jugar sin límite.',subscribe:'Conocer Entre Nosotros',
-  err:'Algo salió mal. Inténtalo de nuevo.'}};
+  err:'Algo salió mal. Inténtalo de nuevo.',notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
 const R2=()=>RG[lang];
 
 // ---------- estado da sala ----------
@@ -127,6 +127,13 @@ R.mgame=function(){const X=R2(),G=t().mg,f=S.mf;
   if(S.pendingRoom&&S.pendingRoom.info&&!S.uid){const inf=S.pendingRoom.info;
     if(!S.pendingRoom.go)return `${head}<h1 style="font-size:36px">${X.invT(esc(inf.host))}</h1><p class="lead">${X.invLead}</p><div class="scene"><span class="po">${GTX().games[inf.game][0]}</span><p>${GTX().games[inf.game][1]}</p></div>
       <div class="btns"><button type="button" class="btn pri" data-rg="invgo">${X.invGo}</button><button type="button" class="btn link" data-rg="invno">${X.invNo}</button></div></section>`}
+  if(S.uid&&!S.hasProfile){f.mode='finish';
+    return `${head}<div class="note">${X.signLead}</div><h3 style="margin:6px 0 0">${X.finT}</h3><form id="fg" novalidate class="btns" style="gap:14px">
+      <div class="field"><label for="gnm">${X.nick}</label><input id="gnm" placeholder="${X.nickPh}" autocomplete="nickname"></div>
+      <div class="field"><label>${X.iam}</label><div class="opts"><button type="button" class="opt" data-rgg="f" aria-pressed="${f.g==='f'}">${X.w}</button><button type="button" class="opt" data-rgg="m" aria-pressed="${f.g==='m'}">${X.m}</button></div></div>
+      <label class="agechk"><input type="checkbox" id="gage" ${f.age?'checked':''}><span>${X.age}</span></label>
+      <label class="agechk"><input type="checkbox" id="gsens" ${f.sens?'checked':''}><span>${X.sens}</span></label>
+      <button class="btn pri" type="submit">${X.finBtn}</button></form></section>`}
   if(!S.uid||!S.hasProfile){
     const newAcc=f.mode==='new';
     return `${head}<p class="lead">${G.lead}</p><div class="note">${X.signLead}</div><h3 style="margin:6px 0 0">${X.signT}</h3>
@@ -157,16 +164,20 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='fg')return;e.prev
   const X=R2(),f=S.mf,v=x=>(document.getElementById(x)||{}).value||'',btn=e.target.querySelector('button[type=submit]');btn.disabled=true;
   try{
     const em=v('gem').trim().toLowerCase(),pw=v('gpw');
-    if(f.mode==='new'){const nm=v('gnm').trim();if(!nm||!em||pw.length<6||!f.g){toast(X.errFill);return}if(!f.age||!f.sens){toast(X.errAge);return}
+    if(f.mode==='finish'){const nm=v('gnm').trim();if(!nm||!f.g){toast(X.errFill);return}if(!f.age||!f.sens){toast(X.errAge);return}
+      const r=await sb.rpc('register_free',{p_nickname:nm,p_gender:f.g,p_lang:lang,p_adult:true,p_sensitive:true});if(r.error)throw r.error;S.name=nm}
+    else if(f.mode==='new'){const nm=v('gnm').trim();if(!nm||!em||pw.length<6||!f.g){toast(X.errFill);return}if(!f.age||!f.sens){toast(X.errAge);return}
       const {data,error}=await sb.auth.signUp({email:em,password:pw});if(error)throw error;
-      if(!data.session){toast(lang==='pt'?'Confirme seu e-mail e depois entre com “Já tenho conta”.':'Confirma tu correo y después entra con “Ya tengo cuenta”.');f.mode='old';render();return}
+      if(!data.session){try{localStorage.setItem('en_free_pending',JSON.stringify({nm,g:f.g}))}catch(_){}toast(lang==='pt'?'Confirme seu e-mail e depois entre com “Já tenho conta”.':'Confirma tu correo y después entra con “Ya tengo cuenta”.');f.mode='old';render();return}
       S.uid=data.user.id;S.email=em;const r=await sb.rpc('register_free',{p_nickname:nm,p_gender:f.g,p_lang:lang,p_adult:true,p_sensitive:true});if(r.error)throw r.error;S.name=nm}
     else{if(!em||!pw){toast(X.errFill);return}const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;S.uid=data.user.id;S.email=em}
     await refreshFree();
-    if(!S.hasProfile){f.mode='new';toast(X.errFill);render();return}
+    if(!S.hasProfile){let pend=null;try{pend=JSON.parse(localStorage.getItem('en_free_pending')||'null')}catch(_){}
+      if(pend){const r=await sb.rpc('register_free',{p_nickname:pend.nm,p_gender:pend.g,p_lang:lang,p_adult:true,p_sensitive:true});if(!r.error){try{localStorage.removeItem('en_free_pending')}catch(_){}await refreshFree()}}}
+    if(!S.hasProfile){render();return}
     if(S.pendingRoom){await joinPending();return}
     render();
-  }catch(err){toast(/Invalid login/i.test(err.message||'')?(lang==='pt'?'E-mail ou senha incorretos.':'Correo o contraseña incorrectos.'):/already/i.test(err.message||'')?(lang==='pt'?'Este e-mail já tem conta: toque em “Já tenho conta”.':'Este correo ya tiene cuenta: toca “Ya tengo cuenta”.'):R2().err)}
+  }catch(err){if(/not confirmed/i.test(err.message||'')){toast(X.notConf);return}toast(/Invalid login/i.test(err.message||'')?(lang==='pt'?'E-mail ou senha incorretos.':'Correo o contraseña incorrectos.'):/already/i.test(err.message||'')?(lang==='pt'?'Este e-mail já tem conta: toque em “Já tenho conta”.':'Este correo ya tiene cuenta: toca “Ya tengo cuenta”.'):R2().err)}
   finally{btn.disabled=false}},true);
 
 async function joinPending(){const code=S.pendingRoom.code;S.pendingRoom=null;const {data,error}=await sb.rpc('join_room',{p_code:code});
