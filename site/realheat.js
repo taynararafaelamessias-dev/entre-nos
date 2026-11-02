@@ -77,11 +77,11 @@ async function loadHx(){if(!S.uid||S.isFree)return;
 
 // ---------- tela Esquentar: pódio + lista ----------
 // figuras ilustradas (mulher / homem), sem rosto, no estilo do app
-function avatar(g,lead){const top=lead?'#A01E2B':(g==='f'?'#5c2a2f':'#4a2a2d');
-  const hairBack=g==='f'?`<path d="M31 42c0-15 8-25 19-25s19 10 19 25v20c0 5-4 8-9 8H40c-5 0-9-3-9-8z" fill="#4a1a1f"/>`:'';
-  const hairTop=g==='f'?`<path d="M33 38c2-11 9-17 17-17s15 6 17 17c-6-6-11-8-17-8s-11 2-17 8z" fill="#4a1a1f"/>`:`<path d="M34 35c1-10 8-16 16-16s15 6 16 16c-4-4-9-6-16-6s-12 2-16 6z" fill="#3a2a26"/>`;
-  const body=g==='f'?`<path d="M24 108c2-20 12-32 26-32s24 12 26 32z" fill="${top}"/><path d="M44 76l6 8 6-8" fill="none" stroke="#d9b8a0" stroke-width="3"/>`:`<path d="M17 108c2-24 15-35 33-35s31 11 33 35z" fill="${top}"/><path d="M44 74h12v6l-6 5-6-5z" fill="#d9b8a0"/>`;
-  return `<svg class="ava" viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="56" r="48" fill="${lead?'rgba(200,161,90,.18)':'rgba(255,255,255,.04)'}"/>${hairBack}${body}<rect x="45" y="56" width="10" height="12" rx="4" fill="#cfa98f"/><ellipse cx="50" cy="42" rx="14" ry="16" fill="#d9b8a0"/>${hairTop}</svg>`}
+// Charme: lábios pra ela, bigode e gravata-borboleta pra ele
+function avatar(g,lead){const bg=g==='f'?'#2A1416':'#1d1715',ring=lead?'#C8A15A':'rgba(200,161,90,.45)';
+  const art=g==='f'?`<path d="M28 60c8-10 17-15 24-12 4 2 6 3 8 3s4-1 8-3c7-3 16 2 24 12-8 12-19 19-32 19S36 72 28 60z" fill="#A01E2B"/><path d="M28 60c10 3 21 4 32 4s22-1 32-4" stroke="#5a0f18" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M44 54c4-2 7-1 9 1" stroke="#F2EBE5" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>`
+   :`<path d="M60 48c-6-8-18-10-26-3-3 3-2 8 2 8 3 0 5-3 9-3 6 0 10 4 15 4s9-4 15-4c4 0 6 3 9 3 4 0 5-5 2-8-8-7-20-5-26 3z" fill="#C8A15A"/><path d="M42 72l14 7-14 7z M78 72l-14 7 14 7z" fill="#A01E2B"/><circle cx="60" cy="79" r="5" fill="#A01E2B" stroke="#5a0f18" stroke-width="1.5"/>`;
+  return `<svg class="ava" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="${bg}"/><circle cx="60" cy="60" r="50" fill="none" stroke="${ring}" stroke-width="${lead?2:1}"/>${art}</svg>`}
 function podium(){const q=Q(),p=S.hx.pod||{week:{},total:{},last:{}};const v=(S.hx.view==='week'?p.week:p.total)||{};const pid=partnerId();
   const me=v[S.uid]||0,th=(pid&&v[pid])||0;const meLead=me>th,thLead=th>me;
   const col=(name,g,n,lead,tie)=>`<div class="podc ${lead?'lead':''}"><span class="trophy">${lead?'🏆':tie&&n>0?'🤝':''}</span>${avatar(g,lead)}<strong>${name}</strong><div class="podbar" style="height:${lead?64:tie?52:40}px"><span class="podn">${n}</span><small>${q.pts(n).replace(/^\d+ /,'')}</small></div></div>`;
