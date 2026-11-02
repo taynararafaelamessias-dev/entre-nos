@@ -97,7 +97,7 @@ document.addEventListener('click',async e=>{const g=e.target.closest('[data-acg]
   }},true);
 document.addEventListener('input',e=>{if(e.target.id==='acem')S.acc.email=e.target.value});
 // o card "Minha conta" da página inicial abre a tela
-document.addEventListener('click',e=>{const tl=e.target.closest('[data-tile="acc"]');if(!tl||!S.uid)return;e.stopImmediatePropagation();S.acc.menu=false;S.acc.changing=false;go('account')},true);
+document.addEventListener('click',e=>{const tl=e.target.closest('[data-tile="acc"]');if(!tl)return;e.stopImmediatePropagation();if(!S.uid){go('welcome',{reset:true});return}S.acc.menu=false;S.acc.changing=false;go('account')},true);
 
 // ===================== SININHO =====================
 S.bellList=null;
