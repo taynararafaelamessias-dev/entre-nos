@@ -11,7 +11,11 @@ const NX={
    share_pre:n=>`${n} compartilhou uma preliminar com você`,share_toys:n=>`${n} compartilhou um brinquedo com você`,share_diary:n=>`${n} compartilhou uma posição do diário`,share_wish:n=>`${n} compartilhou um desejo com você`,share_bdsm:n=>`${n} compartilhou algo do BDSM`,
    ask_pre:n=>`${n} te pediu uma preliminar`,ask_toys:n=>`${n} te pediu um brinquedo`,sur:n=>`${n} preparou uma surpresa pra você`,
    share_cmt:n=>`${n} comentou no que você compartilhou`,chal_new:n=>`${n} começou um desafio do casal`,chal_day:(n,r)=>`${n} montou o dia ${r} do desafio`,chal_cmt:(n,r)=>`${n} comentou no dia ${r} do desafio`,
-   bdsm_limits:n=>`${n} preencheu os limites do BDSM. Já dá pra ver o resultado`,game_inv:n=>`${n} te chamou pra jogar`,game_tease:n=>`${n} te mandou uma provocação no jogo`},
+   bdsm_limits:n=>`${n} preencheu os limites do BDSM. Já dá pra ver o resultado`,game_inv:n=>`${n} te chamou pra jogar`,game_tease:n=>`${n} te mandou uma provocação no jogo`,talk_love:n=>`${n} te mandou uma mensagem com amor 💗`,
+   inv_fire:n=>`${n} te convidou pra Sequência de fogo 🔥`,inv_hold:n=>`${n} te desafiou: Quem segura mais`,inv_care:n=>`${n} te convidou pra Semana do cuidado 💗`,
+   acc_fire:n=>`${n} aceitou a Sequência de fogo 🔥`,acc_hold:n=>`${n} aceitou o Quem segura mais`,acc_care:n=>`${n} aceitou a Semana do cuidado`,
+   mk_fire_done:(n,r)=>`${n} marcou o dia ${r} da Sequência de fogo 🔥`,mk_hold_count:n=>`${n} já colocou o resultado do Quem segura mais`,mk_care_care:n=>`${n} fez o cuidado de hoje 💗`,mk_care_heart:n=>`${n} devolveu um ❤️ no seu cuidado`,
+   end_fire_done:()=>'Sequência de fogo completa! 🔥',end_fire_broken:()=>'A Sequência de fogo quebrou',end_hold_done:()=>'Saiu o resultado do Quem segura mais 🏆',end_care_done:()=>'A Semana do cuidado terminou 💗',week_end:()=>'Fechou a semana! Veja quem ganhou o pódio 🏆'},
   you:'Seu amor',edit:'Editar',edited:'editada · Editar',editT:'Editar mensagem',save:'Salvar',cancel:'Cancelar',sending:'Enviando…'},
  es:{title:'Novedades',all:n=>`Ver todas (${n})`,less:'Ver menos',
   t:{love_new:n=>`${n} te dejó un mensaje de amor`,love_reply:n=>`${n} respondió tu mensaje de amor`,
@@ -19,12 +23,16 @@ const NX={
    share_pre:n=>`${n} compartió un preliminar contigo`,share_toys:n=>`${n} compartió un juguete contigo`,share_diary:n=>`${n} compartió una posición del diario`,share_wish:n=>`${n} compartió un deseo contigo`,share_bdsm:n=>`${n} compartió algo de BDSM`,
    ask_pre:n=>`${n} te pidió un preliminar`,ask_toys:n=>`${n} te pidió un juguete`,sur:n=>`${n} te preparó una sorpresa`,
    share_cmt:n=>`${n} comentó lo que compartiste`,chal_new:n=>`${n} empezó un reto de pareja`,chal_day:(n,r)=>`${n} armó el día ${r} del reto`,chal_cmt:(n,r)=>`${n} comentó el día ${r} del reto`,
-   bdsm_limits:n=>`${n} completó los límites de BDSM. Ya pueden ver el resultado`,game_inv:n=>`${n} te invitó a jugar`,game_tease:n=>`${n} te mandó una provocación en el juego`},
+   bdsm_limits:n=>`${n} completó los límites de BDSM. Ya pueden ver el resultado`,game_inv:n=>`${n} te invitó a jugar`,game_tease:n=>`${n} te mandó una provocación en el juego`,talk_love:n=>`${n} te mandó un mensaje con amor 💗`,
+   inv_fire:n=>`${n} te invitó a la Racha de fuego 🔥`,inv_hold:n=>`${n} te retó: Quién aguanta más`,inv_care:n=>`${n} te invitó a la Semana del cuidado 💗`,
+   acc_fire:n=>`${n} aceptó la Racha de fuego 🔥`,acc_hold:n=>`${n} aceptó Quién aguanta más`,acc_care:n=>`${n} aceptó la Semana del cuidado`,
+   mk_fire_done:(n,r)=>`${n} marcó el día ${r} de la Racha de fuego 🔥`,mk_hold_count:n=>`${n} ya puso su resultado en Quién aguanta más`,mk_care_care:n=>`${n} hizo el cuidado de hoy 💗`,mk_care_heart:n=>`${n} te devolvió un ❤️`,
+   end_fire_done:()=>'¡Racha de fuego completa! 🔥',end_fire_broken:()=>'La Racha de fuego se rompió',end_hold_done:()=>'Salió el resultado de Quién aguanta más 🏆',end_care_done:()=>'La Semana del cuidado terminó 💗',week_end:()=>'¡Terminó la semana! Mira quién ganó el podio 🏆'},
   you:'Tu amor',edit:'Editar',edited:'editado · Editar',editT:'Editar mensaje',save:'Guardar',cancel:'Cancelar',sending:'Enviando…'}};
 const N=()=>NX[lang];
-const ICO={love:'love',talk:'talk',pre:'fore',toys:'toys',diary:'diary',wish:'wish',bdsm:'bdsm',chal:'heat',games:'games'};
-const TILE={love:'heat',chal:'heat',talk:'talk',pre:'fore',toys:'toys',diary:'diary',wish:'wish',bdsm:'bdsm',games:'games'};
-const SCREEN_AREA={pre:'pre',toys:'toys',diary:'diary',wish:'wish',love:'love',chal:'chal',talk:'talk',bdsm:'bdsm',groom:'games'};
+const ICO={heat:'heat',love:'love',talk:'talk',pre:'fore',toys:'toys',diary:'diary',wish:'wish',bdsm:'bdsm',chal:'heat',games:'games'};
+const TILE={heat:'heat',love:'heat',chal:'heat',talk:'talk',pre:'fore',toys:'toys',diary:'diary',wish:'wish',bdsm:'bdsm',games:'games'};
+const SCREEN_AREA={heat:'heat',hxc:'heat',pre:'pre',toys:'toys',diary:'diary',wish:'wish',love:'love',chal:'chal',talk:'talk',bdsm:'bdsm',groom:'games'};
 S.news=[];S.newsAll=false;let known=null;
 
 function label(n){const L=N().t,who=esc(S.pname||N().you);
@@ -59,6 +67,7 @@ document.addEventListener('click',async e=>{
     case 'toys':S.toyw='sh';S.texp=null;go('toys');break;
     case 'diary':S.dtab='shared';go('diary');break;
     case 'wish':go('wish');break;
+    case 'heat':{const m=n.kind.match(/^(?:inv|acc|mk|end)_(fire|hold|care)/);if(m&&S.hx){S.hx.type=m[1];S.hx.again=false;go('hxc')}else go('heat');break}
     case 'love':go('love');break;
     case 'chal':go('chal');break;
     case 'talk':go('talk');break;
