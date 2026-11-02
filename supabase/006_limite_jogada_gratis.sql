@@ -2,9 +2,9 @@
 create or replace function public.free_room_limit() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  if new.kind in ('msg','tod','tdone','plan','tease')
+  if new.kind in ('msg','tsend','tans','plan','tease')
      and (select free from game_rooms where id = new.room_id)
-     and (select count(*) from game_events where room_id = new.room_id and kind in ('msg','tod','tdone','plan','tease')) >= 20
+     and (select count(*) from game_events where room_id = new.room_id and kind in ('msg','tsend','tans','plan','tease')) >= 20
   then raise exception 'limite do jogo grátis'; end if;
   return new;
 end $$;

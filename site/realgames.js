@@ -21,7 +21,7 @@ const RG={
   planWait:n=>`Esperando ${n} enviar…`,planMine:'Você já enviou. Assim que a outra pessoa enviar, aparece o que deu match.',
   todWait:n=>`${n} está escolhendo…`,todTheirs:(n,k)=>`${n} escolheu ${k}:`,answer:'Responder',teaseNone:'Nenhuma provocação ainda.',
   call:n=>`${n} te chamou pra jogar`,callGo:'Entrar no jogo',endAsk:'Encerrar o jogo',paywall:'Você usou seus 3 jogos grátis. Assine o Entre Nós pra jogar sem limite.',subscribe:'Conhecer o Entre Nós',
-  err:'Algo deu errado. Tente de novo.',locked:'Essa parte é do Entre Nós completo. No grátis, só os jogos.',overT:'Esse jogo grátis chegou ao fim 🔥',overL:'Cada jogo grátis tem 20 jogadas. Pra continuar jogando sem limite e liberar posições em 3D, preliminares, brinquedos e tudo mais, assine o Entre Nós.',backFree:'Voltar aos jogos grátis',playsLeft:n=>`${n} jogadas restantes neste jogo grátis`,unend:'Ops, voltar a jogar',endConfirm:'Toque de novo pra encerrar',histT:n=>`Rodadas anteriores (${n})`,edit:'editar',edited:'editado',save:'Salvar',cancel:'Cancelar',expired2:'Seu acesso antigo não existe mais. Crie sua conta de novo.',switchT:'Jogar outra coisa com a mesma pessoa',switchHint:'Trocar de jogo aqui não gasta outro jogo grátis.',openT:'Seus jogos das últimas 24 horas',openWait:'esperando alguém entrar',openWith:n=>`com ${n}`,notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
+  err:'Algo deu errado. Tente de novo.',locked:'Essa parte é do Entre Nós completo. No grátis, só os jogos.',overT:'Esse jogo grátis chegou ao fim 🔥',overL:'Cada jogo grátis tem 20 jogadas. Pra continuar jogando sem limite e liberar posições em 3D, preliminares, brinquedos e tudo mais, assine o Entre Nós.',backFree:'Voltar aos jogos grátis',playsLeft:n=>`${n} jogadas restantes neste jogo grátis`,waitChoose:n=>`Esperando ${n} escolher: verdade ou desafio?`,roundAsk:'Nesta rodada, você pergunta.',yourTurnChoose:'Sua vez de responder',chooseLead:n=>`${n} vai te mandar uma pergunta ou um desafio. O que você escolhe?`,waitPick:(n,k)=>`${n} está escolhendo ${k==='Verdade'?'a sua verdade':'o seu desafio'}…`,theyChose:(n,k)=>`${n} escolheu ${k}`,pickLead:'Escolha uma das opções pra mandar. Não gostou? Gire pra ver outras.',spin:'Girar: outras opções',forYou:(n,k)=>`${n} te mandou ${k==='Verdade'?'uma verdade':'um desafio'}`,accept:'Aceito o desafio',refuse:'Não aceito',accepted:'Aceitou o desafio ✓',refused:'Não aceitou o desafio',youSent:k=>`Você mandou ${k==='Verdade'?'esta verdade':'este desafio'}`,waitAnswer:n=>`Esperando ${n} responder…`,more:'Outras opções',ownPh:'Ou escreva uma ideia sua…',add:'Adicionar',mine:'sua',ownT:'Ideias que vocês escreveram',unend:'Ops, voltar a jogar',endConfirm:'Toque de novo pra encerrar',histT:n=>`Rodadas anteriores (${n})`,edit:'editar',edited:'editado',save:'Salvar',cancel:'Cancelar',expired2:'Seu acesso antigo não existe mais. Crie sua conta de novo.',switchT:'Jogar outra coisa com a mesma pessoa',switchHint:'Trocar de jogo aqui não gasta outro jogo grátis.',openT:'Seus jogos das últimas 24 horas',openWait:'esperando alguém entrar',openWith:n=>`com ${n}`,notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
  es:{signT:'Antes de jugar, crea tu acceso',signLead:'Es rapidito y sirve para tus 3 juegos gratis. Nadie ve tus datos.',haveAcc:'Ya tengo cuenta',noAcc:'Crear cuenta',
   nick:'Tu apodo',nickPh:'Como te conoce la otra persona',email:'Tu correo',pass:'Contraseña',passPh:'Mínimo 6 caracteres',iam:'Soy',w:'Mujer',m:'Hombre',
   age:'Tengo 18 años o más y acepto los <a href="#" data-en="terms">términos de uso</a> y la <a href="#" data-en="terms">política de privacidad</a>.',
@@ -36,7 +36,7 @@ const RG={
   planWait:n=>`Esperando a que ${n} envíe…`,planMine:'Ya enviaste. En cuanto la otra persona envíe, aparece el match.',
   todWait:n=>`${n} está eligiendo…`,todTheirs:(n,k)=>`${n} eligió ${k}:`,answer:'Responder',teaseNone:'Todavía no hay provocaciones.',
   call:n=>`${n} te invitó a jugar`,callGo:'Entrar al juego',endAsk:'Terminar el juego',paywall:'Usaste tus 3 juegos gratis. Suscríbete a Entre Nosotros para jugar sin límite.',subscribe:'Conocer Entre Nosotros',
-  err:'Algo salió mal. Inténtalo de nuevo.',locked:'Esta parte es de Entre Nosotros completo. En la versión gratis, solo los juegos.',overT:'Este juego gratis llegó al final 🔥',overL:'Cada juego gratis tiene 20 jugadas. Para seguir jugando sin límite y desbloquear posturas en 3D, preliminares, juguetes y todo lo demás, suscríbete a Entre Nosotros.',backFree:'Volver a los juegos gratis',playsLeft:n=>`Quedan ${n} jugadas en este juego gratis`,unend:'Ups, volver a jugar',endConfirm:'Toca otra vez para terminar',histT:n=>`Rondas anteriores (${n})`,edit:'editar',edited:'editado',save:'Guardar',cancel:'Cancelar',expired2:'Tu acceso anterior ya no existe. Crea tu cuenta de nuevo.',switchT:'Jugar a otra cosa con la misma persona',switchHint:'Cambiar de juego aquí no gasta otro juego gratis.',openT:'Tus juegos de las últimas 24 horas',openWait:'esperando a que alguien entre',openWith:n=>`con ${n}`,notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
+  err:'Algo salió mal. Inténtalo de nuevo.',locked:'Esta parte es de Entre Nosotros completo. En la versión gratis, solo los juegos.',overT:'Este juego gratis llegó al final 🔥',overL:'Cada juego gratis tiene 20 jugadas. Para seguir jugando sin límite y desbloquear posturas en 3D, preliminares, juguetes y todo lo demás, suscríbete a Entre Nosotros.',backFree:'Volver a los juegos gratis',playsLeft:n=>`Quedan ${n} jugadas en este juego gratis`,waitChoose:n=>`Esperando a que ${n} elija: ¿verdad o reto?`,roundAsk:'En esta ronda, preguntas tú.',yourTurnChoose:'Te toca responder',chooseLead:n=>`${n} te va a mandar una pregunta o un reto. ¿Qué eliges?`,waitPick:(n,k)=>`${n} está eligiendo ${k==='Verdad'?'tu verdad':'tu reto'}…`,theyChose:(n,k)=>`${n} eligió ${k}`,pickLead:'Elige una de las opciones para enviar. ¿No te gusta? Gira para ver otras.',spin:'Girar: otras opciones',forYou:(n,k)=>`${n} te mandó ${k==='Verdad'?'una verdad':'un reto'}`,accept:'Acepto el reto',refuse:'No acepto',accepted:'Aceptó el reto ✓',refused:'No aceptó el reto',youSent:k=>`Enviaste ${k==='Verdad'?'esta verdad':'este reto'}`,waitAnswer:n=>`Esperando a que ${n} responda…`,more:'Otras opciones',ownPh:'O escribe una idea tuya…',add:'Añadir',mine:'tuya',ownT:'Ideas que escribieron',unend:'Ups, volver a jugar',endConfirm:'Toca otra vez para terminar',histT:n=>`Rondas anteriores (${n})`,edit:'editar',edited:'editado',save:'Guardar',cancel:'Cancelar',expired2:'Tu acceso anterior ya no existe. Crea tu cuenta de nuevo.',switchT:'Jugar a otra cosa con la misma persona',switchHint:'Cambiar de juego aquí no gasta otro juego gratis.',openT:'Tus juegos de las últimas 24 horas',openWait:'esperando a que alguien entre',openWith:n=>`con ${n}`,notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
 const R2=()=>RG[lang];
 
 // ---------- estado da sala ----------
@@ -66,7 +66,7 @@ async function pullEvents(){const r=S.rm;if(!r.id)return;const {data}=await sb.f
 function addEvents(list){const r=S.rm;let changed=false;list.forEach(e=>{if(e.room_id&&e.room_id!==r.id)return;if(r.events.some(x=>x.id===e.id))return;r.events.push(e);r.lastId=Math.max(r.lastId,e.id);changed=true});
   if(changed){r.events.sort((a,b)=>a.id-b.id);rr()}}
 function rr(){if(S.screen==='groom'){const vw=document.getElementById('view');if(vw)vw.classList.add('still');setTimeout(()=>{if(vw)vw.classList.remove('still')},50);const y=window.scrollY;const ta=document.getElementById('rgin');const foc=ta&&document.activeElement===ta;render();window.scrollTo(0,y);if(foc){const n=document.getElementById('rgin');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}}}}
-const PLAYK=['msg','tod','tdone','plan','tease'];const plays=()=>S.rm.events.filter(e=>PLAYK.includes(e.kind)).length;
+const PLAYK=['msg','tsend','tans','plan','tease'];const plays=()=>S.rm.events.filter(e=>PLAYK.includes(e.kind)).length;
 async function send(kind,body,data){if(S.rm.free&&PLAYK.includes(kind)&&plays()>=FREE_MAX){S.rm.over=true;rr();return false}
   const {error}=await sb.from('game_events').insert({room_id:S.rm.id,kind,body:body||null,data:data||null});if(error){if(/limite/.test(error.message||'')){S.rm.over=true;rr();return false}toast(R2().err);return false}await pullEvents();return true}
 
@@ -92,25 +92,43 @@ function bodyScene(isScene){const G=GTX(),X=R2(),ev=sinceReset(),msgs=ev.filter(
    :`<div class="bub2 them typing">${X.turnThem(esc(otherName()))}</div>`}
    ${msgs.length>=2?`<button type="button" class="btn gold" data-rg="end">${S.rm.endAsk?X.endConfirm:(isScene?G.end:G.likeEnd)}</button>`:''}`}
 
-function bodyPlan(){const G=GTX(),X=R2(),ev=sinceReset().filter(e=>e.kind==='plan');const mine=[...ev].reverse().find(e=>e.user_id===me()),th=[...ev].reverse().find(e=>e.user_id!==me());
-  if(!mine)return `<p class="hint">${G.planLead}</p><div class="plist2">${PLAN_IDS.map(id=>`<label class="pchk"><input type="checkbox" data-rgpl="${id}" ${S.rm.planSel[id]?'checked':''}><span>${WBY[id][lang]}</span></label>`).join('')}</div><button type="button" class="btn pri" data-rg="plan">${G.planSend}</button>`;
+function bodyPlan(){const G=GTX(),X=R2(),r=S.rm,ev=sinceReset().filter(e=>e.kind==='plan');const mine=[...ev].reverse().find(e=>e.user_id===me()),th=[...ev].reverse().find(e=>e.user_id!==me());
+  if(!mine){const ids=WISH.map(w=>w.id),sel=Object.keys(r.planSel).filter(k=>r.planSel[k]);
+    const start=(r.planPage||0)*8%ids.length;let page=[];for(let i=0;i<8;i++)page.push(ids[(start+i)%ids.length]);
+    const show=[...new Set([...sel,...page])];
+    return `<p class="hint">${G.planLead}</p><div class="plist2">${show.map(id=>`<label class="pchk"><input type="checkbox" data-rgpl="${id}" ${r.planSel[id]?'checked':''}><span>${WBY[id][lang]}</span></label>`).join('')}
+      ${(r.planOwn||[]).map((t,i)=>`<label class="pchk"><input type="checkbox" checked data-rgown="${i}"><span>${esc(t)} <small class="ctag">${X.mine}</small></span></label>`).join('')}</div>
+      <button type="button" class="btn ghost sm" data-rg="planmore">${ic('rot',15)} ${X.more}</button>
+      <div class="cmrow"><input id="rgown" placeholder="${X.ownPh}" maxlength="120" value="${esc(r.ownDraft||'')}"><button type="button" class="btn ghost sm" data-rg="planown">${X.add}</button></div>
+      <button type="button" class="btn pri" data-rg="plan">${G.planSend}</button>`}
   if(!th)return `<div class="wkhero center"><div class="bigic">${ic('both',40)}</div><h2>${X.planWait(esc(otherName()))}</h2><p class="hint">${X.planMine}</p></div>`;
-  const a=new Set(mine.data.sel||[]),m=(th.data.sel||[]).filter(id=>a.has(id));
-  return `<div class="wkhero"><span class="tagc gold">${ic('heat',14)} ${G.planRes}</span>${m.length?m.map(id=>`<div class="witem"><p>${WBY[id][lang]}</p></div>`).join(''):`<p>${G.planNone}</p>`}</div><button type="button" class="btn ghost" data-rg="reset">${lang==='pt'?'Jogar de novo':'Jugar otra vez'}</button>`}
+  const a=new Set(mine.data.sel||[]),m=(th.data.sel||[]).filter(id=>a.has(id)),own=[...(mine.data.own||[]).map(t=>[t,true]),...(th.data.own||[]).map(t=>[t,false])];
+  return `<div class="wkhero"><span class="tagc gold">${ic('heat',14)} ${G.planRes}</span>${m.length?m.map(id=>`<div class="witem"><p>${WBY[id][lang]}</p></div>`).join(''):`<p>${G.planNone}</p>`}</div>
+   ${own.length?`<div class="sec-t">${X.ownT}</div>${own.map(([t,mi])=>`<div class="witem"><span class="po">${mi?(lang==='pt'?'Você':'Tú'):esc(otherName())}</span><p>${esc(t)}</p></div>`).join('')}`:''}
+   <button type="button" class="btn ghost" data-rg="reset">${lang==='pt'?'Jogar de novo':'Jugar otra vez'}</button>`}
 
-function bodyTod(){const G=GTX(),X=R2(),ev=sinceReset();
-  // rodadas: 'tod' (escolha) → 'tdone' (feito/resposta) ou 'tskip' (pulou, escolhe de novo)
-  let done=0,open=null,skips={};ev.forEach(e=>{if(e.kind==='tod')open=e;else if(e.kind==='tdone'&&open){done++;open=null}else if(e.kind==='tskip'&&open){skips[e.user_id]=(skips[e.user_id]||0)+1;open=null}});
-  const chooser=done%2===0?S.rm.host:(S.rm.host===me()?otherId():me()),mineTurn=chooser===me();
-  const lastDone=[...ev].reverse().find(e=>e.kind==='tdone');
-  const lvl=`<div class="chips">${G.lv.map((l,i)=>`<button type="button" class="chip" data-rglv="${i}" aria-pressed="${S.rm.todLv===i}">${l}</button>`).join('')}</div>`;
-  const prev=lastDone&&lastDone.body?`<div class="witem"><span class="po">${lastDone.user_id===me()?(lang==='pt'?'Sua resposta':'Tu respuesta'):esc(otherName())}</span>${bub(lastDone,'plain')}</div>`:'';
-  if(open){const d=open.data,txt=TOD[lang][d.k][d.lv][d.i%3],kn=d.k==='t'?G.truth:G.dare;
-    if(open.user_id===me())return `${prev}<div class="wcard"><span class="po">${kn}</span><p class="wtext">${txt}</p>${d.k==='t'?`<textarea id="rgin" rows="2" placeholder="${G.answerPh}">${esc(S.rm.draft)}</textarea>`:''}
-      <div class="row"><button type="button" class="btn pri sm" data-rg="tdone">${d.k==='t'?X.answer:G.done}</button>${(skips[me()]||0)<1?`<button type="button" class="btn ghost sm" data-rg="tskip">${G.skip}</button>`:''}</div></div>`;
-    return `${prev}<div class="wcard"><span class="po">${X.todTheirs(esc(otherName()),kn)}</span><p class="wtext">${txt}</p></div><p class="hint">${X.turnThem(esc(otherName()))}</p>`}
-  if(!mineTurn)return `${prev}<div class="wkhero center"><h2>${X.todWait(esc(otherName()))}</h2></div>`;
-  return `${prev}<p class="hint">${G.todLead}</p>${lvl}<div class="tturn">${X.turnMe}</div><div class="wbtns2"><button type="button" class="wb maybe" data-rgtk="t">${G.truth}</button><button type="button" class="wb yes" data-rgtk="d">${G.dare}</button></div>`}
+// Verdade ou desafio: quem responde escolhe; quem pergunta manda 1 de 3 opções (pode girar); quem responde responde ou aceita/recusa; depois inverte
+function todState(){const ev=sinceReset();let round=0,choice=null,sent=null,last=null;
+  ev.forEach(e=>{if(e.kind==='tchoice'&&!choice)choice=e;else if(e.kind==='tsend'&&choice&&!sent)sent=e;else if(e.kind==='tans'&&sent){last={choice,sent,ans:e};round++;choice=null;sent=null}});
+  const asker=round%2===0?S.rm.host:(S.rm.host===me()?otherId():me());return {round,choice,sent,last,asker,receiver:asker===me()?otherId():me()}}
+function todOptions(k,lv){const r=S.rm,used=new Set(S.rm.events.filter(e=>e.kind==='tsend').map(e=>e.body)),bank=TODB[lang][k][lv].filter(x=>!used.has(x)),n=bank.length||1,sp=r.spin||0,seed=(S.rm.code||'').charCodeAt(0)+S.rm.events.length;
+  const out=[];for(let i=0;i<3&&i<bank.length;i++)out.push(bank[(seed+sp*3+i*7)%n]);return [...new Set(out)]}
+function bodyTod(){const G=GTX(),X=R2(),r=S.rm,st=todState(),iAsk=st.asker===me(),on=esc(otherName());
+  const lastCard=st.last?(()=>{const L=st.last,k=L.choice.data.k,who=L.ans.user_id===me()?(lang==='pt'?'Você':'Tú'):esc(otherName());
+    const res=k==='t'?`${bub(L.ans,'plain')}`:`<p><strong>${L.ans.data&&L.ans.data.ok?X.accepted:X.refused}</strong></p>`;
+    return `<div class="witem"><span class="po">${who} · ${k==='t'?G.truth:G.dare}</span><p>${esc(L.sent.body)}</p>${res}</div>`})():'';
+  if(!st.choice){if(iAsk)return `${lastCard}<div class="wkhero center"><h2>${X.waitChoose(on)}</h2><p class="hint">${X.roundAsk}</p></div>`;
+    return `${lastCard}<div class="tturn">${X.yourTurnChoose}</div><p class="hint">${X.chooseLead(on)}</p><div class="wbtns2"><button type="button" class="wb maybe" data-rgch="t">${G.truth}</button><button type="button" class="wb yes" data-rgch="d">${G.dare}</button></div>`}
+  const k=st.choice.data.k,kn=k==='t'?G.truth:G.dare;
+  if(!st.sent){if(!iAsk)return `${lastCard}<div class="wkhero center"><h2>${X.waitPick(on,kn)}</h2></div>`;
+    const lvl=`<div class="chips">${G.lv.map((l,i)=>`<button type="button" class="chip" data-rglv="${i}" aria-pressed="${r.todLv===i}">${l}</button>`).join('')}</div>`;
+    return `${lastCard}<div class="tturn">${X.theyChose(on,kn)}</div><p class="hint">${X.pickLead}</p>${lvl}
+      <div class="plist2">${todOptions(k,r.todLv).map((o,i)=>`<button type="button" class="lvmsg" data-rgpick="${i}">${o}</button>`).join('')}</div>
+      <button type="button" class="btn ghost sm" data-rg="spin">${ic('rot',15)} ${X.spin}</button>`}
+  if(!iAsk){return `${lastCard}<div class="wcard"><span class="po">${X.forYou(on,kn)}</span><p class="wtext">${esc(st.sent.body)}</p>
+      ${k==='t'?`<textarea id="rgin" rows="2" placeholder="${G.answerPh}">${esc(r.draft)}</textarea><button type="button" class="btn pri" data-rg="tans">${X.answer}</button>`
+      :`<div class="wbtns2"><button type="button" class="wb yes" data-rgacc="1">${X.accept}</button><button type="button" class="wb no" data-rgacc="0">${X.refuse}</button></div>`}</div>`}
+  return `${lastCard}<div class="wcard"><span class="po">${X.youSent(kn)}</span><p class="wtext">${esc(st.sent.body)}</p></div><p class="hint">${X.waitAnswer(on)}</p>`}
 
 function bodyTease(){const G=GTX(),X=R2(),ev=S.rm.events.filter(e=>e.kind==='tease');
   return `<p class="hint">${G.teaseLead}</p><div class="plist2">${TEASES[lang].map((x,i)=>`<button type="button" class="lvmsg" data-rgtz="${i}">${x}</button>`).join('')}</div>
@@ -120,7 +138,7 @@ function bodyTease(){const G=GTX(),X=R2(),ev=S.rm.events.filter(e=>e.kind==='tea
 const FREE_MAX=20;
 function history(){const ev=S.rm.events,G=GTX(),X=R2();const rounds=[];let cur={game:S.rm.game,items:[]};
   ev.forEach(e=>{if(e.kind==='reset'||e.kind==='switch'){if(cur.items.length)rounds.push(cur);cur={game:e.kind==='switch'?e.data.game:cur.game,items:[]}}
-    else if(['msg','tdone','tease'].includes(e.kind)&&e.body)cur.items.push(e);else if(e.kind==='plan')cur.items.push(Object.assign({},e,{body:(e.data.sel||[]).map(id=>WBY[id][lang]).join(', ')}))});
+    else if(['msg','tease','tsend'].includes(e.kind)&&e.body)cur.items.push(e);else if(e.kind==='tans')cur.items.push(Object.assign({},e,{body:e.body||(e.data&&e.data.ok?R2().accepted:R2().refused)}));else if(e.kind==='plan')cur.items.push(Object.assign({},e,{body:[...(e.data.sel||[]).map(id=>WBY[id][lang]),...(e.data.own||[])].join(', ')}))});
   if(!rounds.length)return '';
   return `<details class="rules"><summary>${X.histT(rounds.length)}</summary><div class="rbody">${rounds.map(rd=>`<div class="sec-t">${(G.games[rd.game]||[''])[0]}</div>${rd.items.map(e=>`<div class="witem"><span class="po">${e.user_id===me()?(lang==='pt'?'Você':'Tú'):esc(otherName())}</span><p>${esc(txt(e))}</p></div>`).join('')}`).join('')}</div></details>`}
 R.groom=function(){const G=GTX(),X=R2(),r=S.rm;if(!r.id)return R.games();
@@ -213,7 +231,10 @@ document.addEventListener('click',async e=>{
   const sw=e.target.closest('[data-rgsw]');if(sw){S.rm.planSel={};S.rm.draft='';send('switch',null,{game:sw.dataset.rgsw});window.scrollTo(0,0);return}
   const rs=e.target.closest('[data-rgresume]');if(rs){e.stopImmediatePropagation();enterRoom(rs.dataset.rgresume);return}
   const lv=e.target.closest('[data-rglv]');if(lv){S.rm.todLv=+lv.dataset.rglv;rr();return}
-  const tk=e.target.closest('[data-rgtk]');if(tk){const n=S.rm.events.filter(x=>x.kind==='tod').length;send('tod',null,{k:tk.dataset.rgtk,lv:S.rm.todLv,i:n});return}
+  const ch=e.target.closest('[data-rgch]');if(ch){send('tchoice',null,{k:ch.dataset.rgch});return}
+  const pk=e.target.closest('[data-rgpick]');if(pk){const st=todState();S.rm.spin=0;send('tsend',pk.textContent,{k:st.choice.data.k,lv:S.rm.todLv});return}
+  const ac=e.target.closest('[data-rgacc]');if(ac){send('tans',null,{ok:ac.dataset.rgacc==='1'});return}
+  const ow=e.target.closest('[data-rgown]');if(ow){S.rm.planOwn.splice(+ow.dataset.rgown,1);rr();return}
   const tz=e.target.closest('[data-rgtz]');if(tz){S.rm.draft=TEASES[lang][+tz.dataset.rgtz];rr();return}
   const id=e.target.closest('[data-rgidea]');if(id){S.rm.draft=id.textContent;S.rm.ideas=false;rr();return}
   const b=e.target.closest('[data-rg]');if(!b)return;const [a,p]=b.dataset.rg.split(':'),r=S.rm,X=R2();
@@ -229,14 +250,16 @@ document.addEventListener('click',async e=>{
    case 'end':if(!r.endAsk){r.endAsk=true;rr();setTimeout(()=>{r.endAsk=false;rr()},4000);break}r.endAsk=false;await send('end');break;
    case 'unend':await send('unend');break;
    case 'reset':r.planSel={};await send('reset');break;
-   case 'plan':{const sel=Object.keys(r.planSel).filter(k=>r.planSel[k]);await send('plan',null,{sel});break}
-   case 'tdone':{const tx=r.draft.trim();r.draft='';await send('tdone',tx||null);break}
-   case 'tskip':await send('tskip');break;
+   case 'plan':{const sel=Object.keys(r.planSel).filter(k=>r.planSel[k]);await send('plan',null,{sel,own:r.planOwn||[]});r.planOwn=[];break}
+   case 'tans':{const tx=r.draft.trim();if(!tx)break;r.draft='';await send('tans',tx,{ok:true});break}
+   case 'spin':r.spin=(r.spin||0)+1;rr();break;
+   case 'planmore':r.planPage=(r.planPage||0)+1;rr();break;
+   case 'planown':{const tx=(r.ownDraft||'').trim();if(!tx)break;r.planOwn=r.planOwn||[];r.planOwn.push(tx);r.ownDraft='';rr();break}
    case 'tease':{const tx=r.draft.trim();if(!tx)break;r.draft='';if(await send('tease',tx))toast(GTX().teaseSent);break}
   }},true);
 document.addEventListener('change',e=>{const pl=e.target.closest('[data-rgpl]');if(pl){S.rm.planSel[pl.dataset.rgpl]=pl.checked;return}
   if(e.target.id==='gage')S.mf.age=e.target.checked;if(e.target.id==='gsens')S.mf.sens=e.target.checked});
-document.addEventListener('input',e=>{if(e.target.id==='rgin')S.rm.draft=e.target.value;else if(e.target.id==='rged')S.rm.edDraft=e.target.value});
+document.addEventListener('input',e=>{if(e.target.id==='rgown')S.rm.ownDraft=e.target.value;else if(e.target.id==='rgin')S.rm.draft=e.target.value;else if(e.target.id==='rged')S.rm.edDraft=e.target.value});
 
 // assinantes: tocar num jogo da Sala de jogos abre uma sala de verdade pro casal
 document.addEventListener('click',e=>{const gc=e.target.closest('[data-game]');if(!gc||!S.uid)return;e.stopImmediatePropagation();openRoom(gc.dataset.game)},true);

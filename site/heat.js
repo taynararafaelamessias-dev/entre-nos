@@ -105,14 +105,14 @@ const GUIDE={
 };
 const GUIDE_GAMES={
  pt:{scene:'Vocês recebem um cenário (ex.: “quarto de hotel”) e constroem uma história juntos, uma frase cada um, em turnos, até o finalmente. Se travar, o botão “me dá uma ideia” sugere frases.',
-  plan:'Cada um marca, sozinho, o que topa fazer hoje. Depois que os dois enviam, só aparece o que os dois marcaram. Ninguém fica sabendo do que o outro não quis.',
+  plan:'Cada um marca, sozinho, o que topa fazer hoje. Dá pra ver outras opções e escrever ideias suas. Depois que os dois enviam, aparece o que os dois marcaram, mais as ideias escritas. Ninguém fica sabendo do que o outro não quis.',
   like:'Uma corrente de confissões: cada um completa “Eu gosto quando você…”. No fim, vocês veem o mapa do prazer dos dois.',
-  tod:'Verdade ou desafio em turnos, com 3 níveis de calor. Cada um pode pular uma vez.',
+  tod:'Em cada rodada, quem vai responder escolhe: verdade ou desafio. Quem pergunta recebe 3 opções do acervo (pode girar pra ver outras) e manda uma. Verdade se responde escrevendo; desafio, aceita ou não. Depois as posições trocam.',
   tease:'Escolha uma provocação pronta ou escreva a sua. Chega no celular dele na hora, como notificação.'},
  es:{scene:'Recibís un escenario (ej.: “habitación de hotel”) y construís una historia juntos, una frase cada uno, por turnos, hasta el final. Si os atascáis, el botón “dame una idea” sugiere frases.',
-  plan:'Cada uno marca, a solas, lo que se anima a hacer hoy. Cuando los dos envían, solo aparece lo que marcaron los dos. Nadie se entera de lo que el otro no quiso.',
+  plan:'Cada uno marca, a solas, lo que se anima a hacer hoy. Se pueden ver otras opciones y escribir ideas propias. Cuando los dos envían, aparece lo que marcaron los dos, más las ideas escritas. Nadie se entera de lo que el otro no quiso.',
   like:'Una cadena de confesiones: cada uno completa “Me gusta cuando tú…”. Al final, veis el mapa del placer de los dos.',
-  tod:'Verdad o reto por turnos, con 3 niveles de calor. Cada uno puede saltar una vez.',
+  tod:'En cada ronda, quien va a responder elige: verdad o reto. Quien pregunta recibe 3 opciones del acervo (puede girar para ver otras) y envía una. La verdad se responde por escrito; el reto, se acepta o no. Después se cambian los papeles.',
   tease:'Elige una provocación lista o escribe la tuya. Le llega al móvil al momento, como notificación.'}};
 const GUIDE_ORDER=['ask','wish','games','diary','talk','pos','fore','toys','heat','bdsm','acc'];
 
