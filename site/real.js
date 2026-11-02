@@ -102,12 +102,12 @@ document.addEventListener('submit',async e=>{const id=e.target.id;if(!['f2','f3'
      const reg={kind:'owner',nm,g:S.gender,pe,pg:S.pgender,lang};
      try{localStorage.setItem('en_pending',JSON.stringify(reg))}catch(_){}
      const {data,error}=await sb.auth.signUp({email:em,password:pw});if(error)throw error;
-     if(!data.session){toast(RT().confirm);go('login');return}
+     if(!data.session){showCheckMail(em||S.pemail,'login');return}
      await finishPending();S.pinStage=1;S.skipTour=false;go('pin');toast(E.sentTo(pe))}
    else if(id==='f3'){const nm=v('pnm').trim(),pw=v('ppw');if(!nm||pw.length<6){toast(E.ps_err);return}if(!S.page){toast(E.ageErr);return}if(!S.psens){toast(E.sensErr);return}
      const reg={kind:'partner',code:S.inviteCode,nm,lang};try{localStorage.setItem('en_pending',JSON.stringify(reg))}catch(_){}
      const {data,error}=await sb.auth.signUp({email:S.pemail,password:pw});if(error)throw error;
-     if(!data.session){toast(RT().confirm);go('login');return}
+     if(!data.session){showCheckMail(S.pemail,'login');return}
      await finishPending();S.pinStage=1;S.skipTour=false;go('pin')}
    else if(id==='f4'){const em=v('lem').trim().toLowerCase(),pw=v('lpw');if(!em||!pw){toast(E.lg_err);return}
      const {error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;
@@ -131,6 +131,19 @@ async function finishPending(){let reg=null;try{reg=JSON.parse(localStorage.getI
 // "Aceitar e criar meu login" já usa o e-mail do convite
 // sair da conta
 window.realLogout=async()=>{await sb.auth.signOut();clearDemo();S.uid=null;go('welcome',{reset:true})};
+
+
+// ---------- tela "confirme seu e-mail" (fica parada na tela, não some) ----------
+const CM={pt:{t:'Confirme seu <em>e-mail</em>',l:e=>`Mandamos um e-mail pra <strong>${e}</strong> com um link de confirmação. Abra o e-mail, toque no link e depois volte aqui.`,
+  tip:'Não chegou? Olhe a caixa de spam ou promoções. Pode levar alguns minutos.',done:'Já confirmei, entrar',resend:'Reenviar e-mail',sent:'E-mail reenviado ✉️'},
+ es:{t:'Confirma tu <em>correo</em>',l:e=>`Te enviamos un correo a <strong>${e}</strong> con un enlace de confirmación. Ábrelo, toca el enlace y después vuelve aquí.`,
+  tip:'¿No llegó? Mira en spam o promociones. Puede tardar unos minutos.',done:'Ya confirmé, entrar',resend:'Reenviar correo',sent:'Correo reenviado ✉️'}};
+window.showCheckMail=function(email,next){S.cmEmail=email;S.cmNext=next;go('checkmail')};
+R.checkmail=function(){const C=CM[lang];return `<section class="screen center"><div class="spacer"></div><div class="bigic">${ic('mail',40)}</div><h2>${C.t}</h2><p>${C.l(esc(S.cmEmail||''))}</p><p class="hint">${C.tip}</p>
+  <div class="btns" style="align-self:stretch"><button type="button" class="btn pri" data-cm="done">${C.done}</button><button type="button" class="btn ghost" data-cm="resend">${C.resend}</button></div><div class="spacer"></div></section>`};
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-cm]');if(!b)return;
+  if(b.dataset.cm==='resend'){const {error}=await sb.auth.resend({type:'signup',email:S.cmEmail});toast(error?RT().errGeneric:CM[lang].sent);return}
+  if(S.cmNext==='mgame'){S.mf.mode='old';go('mgame',{reset:true})}else go('login',{reset:true})});
 
 // ---------- início ----------
 async function boot(){

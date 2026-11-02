@@ -1095,7 +1095,7 @@ function stopRec(){clearInterval(recTimer);recTimer=null;S.rec=false}
 S.hist=[];
 function go(s,opt){if(S.rec)stopRec();opt=opt||{};if(!opt.noPush&&S.screen!==s)S.hist.push({sc:S.screen,y:window.scrollY});if(opt.reset)S.hist=[];S.screen=s; if(s==='pin'||s==='lock'){S.pin='';} render(); window.scrollTo(0,opt.y||0)}
 function goBack(){if(S.screen==='wish')S.wmode=null;const h=S.hist.pop();if(!h){go('home',{noPush:true});return}go(h.sc,{noPush:true,y:h.y});requestAnimationFrame(()=>window.scrollTo(0,h.y))}
-const NARROW=['welcome','signup','pin','lock','tour','invite','partner','psignup','login','forgotpin'];
+const NARROW=['checkmail','welcome','signup','pin','lock','tour','invite','partner','psignup','login','forgotpin'];
 function render(){chrome();view.className=NARROW.includes(S.screen)||S.screen==='mgame'?'narrow':(S.screen==='ask'||S.screen==='wish'||S.screen==='talk'||S.screen==='diary'||S.screen==='pre'||S.screen==='toys'||S.screen==='concierge'||['heat','chal','love','guide','guided','bdsm'].includes(S.screen)||(S.screen==='games'&&S.gm.game))?'mid':'wide';view.innerHTML=R[S.screen]();mountViewer();if(S.screen==='posl'||S.screen==='wish'||S.screen==='guided'||S.screen==='chal')fillThumbs();fillToys();}
 
 function onKey(k){

@@ -168,7 +168,7 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='fg')return;e.prev
       const r=await sb.rpc('register_free',{p_nickname:nm,p_gender:f.g,p_lang:lang,p_adult:true,p_sensitive:true});if(r.error)throw r.error;S.name=nm}
     else if(f.mode==='new'){const nm=v('gnm').trim();if(!nm||!em||pw.length<6||!f.g){toast(X.errFill);return}if(!f.age||!f.sens){toast(X.errAge);return}
       const {data,error}=await sb.auth.signUp({email:em,password:pw});if(error)throw error;
-      if(!data.session){try{localStorage.setItem('en_free_pending',JSON.stringify({nm,g:f.g}))}catch(_){}toast(lang==='pt'?'Confirme seu e-mail e depois entre com “Já tenho conta”.':'Confirma tu correo y después entra con “Ya tengo cuenta”.');f.mode='old';render();return}
+      if(!data.session){try{localStorage.setItem('en_free_pending',JSON.stringify({nm,g:f.g}))}catch(_){}f.mode='old';showCheckMail(em,'mgame');return}
       S.uid=data.user.id;S.email=em;const r=await sb.rpc('register_free',{p_nickname:nm,p_gender:f.g,p_lang:lang,p_adult:true,p_sensitive:true});if(r.error)throw r.error;S.name=nm}
     else{if(!em||!pw){toast(X.errFill);return}const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;S.uid=data.user.id;S.email=em}
     await refreshFree();
@@ -228,7 +228,10 @@ document.addEventListener('click',e=>{const c=e.target.closest('[data-rgcall]');
 // ---------- início: link de jogo e conta ----------
 (async()=>{
   const q=new URLSearchParams(location.search),code=q.get('jogo');
-  const {data:{session}}=await sb.auth.getSession();if(session){S.uid=session.user.id;await refreshFree();watchCalls()}
+  const {data:{session}}=await sb.auth.getSession();if(session){S.uid=session.user.id;await refreshFree();
+    if(!S.hasProfile){let pend=null;try{pend=JSON.parse(localStorage.getItem('en_free_pending')||'null')}catch(_){}
+      if(pend){const r=await sb.rpc('register_free',{p_nickname:pend.nm,p_gender:pend.g,p_lang:lang,p_adult:true,p_sensitive:true});if(!r.error){try{localStorage.removeItem('en_free_pending')}catch(_){}await refreshFree();if(!code)setTimeout(()=>go('mgame',{reset:true}),400)}}}
+    watchCalls()}
   sb.auth.onAuthStateChange((ev,s)=>{if(s&&s.user){S.uid=s.user.id;watchCalls()}});
   if(code){history.replaceState(null,'',location.pathname);
     const {data}=await sb.rpc('room_info',{p_code:code});const inf=data&&data[0];
