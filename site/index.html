@@ -208,6 +208,12 @@ textarea::placeholder{color:#6E6564}
 .locksh{background:var(--night-2);border:1px solid var(--line);border-radius:22px;padding:22px 20px 16px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:8px}
 .locksh h2{margin:0}.locksh p{margin:0 0 6px;color:var(--muted)}.lockic{color:var(--honey);display:grid;width:44px;height:44px;place-items:center;border-radius:14px;background:rgba(200,161,90,.12)}
 .tile.locked{position:relative;opacity:.72}.tile.locked .lk{position:absolute;top:12px;right:12px;color:var(--honey);display:grid}
+.newsbox{display:flex;flex-direction:column;gap:8px;margin:2px 0 16px;padding:14px;border-radius:18px;border:1px solid var(--honey);background:rgba(200,161,90,.08)}
+.newsit{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:8px 6px;border:0;border-radius:12px;background:none;color:var(--cream);font:inherit;font-size:15px;cursor:pointer}
+.newsit:hover{background:rgba(255,255,255,.04)}.newsit .gic{flex:none;width:36px;height:36px;color:var(--honey)}
+.tile.hasnew{position:relative;border-color:var(--honey)}.tile .ndot{position:absolute;top:12px;right:12px;width:10px;height:10px;border-radius:50%;background:var(--honey);box-shadow:0 0 0 3px rgba(200,161,90,.25)}
+.tile.locked.hasnew .ndot{right:32px}
+.bub2.canedit{cursor:pointer}.bub2.canedit::after{content:attr(data-edl);display:block;margin-top:4px;font-size:11px;opacity:.7;text-decoration:underline}
 .real .bell b{display:none}.real .bell.new b{display:block}
 .annc{display:flex;gap:12px;align-items:center;text-align:left;width:100%;margin:4px 0 14px;padding:12px 14px;border-radius:16px;border:1px solid var(--honey);background:rgba(200,161,90,.1);color:var(--cream);cursor:pointer;font:inherit}
 .annc>span:first-child{color:var(--honey);flex:none;display:grid}.annc strong{display:block}.annc small{display:block;color:var(--muted);font-size:14px}
@@ -1273,9 +1279,10 @@ render();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="real.js?v=1793651109"></script>
 <script src="realcommunity.js?v=1793638126"></script>
-<script src="realshare.js?v=1793638126"></script>
+<script src="realshare.js?v=1793652446"></script>
 <script src="realcouple.js?v=1793651833"></script>
 <script src="realfree.js?v=1793651833"></script>
+<script src="realnews.js?v=1793652446"></script>
 <script src="todbank.js?v=1793638126"></script>
 <script src="realgames.js?v=1793651109"></script>
 </body>

@@ -10,6 +10,7 @@ let synced={cm:new Set(),dcm:new Set()},busy=false,loaded=false;
 async function loadShares(){if(!S.uid||S.isFree)return;
   const [{data:sh},{data:cm}]=await Promise.all([sb.from('shares').select('id,from_user,kind,keys,mode,message,created_at').order('created_at'),sb.from('share_comments').select('share_id,user_id,body')]);
   const cms={};(cm||[]).forEach(c=>{(cms[c.share_id]=cms[c.share_id]||{})[c.user_id===S.uid?'me':'them']=c.body});
+  const sigB=JSON.stringify([S.sh,S.shc,S.pdiary,S.dpc,S.dmc]);
   const opened=new Set((S.sh||[]).filter(e=>e.open&&e.id).map(e=>e.id));
   S.sh=[];S.shc={};S.pdiary=[];S.dpc={};S.dmc={};S.myDiaryShare={};S.theirDiaryShare={};synced={cm:new Set(),dcm:new Set()};
   Object.keys(S.diary||{}).forEach(id=>{S.diary[id].shared=false});
@@ -20,7 +21,7 @@ async function loadShares(){if(!S.uid||S.isFree)return;
       return}
     const i=S.sh.length;S.sh.push(Object.assign({id:r.id,from:mine?'me':'them',mode:r.mode,msg:r.message||'',open:opened.has(r.id)},r.keys.length>1?{keys:r.keys}:{key:r.keys[0]}));
     if(c.me||c.them){S.shc[i]={me:c.me,them:c.them};if(c.me)synced.cm.add(r.id)}});
-  loaded=true;window.__shSnap=snapDiary();if(['pre','toys','diary','wish','talk'].includes(S.screen))_render()}
+  const first=!loaded;loaded=true;window.__shSnap=snapDiary();if(['pre','toys','diary','wish','talk'].includes(S.screen)&&(first||JSON.stringify([S.sh,S.shc,S.pdiary,S.dpc,S.dmc])!==sigB)){const y=window.scrollY;_render();window.scrollTo(0,y)}}
 const snapDiary=()=>JSON.stringify(Object.fromEntries(Object.entries(S.diary||{}).map(([k,v])=>[k,!!v.shared])));
 
 async function syncShares(){if(!loaded||busy||!S.uid)return;busy=true;
@@ -38,6 +39,8 @@ const _render=window.render;
 window.render=function(){_render();setTimeout(syncShares,300)};
 const _go=window.go;
 window.go=function(s,o){const r=_go(s,o);if(['pre','toys','diary','wish','talk'].includes(s))loadShares();return r};
+// atualiza sozinho enquanto a tela de compartilhados está aberta
+setInterval(()=>{if(loaded&&!busy&&['pre','toys','diary','wish'].includes(S.screen)&&document.visibilityState==='visible'&&!document.activeElement.matches('input,textarea'))loadShares()},12000);
 // quando a conta carrega
 const iv=setInterval(()=>{if(S.uid&&S.diary&&!loaded&&S.isFree===false){clearInterval(iv);loadShares()}},800);
 setTimeout(()=>clearInterval(iv),20000);
