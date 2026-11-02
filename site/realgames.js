@@ -21,7 +21,7 @@ const RG={
   planWait:n=>`Esperando ${n} enviar…`,planMine:'Você já enviou. Assim que a outra pessoa enviar, aparece o que deu match.',
   todWait:n=>`${n} está escolhendo…`,todTheirs:(n,k)=>`${n} escolheu ${k}:`,answer:'Responder',teaseNone:'Nenhuma provocação ainda.',
   call:n=>`${n} te chamou pra jogar`,callGo:'Entrar no jogo',endAsk:'Encerrar o jogo',paywall:'Você usou seus 3 jogos grátis. Assine o Entre Nós pra jogar sem limite.',subscribe:'Conhecer o Entre Nós',
-  err:'Algo deu errado. Tente de novo.',locked:'Essa parte é do Entre Nós completo. No grátis, só os jogos.',overT:'Esse jogo grátis chegou ao fim 🔥',overL:'Cada jogo grátis tem 20 jogadas. Pra continuar jogando sem limite e liberar posições em 3D, preliminares, brinquedos e tudo mais, assine o Entre Nós.',backFree:'Voltar aos jogos grátis',playsLeft:n=>`${n} jogadas restantes neste jogo grátis`,edit:'editar',edited:'editado',save:'Salvar',cancel:'Cancelar',expired2:'Seu acesso antigo não existe mais. Crie sua conta de novo.',switchT:'Jogar outra coisa com a mesma pessoa',switchHint:'Trocar de jogo aqui não gasta outro jogo grátis.',openT:'Continuar de onde parou',openWait:'esperando alguém entrar',openWith:n=>`com ${n}`,notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
+  err:'Algo deu errado. Tente de novo.',locked:'Essa parte é do Entre Nós completo. No grátis, só os jogos.',overT:'Esse jogo grátis chegou ao fim 🔥',overL:'Cada jogo grátis tem 20 jogadas. Pra continuar jogando sem limite e liberar posições em 3D, preliminares, brinquedos e tudo mais, assine o Entre Nós.',backFree:'Voltar aos jogos grátis',playsLeft:n=>`${n} jogadas restantes neste jogo grátis`,unend:'Ops, voltar a jogar',endConfirm:'Toque de novo pra encerrar',histT:n=>`Rodadas anteriores (${n})`,edit:'editar',edited:'editado',save:'Salvar',cancel:'Cancelar',expired2:'Seu acesso antigo não existe mais. Crie sua conta de novo.',switchT:'Jogar outra coisa com a mesma pessoa',switchHint:'Trocar de jogo aqui não gasta outro jogo grátis.',openT:'Seus jogos das últimas 24 horas',openWait:'esperando alguém entrar',openWith:n=>`com ${n}`,notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
  es:{signT:'Antes de jugar, crea tu acceso',signLead:'Es rapidito y sirve para tus 3 juegos gratis. Nadie ve tus datos.',haveAcc:'Ya tengo cuenta',noAcc:'Crear cuenta',
   nick:'Tu apodo',nickPh:'Como te conoce la otra persona',email:'Tu correo',pass:'Contraseña',passPh:'Mínimo 6 caracteres',iam:'Soy',w:'Mujer',m:'Hombre',
   age:'Tengo 18 años o más y acepto los <a href="#" data-en="terms">términos de uso</a> y la <a href="#" data-en="terms">política de privacidad</a>.',
@@ -36,7 +36,7 @@ const RG={
   planWait:n=>`Esperando a que ${n} envíe…`,planMine:'Ya enviaste. En cuanto la otra persona envíe, aparece el match.',
   todWait:n=>`${n} está eligiendo…`,todTheirs:(n,k)=>`${n} eligió ${k}:`,answer:'Responder',teaseNone:'Todavía no hay provocaciones.',
   call:n=>`${n} te invitó a jugar`,callGo:'Entrar al juego',endAsk:'Terminar el juego',paywall:'Usaste tus 3 juegos gratis. Suscríbete a Entre Nosotros para jugar sin límite.',subscribe:'Conocer Entre Nosotros',
-  err:'Algo salió mal. Inténtalo de nuevo.',locked:'Esta parte es de Entre Nosotros completo. En la versión gratis, solo los juegos.',overT:'Este juego gratis llegó al final 🔥',overL:'Cada juego gratis tiene 20 jugadas. Para seguir jugando sin límite y desbloquear posturas en 3D, preliminares, juguetes y todo lo demás, suscríbete a Entre Nosotros.',backFree:'Volver a los juegos gratis',playsLeft:n=>`Quedan ${n} jugadas en este juego gratis`,edit:'editar',edited:'editado',save:'Guardar',cancel:'Cancelar',expired2:'Tu acceso anterior ya no existe. Crea tu cuenta de nuevo.',switchT:'Jugar a otra cosa con la misma persona',switchHint:'Cambiar de juego aquí no gasta otro juego gratis.',openT:'Seguir donde lo dejaste',openWait:'esperando a que alguien entre',openWith:n=>`con ${n}`,notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
+  err:'Algo salió mal. Inténtalo de nuevo.',locked:'Esta parte es de Entre Nosotros completo. En la versión gratis, solo los juegos.',overT:'Este juego gratis llegó al final 🔥',overL:'Cada juego gratis tiene 20 jugadas. Para seguir jugando sin límite y desbloquear posturas en 3D, preliminares, juguetes y todo lo demás, suscríbete a Entre Nosotros.',backFree:'Volver a los juegos gratis',playsLeft:n=>`Quedan ${n} jugadas en este juego gratis`,unend:'Ups, volver a jugar',endConfirm:'Toca otra vez para terminar',histT:n=>`Rondas anteriores (${n})`,edit:'editar',edited:'editado',save:'Guardar',cancel:'Cancelar',expired2:'Tu acceso anterior ya no existe. Crea tu cuenta de nuevo.',switchT:'Jugar a otra cosa con la misma persona',switchHint:'Cambiar de juego aquí no gasta otro juego gratis.',openT:'Tus juegos de las últimas 24 horas',openWait:'esperando a que alguien entre',openWith:n=>`con ${n}`,notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
 const R2=()=>RG[lang];
 
 // ---------- estado da sala ----------
@@ -79,9 +79,9 @@ function curGame(){const sw=S.rm.events.filter(e=>e.kind==='switch');return sw.l
 function sceneIdx(){const ev=S.rm.events.filter(e=>e.kind==='reset');const base=parseInt(S.rm.code.replace(/[^0-9]/g,'')||'0',10);return (base+ev.length)%SCENES.length}
 function chatTurn(msgs){if(!msgs.length)return S.rm.host;const last=msgs[msgs.length-1].user_id;return last===me()?otherId():me()}
 
-function bodyScene(isScene){const G=GTX(),X=R2(),ev=sinceReset(),msgs=ev.filter(e=>e.kind==='msg'),ended=ev.some(e=>e.kind==='end');
+function bodyScene(isScene){const G=GTX(),X=R2(),ev=sinceReset(),msgs=ev.filter(e=>e.kind==='msg'),ended=(()=>{let x=false;ev.forEach(e=>{if(e.kind==='end')x=true;if(e.kind==='unend')x=false});return x})();
   const chat=`<div class="chat">${msgs.map(m=>bub(m)).join('')}</div>`;
-  if(ended){if(isScene)return `${chat}<div class="wkhero center"><div class="bigic">${ic('heat',40)}</div><h2>${G.ended}</h2><p class="hint">${G.erase}</p><button type="button" class="btn pri" data-rg="reset">${G.newScene}</button></div>`;
+  if(ended){if(isScene)return `${chat}<div class="wkhero center"><div class="bigic">${ic('heat',40)}</div><h2>${G.ended}</h2><p class="hint">${G.erase}</p><button type="button" class="btn pri" data-rg="reset">${G.newScene}</button><button type="button" class="btn ghost" data-rg="unend">${X.unend}</button></div>`;
     const mine=msgs.filter(m=>m.user_id===me()),th=msgs.filter(m=>m.user_id!==me());
     return `<div class="wkhero"><span class="tagc gold">${ic('toys',14)} ${G.mapT}</span><div class="sec-t">${G.mapYou}</div>${mine.map(c=>`<div class="witem"><p>${esc(txt(c))}</p></div>`).join('')}<div class="sec-t">${G.mapThem}</div>${th.map(c=>`<div class="witem"><p>${esc(txt(c))}</p></div>`).join('')}</div><button type="button" class="btn ghost" data-rg="reset">${lang==='pt'?'Jogar de novo':'Jugar otra vez'}</button>`}
   const turn=chatTurn(msgs),mine=turn===me(),st=Math.min(2,Math.floor(msgs.filter(m=>m.user_id===me()).length/2));
@@ -90,7 +90,7 @@ function bodyScene(isScene){const G=GTX(),X=R2(),ev=sinceReset(),msgs=ev.filter(
      ${isScene&&S.rm.ideas?`<p class="hint">${G.ideaT}</p><div class="ideas">${IDEAS[lang][st].map((x,i)=>`<button type="button" class="ideab" data-rgidea="${i}">${x}</button>`).join('')}</div>`:''}
      <div class="row"><button type="button" class="btn pri sm" data-rg="msg">${G.send}</button>${isScene?`<button type="button" class="btn ghost sm" data-rg="ideas">${ic('fore',15)} ${G.idea}</button>`:''}</div>`
    :`<div class="bub2 them typing">${X.turnThem(esc(otherName()))}</div>`}
-   ${msgs.length>=2?`<button type="button" class="btn gold" data-rg="end">${isScene?G.end:G.likeEnd}</button>`:''}`}
+   ${msgs.length>=2?`<button type="button" class="btn gold" data-rg="end">${S.rm.endAsk?X.endConfirm:(isScene?G.end:G.likeEnd)}</button>`:''}`}
 
 function bodyPlan(){const G=GTX(),X=R2(),ev=sinceReset().filter(e=>e.kind==='plan');const mine=[...ev].reverse().find(e=>e.user_id===me()),th=[...ev].reverse().find(e=>e.user_id!==me());
   if(!mine)return `<p class="hint">${G.planLead}</p><div class="plist2">${PLAN_IDS.map(id=>`<label class="pchk"><input type="checkbox" data-rgpl="${id}" ${S.rm.planSel[id]?'checked':''}><span>${WBY[id][lang]}</span></label>`).join('')}</div><button type="button" class="btn pri" data-rg="plan">${G.planSend}</button>`;
@@ -118,6 +118,11 @@ function bodyTease(){const G=GTX(),X=R2(),ev=S.rm.events.filter(e=>e.kind==='tea
    <div class="sec-t"></div>${ev.length?[...ev].reverse().map(e=>`<div class="notif"><span class="gic">${ic('bell',18)}</span><div><strong>${e.user_id===me()?(lang==='pt'?'Você mandou':'Tú enviaste'):G.teaseNotif(esc(otherName()))}</strong>${bub(e,'plain')}</div></div>`).join(''):`<p class="hint">${X.teaseNone}</p>`}`}
 
 const FREE_MAX=20;
+function history(){const ev=S.rm.events,G=GTX(),X=R2();const rounds=[];let cur={game:S.rm.game,items:[]};
+  ev.forEach(e=>{if(e.kind==='reset'||e.kind==='switch'){if(cur.items.length)rounds.push(cur);cur={game:e.kind==='switch'?e.data.game:cur.game,items:[]}}
+    else if(['msg','tdone','tease'].includes(e.kind)&&e.body)cur.items.push(e);else if(e.kind==='plan')cur.items.push(Object.assign({},e,{body:(e.data.sel||[]).map(id=>WBY[id][lang]).join(', ')}))});
+  if(!rounds.length)return '';
+  return `<details class="rules"><summary>${X.histT(rounds.length)}</summary><div class="rbody">${rounds.map(rd=>`<div class="sec-t">${(G.games[rd.game]||[''])[0]}</div>${rd.items.map(e=>`<div class="witem"><span class="po">${e.user_id===me()?(lang==='pt'?'Você':'Tú'):esc(otherName())}</span><p>${esc(txt(e))}</p></div>`).join('')}`).join('')}</div></details>`}
 R.groom=function(){const G=GTX(),X=R2(),r=S.rm;if(!r.id)return R.games();
   if(r.free&&(r.over||plays()>=FREE_MAX))return `<section class="screen"><button type="button" class="back" data-rg="leave">${G.back}</button><div class="wkhero center"><div class="bigic">${ic('heat',40)}</div><h2>${X.overT}</h2><p>${X.overL}</p>
     <button type="button" class="btn pri" data-act="welcome">${X.subscribe}</button><button type="button" class="btn ghost" data-rg="leave">${X.backFree}</button></div></section>`;
@@ -128,7 +133,7 @@ R.groom=function(){const G=GTX(),X=R2(),r=S.rm;if(!r.id)return R.games();
   else{body=(cg==='scene'?bodyScene(true):cg==='like'?bodyScene(false):cg==='plan'?bodyPlan():cg==='tod'?bodyTod():bodyTease())+`<div class="sec-t">${X.switchT}</div><div class="chips wrap">${Object.entries(G.games).filter(([k])=>k!==cg).map(([k,v])=>`<button type="button" class="chip" data-rgsw="${k}">${ic(GIC[k],14)} ${v[0]}</button>`).join('')}</div><p class="hint">${X.switchHint}</p>`}
   return `<section class="screen"><button type="button" class="back" data-rg="leave">${G.back}</button><h2>${title}</h2>
    ${otherId()?`<span class="tagc" style="align-self:flex-start">${ic('both',14)} ${esc(S.rm.people[me()]||'')} + ${esc(otherName())}</span>`:''}
-   ${r.free&&otherId()?`<span class="tagc gold" style="align-self:flex-start">${X.playsLeft(Math.max(0,FREE_MAX-plays()))}</span>`:''}${body}<p class="hint">${ic('lock',13)} ${X.erased}</p></section>`};
+   ${r.free&&otherId()?`<span class="tagc gold" style="align-self:flex-start">${X.playsLeft(Math.max(0,FREE_MAX-plays()))}</span>`:''}${body}${otherId()?history():''}<p class="hint">${ic('lock',13)} ${X.erased}</p></section>`};
 
 // ---------- jogo grátis: cadastro rápido, escolha do jogo, convite ----------
 R.mgame=function(){const X=R2(),G=t().mg,f=S.mf;
@@ -221,7 +226,8 @@ document.addEventListener('click',async e=>{
    case 'copymsg':copyText(X.msg(S.rm.people[me()]||S.name||'',GTX().games[r.game][0])+'https://'+roomLink(),X.copied);break;
    case 'ideas':r.ideas=!r.ideas;rr();break;
    case 'msg':{const tx=r.draft.trim();if(!tx)break;r.draft='';r.ideas=false;await send('msg',tx);break}
-   case 'end':await send('end');break;
+   case 'end':if(!r.endAsk){r.endAsk=true;rr();setTimeout(()=>{r.endAsk=false;rr()},4000);break}r.endAsk=false;await send('end');break;
+   case 'unend':await send('unend');break;
    case 'reset':r.planSel={};await send('reset');break;
    case 'plan':{const sel=Object.keys(r.planSel).filter(k=>r.planSel[k]);await send('plan',null,{sel});break}
    case 'tdone':{const tx=r.draft.trim();r.draft='';await send('tdone',tx||null);break}
