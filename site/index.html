@@ -1,0 +1,1257 @@
+<title>Entre Nós</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500;1,6..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: uma tela de celular por vez (fluxo de entrada), centralizada; à noite, só os dois. Visual único escuro, de propósito. */
+:root{
+  --night:#0D0A0A;      /* fundo: preto quente */
+  --night-2:#191414;    /* cartões: grafite */
+  --line:#352B2B;       /* bordas: cinza quente */
+  --blush:#A01E2B;      /* vinho/vermelho principal */
+  --honey:#C8A15A;      /* dourado, traço de destaque */
+  --cream:#F2EBE5;      /* texto */
+  --muted:#A69C99;      /* texto secundário: cinza */
+  --display:"Bodoni Moda", Didot, Georgia, serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--night);color:var(--cream);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background-image:radial-gradient(120% 60% at 50% -10%, #3A0F15 0%, transparent 60%),radial-gradient(80% 40% at 100% 110%, #1E1414 0%, transparent 70%);background-attachment:fixed}
+.app{max-width:1120px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding-block:20px 28px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:40px}
+.mark{font-family:var(--display);font-style:italic;font-size:20px;color:var(--cream);letter-spacing:.01em}
+.mark b{color:var(--honey);font-weight:700}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang button{background:none;border:0;color:var(--muted);font:600 12px var(--body);padding:6px 11px;cursor:pointer;letter-spacing:.06em}
+.lang button[aria-pressed="true"]{background:var(--blush);color:var(--cream)}
+.screen{flex:1;display:flex;flex-direction:column;gap:18px;padding-top:22px;animation:in .35s ease}
+@keyframes in{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,11vw,54px);line-height:1.02;margin:0;text-wrap:balance}
+h1 em{color:var(--honey)}
+h2{font-family:var(--display);font-weight:500;font-size:30px;line-height:1.1;margin:0;text-wrap:balance}
+h2 em{color:var(--honey)}
+p{margin:0;color:var(--muted)}
+.lead{font-size:17px;color:var(--cream);opacity:.9;max-width:34ch}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--honey)}
+.spacer{flex:1}
+.btn{appearance:none;border:0;border-radius:16px;padding:16px 18px;font:700 16px var(--body);cursor:pointer;width:100%;transition:transform .12s, filter .12s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--blush);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(200,161,90,.6)}
+.btn.gold{background:var(--honey);color:var(--night)}
+.btn.ghost{background:transparent;color:var(--cream);border:1px solid var(--line)}
+.btn.link{background:none;color:var(--muted);padding:8px;font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.btn:focus-visible,.lang button:focus-visible,.opt:focus-visible,.key:focus-visible,.tile:focus-visible,input:focus-visible{outline:2px solid var(--honey);outline-offset:2px}
+.btns{display:flex;flex-direction:column;gap:10px}
+.field{display:flex;flex-direction:column;gap:6px}
+label{font-size:13px;font-weight:600;color:var(--muted)}
+input{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--cream);font:500 16px var(--body);width:100%}
+input::placeholder{color:#6E6564}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{background:var(--night-2);border:1px solid var(--line);border-radius:16px;padding:16px 12px;color:var(--cream);font:600 15px var(--body);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}
+.opt .ic{font-size:26px}
+.opt[aria-pressed="true"]{border-color:var(--honey);background:#241A1A;box-shadow:inset 0 0 0 1px var(--honey)}
+.hint{font-size:13px;color:var(--muted)}
+.steps{display:flex;gap:6px}
+.steps i{height:4px;flex:1;border-radius:4px;background:var(--line)}
+.steps i.on{background:var(--blush)}
+/* PIN */
+.dots{display:flex;gap:16px;justify-content:center;padding:10px 0}
+.dots span{width:16px;height:16px;border-radius:50%;border:2px solid var(--blush)}
+.dots span.f{background:var(--blush)}
+.dots.err{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:300px;margin:0 auto;width:100%}
+.key{aspect-ratio:1.35;max-width:100%;border-radius:18px;background:var(--night-2);border:1px solid var(--line);color:var(--cream);font:500 26px var(--display);cursor:pointer}
+.key.sm{font:600 13px var(--body);color:var(--muted)}
+.key:active{background:#2A1C1D}
+.center{text-align:center;align-items:center}
+/* tour */
+.tour{background:var(--night-2);border:1px solid var(--line);border-radius:24px;padding:26px 22px;display:flex;flex-direction:column;gap:12px;min-height:280px}
+.tour .big{font-size:44px}
+.tdots{display:flex;gap:8px;justify-content:center}
+.tdots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.tdots i.on{background:var(--honey);width:22px;border-radius:8px}
+/* convite */
+.invite{background:linear-gradient(160deg,#2A1215,#191414);border:1px solid var(--line);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.linkbox{display:flex;gap:8px;align-items:center;background:var(--night);border:1px dashed var(--honey);border-radius:12px;padding:10px 12px}
+.linkbox code{flex:1;min-width:0;overflow-wrap:anywhere;font:500 13px ui-monospace,Menlo,monospace;color:var(--honey)}
+.copy{background:var(--honey);color:var(--night);border:0;border-radius:10px;padding:8px 12px;font:700 13px var(--body);cursor:pointer;white-space:nowrap}
+.msg{background:var(--night);border-radius:14px;padding:14px;font-size:14px;color:var(--cream);white-space:pre-line;border-left:3px solid var(--honey)}
+/* home */
+.hello{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.bell{position:relative;background:var(--night-2);border:1px solid var(--line);width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:20px;cursor:pointer;color:var(--cream);flex:none}
+.bell b{position:absolute;top:8px;right:9px;width:9px;height:9px;border-radius:50%;background:var(--honey);box-shadow:0 0 0 2px var(--night-2)}
+.couple{display:flex;align-items:center;gap:12px;background:var(--night-2);border:1px solid var(--line);border-radius:18px;padding:14px}
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font:700 16px var(--body);color:var(--night);flex:none}
+.av.a{background:var(--blush);color:var(--cream)}.av.b{background:var(--line);color:var(--muted);margin-left:-18px;border:2px dashed var(--muted)}
+.av.b.ok{background:var(--honey);color:var(--night);border:2px solid var(--night-2)}
+.couple div{min-width:0}
+.couple small{display:block;color:var(--muted);font-size:13px}
+.sec-t{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--night-2);border:1px solid var(--line);border-radius:18px;padding:14px;text-align:left;color:var(--cream);cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:104px}
+.tile .ic{font-size:22px}
+.tile strong{font-size:15px;line-height:1.2}
+.tile span{font-size:12px;color:var(--muted);line-height:1.3}
+.tile.hero{grid-column:1/-1;background:linear-gradient(140deg,#4A0F18,#191414);border-color:#6E3A2E;min-height:0}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--cream);color:var(--night);padding:12px 18px;border-radius:14px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);text-align:center;z-index:20}
+.protonote{margin-top:22px;border-top:1px solid var(--line);padding-top:14px;font-size:12px;color:#6E6564;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.protonote button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 10px;font:600 12px var(--body);cursor:pointer}
+/* Pergunte sem vergonha */
+button:focus-visible,textarea:focus-visible{outline:2px solid var(--honey);outline-offset:2px}
+.back{background:none;border:0;color:var(--muted);font:600 14px var(--body);cursor:pointer;padding:4px 0;align-self:flex-start}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px}
+.seg-b{background:none;border:0;border-radius:10px;padding:10px 6px;color:var(--muted);font:600 14px var(--body);cursor:pointer}
+.seg-b[aria-pressed="true"]{background:var(--blush);color:var(--cream)}
+.note{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--cream);display:flex;gap:8px;align-items:flex-start}
+.note .svg{margin-top:2px;color:var(--honey)}
+textarea{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--cream);font:500 16px/1.45 var(--body);width:100%;resize:vertical}
+.qcard textarea{background:var(--night)}
+textarea::placeholder{color:#6E6564}
+.rec{background:transparent;border:1px solid var(--honey);color:var(--honey);border-radius:999px;padding:10px 16px;font:600 14px var(--body);cursor:pointer}
+.rec.on{background:var(--honey);color:var(--night)}
+.rec.live{border-color:var(--blush);color:var(--cream);background:var(--blush);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.7}}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn.sm{width:auto;padding:10px 16px;font-size:14px;border-radius:12px}
+.qcard{background:var(--night-2);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.qtext{color:var(--cream);font-family:var(--display);font-style:italic;font-size:19px;line-height:1.3}
+.meter{display:flex;align-items:center;gap:10px}
+.pips{display:flex;gap:4px}.pips i{width:22px;height:5px;border-radius:3px;background:var(--line)}.pips i.on{background:var(--honey)}
+.meter small,.to{font-size:12px;color:var(--muted)}
+.qhead{background:none;border:0;padding:0;text-align:left;color:inherit;cursor:pointer;display:flex;flex-direction:column;gap:8px;font:inherit;width:100%}
+.qmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.tag.ok{color:var(--night);background:var(--honey);border-color:var(--honey)}
+.answers{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.ans{background:var(--night);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.ans p{color:var(--cream);font-size:15px}
+.ans.team{border:1px solid var(--honey)}
+.ans.audio{flex-direction:row;align-items:center;gap:12px}
+.badge{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--honey)}
+.play{width:36px;height:36px;border-radius:50%;border:0;background:var(--blush);color:var(--cream);cursor:pointer;flex:none}
+.wave{flex:1;min-width:0;height:20px;background:repeating-linear-gradient(90deg,var(--muted) 0 2px,transparent 2px 6px);opacity:.45;border-radius:4px}
+.ans.audio small{color:var(--muted);font-variant-numeric:tabular-nums}
+.empty{text-align:center;padding:30px 10px}
+.rules{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:4px 14px}
+.qcard .rules{background:var(--night)}
+.rules summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--honey);padding:10px 0;list-style:none}
+.rules summary::-webkit-details-marker{display:none}
+.rules summary::after{content:" ▾"}
+.rules[open] summary::after{content:" ▴"}
+.rbody{display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
+.ex{border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.4;color:var(--cream);background:var(--night)}
+.qcard .ex{background:var(--night-2)}
+.ex b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.ex.ok{border-left:3px solid #6FAF7F}.ex.ok b{color:#8FC79C}
+.ex.no{border-left:3px solid var(--blush)}.ex.no b{color:#E07A84}
+.ex.no span{text-decoration:line-through;text-decoration-color:rgba(224,122,132,.6)}
+.thread{display:flex;flex-direction:column;gap:8px;margin-left:10px;border-left:2px solid var(--line);padding-left:12px}
+.bub{font-size:14px;color:var(--cream);line-height:1.4}
+.bub small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bub.me small{color:var(--honey)}
+.more{background:none;border:0;color:var(--honey);font:600 13px var(--body);cursor:pointer;padding:2px 0;text-align:left}
+.limit{font-size:12px;color:var(--muted)}
+.fu{border-color:var(--honey)}
+.rlist{margin:0;padding-left:18px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+/* Posições */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;background:var(--night-2);border:1px solid var(--line);color:var(--cream);border-radius:999px;padding:8px 14px;font:600 13px var(--body);cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{border-color:var(--honey);color:var(--honey);background:#241A1A}
+.oinfo{border-left:3px solid var(--honey);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:4px}
+.oinfo strong{font-family:var(--display);font-style:italic;font-weight:500;font-size:19px;color:var(--honey)}
+.plist{display:flex;flex-direction:column;gap:10px}
+.pcard{background:var(--night-2);border:1px solid var(--line);border-radius:18px;padding:14px 16px;text-align:left;color:var(--cream);cursor:pointer;display:flex;flex-direction:column;gap:6px;font:inherit}
+.pt{font-family:var(--display);font-size:21px;line-height:1.15}
+.dn{color:var(--honey);font-style:normal;font-size:16px}
+.po{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--honey)}
+.pd{font-size:14px;color:var(--muted);line-height:1.4}
+.mts{display:flex;gap:16px;flex-wrap:wrap;margin-top:4px}
+.mt{display:flex;flex-direction:column;gap:4px}
+.mt small{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.dots5{display:flex;gap:3px}.dots5 i{width:14px;height:5px;border-radius:3px;background:var(--line)}
+.dots5 i.on{background:var(--cream)}.mt.h .dots5 i.on{background:var(--blush)}
+.mts.big .dots5 i{width:22px;height:6px}
+.stage{position:relative;width:100%;height:340px;border-radius:22px;overflow:hidden;background:radial-gradient(90% 80% at 50% 30%,#2A1416,#0D0A0A);border:1px solid var(--line)}
+.stage canvas{display:block}
+.drag,.legend{position:absolute;top:10px;font-size:12px;color:var(--muted);pointer-events:none;z-index:1}
+.drag{left:12px}.legend{right:12px;display:flex;gap:6px;align-items:center}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}.lw{background:#E2B8A0}.lm{background:#B98A6C}
+.no3d{position:absolute;left:16px;right:16px;bottom:16px;color:var(--muted);font-size:13px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.facts div{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px;color:var(--cream);min-width:0}
+.facts small{display:block;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.tip{border-radius:14px;padding:12px 14px;font-size:15px;color:var(--cream);background:var(--night-2)}
+.tip b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.tip.her{border-left:3px solid var(--blush)}.tip.her b{color:#E07A84}
+.tip.him{border-left:3px solid var(--muted)}.tip.him b{color:var(--muted)}
+/* ícones, desktop, bolinhas */
+.svg{display:block;flex:none}
+.hint .svg,p .svg{display:inline-block;vertical-align:-2px;margin-right:4px}
+.tile .ic,.opt .ic{color:var(--honey);display:flex}
+.tile.hero .ic{color:var(--cream)}
+.bigic{color:var(--honey)}
+.bell .svg{margin:auto}
+.rec{display:inline-flex;align-items:center;gap:8px}
+.seg-b{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opts.three .opt{padding:14px 6px;font-size:14px}
+.chips{flex-wrap:wrap;overflow:visible}
+.lvd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;background:var(--muted)}
+.lvd.l1{background:#8FC79C}.lvd.l2{background:var(--honey)}.lvd.l3{background:#E07A84}
+.count{color:var(--honey);font-weight:600;white-space:nowrap}
+.newb{color:var(--cream);font-weight:700}
+.how{display:flex;flex-direction:column;gap:10px}
+.how ol{margin:0;padding:0;list-style:none;counter-reset:st;display:flex;flex-direction:column;gap:10px}
+.how li{counter-increment:st;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;font-size:15px;line-height:1.45;color:var(--cream)}
+.how li::before{content:counter(st);width:26px;height:26px;border-radius:50%;border:1px solid var(--honey);color:var(--honey);font:600 13px var(--body);display:grid;place-items:center}
+.wcard{background:linear-gradient(160deg,#2A1215,#191414);border:1px solid var(--line);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:18px;min-height:240px}
+.wtop{display:flex;justify-content:space-between;align-items:center}
+.wtext{font-family:var(--display);font-size:clamp(24px,6vw,30px);line-height:1.2;color:var(--cream);flex:1;display:flex;align-items:center}
+.wbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.wb{border-radius:14px;padding:14px 6px;font:700 15px var(--body);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.wb.no{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.wb.maybe{background:transparent;color:var(--honey);border:1px solid var(--honey)}
+.wb.yes{background:var(--blush);color:var(--cream);border:1px solid rgba(200,161,90,.6)}
+.witem{background:var(--night-2);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.witem p{color:var(--cream);font-size:16px;margin-top:2px}
+.wkhero{background:var(--night-2);border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.wkhero .tagc{align-self:flex-start}
+.wkban{display:flex;flex-direction:column;gap:6px;text-align:left;background:linear-gradient(140deg,#3A1418,#191414);border:1px solid rgba(200,161,90,.45);border-radius:18px;padding:16px;color:var(--cream);cursor:pointer;font:inherit}
+.wkban .tagc{align-self:flex-start}.wkban strong{font-family:var(--display);font-size:22px;font-weight:500}.wkban>span:last-child{color:var(--muted);font-size:13px}
+.moods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mood{background:var(--night-2);border:1px solid var(--line);border-radius:16px;padding:14px 10px;text-align:left;color:var(--cream);cursor:pointer;display:flex;flex-direction:column;gap:4px;font:inherit}
+.mood strong{font-size:15px}.mood span{font-size:12px;color:var(--muted);line-height:1.3}
+.mood[aria-pressed="true"]{border-color:var(--honey);box-shadow:inset 0 0 0 1px var(--honey);background:#241A1A}
+@media (max-width:420px){.moods{grid-template-columns:1fr}}
+.check{display:flex;gap:10px;align-items:center;font-size:15px;color:var(--cream);cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--blush)}
+.cta{border:1px solid rgba(200,161,90,.45);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.cta p{color:var(--cream)}
+.glist{display:grid;gap:10px}
+@media (min-width:900px){.glist{grid-template-columns:repeat(2,1fr)}}
+.gcard{display:flex;gap:14px;align-items:center;text-align:left;background:var(--night-2);border:1px solid var(--line);border-radius:18px;padding:16px;color:var(--cream);cursor:pointer;font:inherit}
+.gic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#2A1416;color:var(--honey);flex:none}
+.gbody{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}.gbody strong{font-family:var(--display);font-size:20px;font-weight:500}.gbody span{font-size:13px;color:var(--muted);line-height:1.35}
+.gplay{font-size:12px;font-weight:700;color:var(--honey);border:1px solid rgba(200,161,90,.5);border-radius:999px;padding:6px 12px;flex:none}
+.scene{border-left:3px solid var(--honey);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:6px}
+.scene p{font-family:var(--display);font-style:italic;font-size:20px;line-height:1.35;color:var(--cream)}
+.chat{display:flex;flex-direction:column;gap:8px}
+.bub2{max-width:85%;padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.4;color:var(--cream)}
+.bub2.me{align-self:flex-end;background:var(--blush);border-bottom-right-radius:4px}
+.bub2.them{align-self:flex-start;background:var(--night-2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bub2.typing{color:var(--muted);font-style:italic}
+.tturn{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--honey)}
+.ideas{display:flex;flex-direction:column;gap:8px}
+.ideab{text-align:left;background:transparent;border:1px dashed rgba(200,161,90,.6);color:var(--cream);border-radius:12px;padding:10px 12px;font:500 14px var(--body);cursor:pointer}
+.plist2{display:flex;flex-direction:column;gap:8px}
+.pchk{display:flex;gap:12px;align-items:center;background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;font-size:15px;color:var(--cream)}
+.pchk input{width:20px;height:20px;accent-color:var(--blush);flex:none}
+.pchk:has(input:checked){border-color:var(--blush)}
+.wbtns2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wbtns2 .wb{padding:22px 10px;font-size:18px}
+.notif{display:flex;gap:12px;align-items:center;background:var(--cream);color:var(--night);border-radius:16px;padding:12px 14px}
+.notif .gic{background:var(--blush);color:var(--cream);width:38px;height:38px}
+.notif div{display:flex;flex-direction:column;gap:2px;min-width:0}.notif strong{font-size:14px}.notif span{font-size:13px;color:#5a4a4a}
+.panel{background:var(--night-2);border:1px solid rgba(200,161,90,.4);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.panel .pchk{background:var(--night)}
+.bub2.special{display:flex;flex-direction:column;gap:6px}
+.bub2.special .po{display:inline-flex;gap:4px;align-items:center;font-size:10px}
+.bub2.me.special .po{color:#F3D9A0}
+.bub2.wishc strong{font-family:var(--display);font-size:18px;font-weight:500}
+.bub2 .btn.sm{align-self:flex-start;padding:6px 10px;font-size:12px}
+.dcard{background:var(--night-2);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.dhead{display:flex;justify-content:space-between;align-items:center;gap:10px}.dhead strong{font-family:var(--display);font-size:20px;font-weight:500}
+.dcard textarea{background:var(--night)}
+.stars{display:flex;gap:4px}
+.star{background:none;border:0;padding:0;font-size:22px;line-height:1;color:var(--line);cursor:pointer;font-style:normal}
+.star.on{color:var(--honey)}
+.dnote{color:var(--cream);font-style:italic}
+.wsec{display:flex;flex-direction:column;gap:10px}
+.wsech{display:flex;align-items:center;gap:10px;background:linear-gradient(100deg,#4A0F18,#2A1215 60%,#191414);border:1px solid #6E2A30;border-left:4px solid var(--honey);border-radius:14px;padding:12px 14px;color:var(--cream);font-family:var(--display);font-size:20px}
+.wsech .svg{color:var(--honey)}.wsech span{flex:1}.wsech b{font:700 12px var(--body);color:var(--night);background:var(--honey);border-radius:999px;padding:2px 9px}
+.hscroll{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin}
+.wtile{flex:none;width:132px;scroll-snap-align:start;background:var(--night-2);border:1px solid var(--line);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:8px;text-align:left;color:var(--cream);cursor:pointer;font:inherit}
+.wtile.on{border-color:var(--honey);box-shadow:inset 0 0 0 1px var(--honey)}
+.wthumb,.wtic{width:100%;aspect-ratio:1;max-width:100%;border-radius:12px;overflow:hidden;background:radial-gradient(90% 80% at 50% 30%,#2A1416,#0D0A0A);display:grid;place-items:center;color:var(--honey)}
+.wthumb img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}.wthumb img.ok{opacity:1}
+.wtt{font-size:13px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.wdet{background:var(--night-2);border:1px solid rgba(200,161,90,.45);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.wdet strong{font-family:var(--display);font-size:20px;font-weight:500}
+.cmt{background:var(--night);border-radius:12px;padding:10px 12px;font-size:14px;color:var(--cream);display:flex;flex-direction:column;gap:4px;border-left:3px solid var(--muted)}
+.cmt.gold{border-left-color:var(--honey)}
+.wtt .lvd{width:7px;height:7px;margin-right:5px}
+.wtic.sm{width:56px;flex:none;aspect-ratio:1}
+.shitem{display:flex;gap:12px;align-items:flex-start}.shitem strong{font-family:var(--display);font-size:18px;font-weight:500}.shitem p{font-size:14px;margin-top:2px}
+.mystery{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:18px;border-radius:16px;background:radial-gradient(90% 90% at 50% 20%,#4A0F18,#191414);color:var(--honey)}
+.mystery strong{color:var(--cream);font-family:var(--display);font-size:20px;font-weight:500}
+.toyimg{display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}.toyimg.ok{opacity:1}.cgt .toyimg,.wtic.sm .toyimg{width:auto;height:auto;border-radius:6px}
+.toybig canvas{display:block;border-radius:12px}
+.bdxban{display:flex;align-items:center;gap:12px;width:100%;margin:22px 0 10px;padding:14px 16px;border-radius:14px;border:1px solid #5a1d24;background:linear-gradient(135deg,#1c0d10,#2a1014);color:var(--cream);text-align:left;cursor:pointer;font:inherit}
+.bdxban>span{flex:1;display:flex;flex-direction:column;gap:2px}.bdxban>span>span{font-size:13px;opacity:.75}.bdxban>b{font-size:22px;color:var(--honey);font-weight:400}.bdxban.on{border-color:var(--honey)}
+.gdgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:640px){.gdgrid{grid-template-columns:repeat(3,1fr)}}
+.gdtile{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--night-2);border:1px solid var(--line);border-radius:16px;padding:14px;color:var(--cream);font:inherit;cursor:pointer;min-height:130px}
+.gdtile .ic{color:var(--honey);display:flex}.gdtile strong{font-size:15px;line-height:1.2}.gdtile>span:last-child{font-size:12.5px;color:var(--muted);line-height:1.35}
+.gdhead{display:flex;gap:14px;align-items:center}.gdhead .ic{color:var(--honey);display:flex;flex:none;width:52px;height:52px;border-radius:14px;background:var(--night-2);border:1px solid var(--line);align-items:center;justify-content:center}.gdhead h2{margin:0}.gdhead p{margin:4px 0 0}
+.pvbox{position:relative;height:340px;overflow:hidden;border-radius:18px;border:1px solid var(--line);background:var(--night);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.pvbox::after{content:"";position:absolute;inset:auto 0 0 0;height:70px;background:linear-gradient(transparent,var(--night))}
+.pvbox.soon{height:120px;display:grid;place-items:center}.pvbox.soon::after{display:none}
+.pvin{width:161.3%;transform:scale(.62);transform-origin:0 0;pointer-events:none;padding:22px}
+.pvin .screen{min-height:0}
+.gdlist{list-style:none;padding:0;margin:0;display:grid;gap:10px}.gdlist li{display:flex;gap:10px;align-items:flex-start;line-height:1.45}.gdlist li .svg{color:var(--honey);flex:none;margin-top:3px}
+.gdgame{background:var(--night-2);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px}.gdgh{display:flex;gap:10px;align-items:center}.gdgame p{margin:0;line-height:1.5;font-size:14.5px}.gdgame .pvbox{height:280px}
+.chseg{grid-template-columns:repeat(2,1fr)!important}@media(min-width:640px){.chseg{grid-template-columns:repeat(4,1fr)!important}}
+.tile.wide1{grid-column:1/-1}
+.chgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}@media(min-width:640px){.chgrid{grid-template-columns:repeat(3,1fr)}}
+.chtile{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--night-2);border:1.5px solid var(--line);border-radius:16px;padding:8px;color:var(--cream);font:inherit;cursor:pointer}
+.chtile.on{border-color:var(--honey);background:#22180f}.chtile .wthumb,.chtile .wtic{width:100%;aspect-ratio:4/3}
+.chck{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--honey);color:#1a1210;display:grid;place-items:center}
+.chd{font-size:12px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.sema{display:flex;gap:8px;justify-content:center;margin:6px 0}.sema span{padding:8px 14px;border-radius:999px;font-weight:700;font-size:13px}.sg{background:#1f4d2e;color:#bff0cc}.sy{background:#5a4a12;color:#ffe9a6}.sr{background:#5a1820;color:#ffc9cf}
+.chips.wrap{flex-wrap:wrap;overflow:visible}
+details.bdl{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px}details.bdl summary{cursor:pointer;font-weight:600;color:var(--cream);list-style-position:inside}details.bdl[open]{border-color:var(--honey)}details.bdl .rbody{margin-top:10px}details.bdl p{margin:0;line-height:1.55}
+.ynlist{display:grid;gap:8px}.ynrow{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--night-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.ynrow strong{font-size:14px;font-weight:600}.ynrow>div:first-child{display:flex;gap:8px;align-items:center}
+.yn{display:flex;gap:4px;flex:none}.ynb{border:1px solid var(--line);background:var(--night);color:var(--muted);border-radius:8px;padding:6px 9px;font:inherit;font-size:12.5px;cursor:pointer}
+.ynb.y[aria-pressed=true]{background:#1f4d2e;color:#d8f5e0;border-color:#2f7a48}.ynb.m[aria-pressed=true]{background:#5a4a12;color:#fff0c2;border-color:#8a7020}.ynb.n[aria-pressed=true]{background:#5a1820;color:#ffd6db;border-color:#8a2632}
+.regbox{background:var(--night-2);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:14px}.regbox.love{border-color:#5a1d24;background:linear-gradient(160deg,#1e0f12,var(--night-2))}
+.regh{display:flex;gap:12px;align-items:flex-start}.regh .svg{color:var(--honey);flex:none;margin-top:2px}.regh strong{display:block;font-size:17px}.regh span{font-size:13.5px;color:var(--muted);line-height:1.45}
+.agechk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:var(--cream);cursor:pointer}.agechk input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--honey)}.agechk a{color:var(--honey)}
+.real .protonote{display:none}
+.chwho{display:grid;gap:8px}.chwr{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:center}.chwr .opt{padding:10px}
+.chday{background:var(--night-2);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px}.chday.done{border-color:var(--honey)}
+.chdh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.chdh strong{font-size:17px;margin-right:auto}
+.chitems{display:grid;gap:6px}.chit{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--night)}.chit .svg{color:var(--honey);flex:none}.chit span{flex:1;font-size:14.5px}
+.ctag{font-size:11px;color:var(--honey);border:1px solid var(--line);border-radius:6px;padding:1px 5px;margin-right:4px}
+.chpick{max-height:none}.seg-b .cnt{font-weight:400;opacity:.7;font-size:11px}
+.cmrow{display:flex;gap:8px}.cmrow input{flex:1;min-width:0}
+.lvmsg{text-align:left;background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:var(--cream);font:inherit;font-size:15px;line-height:1.45;cursor:pointer}.lvmsg.on{border-color:var(--honey);background:#2a1a12}
+.lvcard{background:var(--night-2);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:8px}.lvcard.them{border-left:3px solid #C42F3E}.lvcard.me{border-left:3px solid var(--honey)}.lvcard p{margin:0;font-size:16px;line-height:1.5}.lvcard small{color:var(--muted)}
+.toybig{display:grid;place-items:center;color:var(--honey);padding:10px;border-radius:16px;background:radial-gradient(90% 80% at 50% 30%,#2A1416,#0D0A0A)}
+.wtt.long{-webkit-line-clamp:5;font-size:13px;font-weight:500}
+.wtile{position:relative}.wtile.intray{border-color:var(--blush)}
+.trayck{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--blush);color:var(--cream);display:grid;place-items:center;font-size:12px;font-weight:700}
+.traybar{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--cream);color:var(--night);border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 8px 30px rgba(0,0,0,.5);font-weight:700;z-index:5}
+.traybar span{display:inline-flex;gap:8px;align-items:center}
+.ptitle{font-family:var(--display);font-size:20px;font-weight:500}
+.opt strong{font-size:15px}
+.cgban{display:flex;gap:12px;align-items:center;text-align:left;background:linear-gradient(120deg,#3A1418,#191414);border:1px solid rgba(200,161,90,.5);border-radius:18px;padding:14px 16px;color:var(--cream);cursor:pointer;font:inherit}
+.cgban .svg{color:var(--honey)}.cgban>span{display:flex;flex-direction:column;gap:2px}.cgban strong{font-family:var(--display);font-size:19px;font-weight:500}.cgban span span{font-size:13px;color:var(--muted)}
+.cgt{display:inline-flex;align-items:center;gap:10px}.cgt .svg{color:var(--honey)}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tagc{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--cream);border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--night-2)}
+.tagc.gold{color:var(--honey);border-color:rgba(200,161,90,.5)}
+.chip .cnt{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--line);font-size:11px;color:var(--cream)}
+.chip.dim{opacity:.5}
+.mrows{display:grid;gap:7px;margin-top:6px;max-width:300px}
+.mrow{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;color:var(--muted)}
+.bol{display:flex;gap:6px}
+.bol i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line)}
+.bol i.on{background:var(--cream);border-color:var(--cream)}
+.bol.her i.on{background:#C42F3E;border-color:#C42F3E;box-shadow:0 0 6px rgba(196,47,62,.55)}
+.bol.him i.on{background:#B9B0AC;border-color:#B9B0AC}
+.bol.int i.on{background:var(--honey);border-color:var(--honey)}
+.mrows.big{gap:10px;max-width:none}.mrows.big .mrow{font-size:14px}.mrows.big .bol i{width:13px;height:13px}
+.pcard{flex-direction:row;gap:14px;align-items:flex-start}
+.thumb{position:relative;flex:none;width:112px;aspect-ratio:4/3;max-width:100%;border-radius:14px;overflow:hidden;background:radial-gradient(90% 80% at 50% 30%,#2A1416,#0D0A0A);border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
+.thumb img.ok{opacity:1}
+.t3d{position:absolute;left:6px;bottom:6px;display:inline-flex;gap:3px;align-items:center;font-size:10px;font-weight:700;color:var(--honey);background:rgba(13,10,10,.7);border-radius:6px;padding:2px 5px}
+.pbody{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.catline{color:var(--honey);display:flex;align-items:center;gap:6px}
+.posdetail,.pinfo{display:flex;flex-direction:column;gap:18px}
+#view.narrow{max-width:460px;margin:0 auto;width:100%}
+#view.mid{max-width:720px;margin:0 auto;width:100%}
+@media (min-width:900px){
+  .grid{grid-template-columns:repeat(4,1fr)}
+  .plist{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .pcard{flex-direction:column}
+  .thumb{width:100%}
+  .posdetail{display:grid;grid-template-columns:1.15fr 1fr;gap:32px;align-items:start}
+  .stage{height:520px;position:sticky;top:20px}
+  h1{font-size:60px}
+}
+@media (min-width:600px) and (max-width:899px){.plist{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.pcard{flex-direction:column}.thumb{width:100%}}
+@media (prefers-reduced-motion:reduce){.screen,.dots.err,.rec.live{animation:none}.thumb img{transition:none}}
+</style>
+
+<div class="app">
+  <div class="top">
+    <div class="mark" id="mark">Entre <b>Nós</b></div>
+    <div class="lang" role="group" aria-label="Idioma">
+      <button type="button" data-lang="pt" aria-pressed="true">PT</button>
+      <button type="button" data-lang="es" aria-pressed="false">ES</button>
+    </div>
+  </div>
+  <main id="view"></main>
+  <div class="protonote">
+    <span id="pnote">Protótipo · pular para:</span>
+    <button type="button" data-go="welcome">Início</button>
+    <button type="button" data-go="lock">Tela de PIN</button>
+    <button type="button" data-go="partner">Convite (visão dele)</button>
+    <button type="button" data-go="home">Página inicial</button>
+    <button type="button" data-go="mgame">Jogos grátis</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="poses.js"></script>
+<script src="posdata.js"></script>
+<script src="poshow.js"></script>
+<script src="wishdata.js"></script>
+<script src="gamedata.js"></script>
+<script src="contentdata.js"></script>
+<script src="toy3d.js"></script>
+<script src="toyhow.js"></script>
+<script>
+const ICON={
+ ask:'<path d="M4 5h16v11H9l-5 4z"/><path d="M10 9.2a2 2 0 1 1 2.8 1.8c-.5.3-.8.7-.8 1.3"/><circle cx="12" cy="14" r=".4"/>',
+ wish:'<path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13"/><path d="M12 7c-2-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3-2-5 1"/>',
+ friday:'<path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/><path d="M8 14h3v3H8z"/>',
+ games:'<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="15" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="9" cy="15" r="1"/>',
+ diary:'<path d="M6 4h10a3 3 0 0 1 3 3v13H9a3 3 0 0 1-3-3z"/><path d="M6 17a3 3 0 0 1 3-3h10M10 8h5"/>',
+ pos:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>',
+ know:'<path d="M12 20c-4 0-7-3-7-7 3 0 5 1 7 4 2-3 4-4 7-4 0 4-3 7-7 7z"/><path d="M12 17c-2-3-2-7 0-11 2 4 2 8 0 11z"/>',
+ talk:'<path d="M3 5h12v8H7l-4 3z"/><path d="M9 15v1h8l4 3V9h-4"/>',
+ fore:'<path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><path d="M18 15l.8 1.9 1.9.8-1.9.8L18 20.4l-.8-1.9-1.9-.8 1.9-.8z"/>',
+ heat:'<path d="M12 21c-4 0-6-3-6-6 0-4 4-6 4-10 3 2 4 4 4 6 1-1 2-2 2-3 2 2 2 4 2 7 0 3-2 6-6 6z"/>',
+ bdsm:'<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+ toys:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
+ acc:'<circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+ bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+ lock:'<path d="M6 11h12v9H6z"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+ mail:'<path d="M3 6h18v12H3z"/><path d="M3 7l9 6 9-6"/>',
+ fem:'<circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/>',
+ male:'<circle cx="10" cy="14" r="5"/><path d="M13.5 10.5 20 4M15 4h5v5"/>',
+ both:'<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>',
+ compass:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+ mic:'<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+ rec:'<circle cx="12" cy="12" r="5" fill="currentColor"/>',
+ rot:'<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4h-4"/>'
+};
+const ic=(k,sz=22)=>`<svg class="svg" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]||''}</svg>`;
+const TOUR_IC=['ask','compass','both','lock'];
+const T = {
+pt:{
+  brand:['Entre','Nós'], proto:'Protótipo · pular para:', jump:['Início','Tela de PIN','Convite (visão dele)','Página inicial'],
+  w_eyebrow:'Só pra vocês dois', w_title:'Aqui não existe <em>pergunta boba.</em>',
+  w_lead:'Um cantinho seguro pra se conhecer, conversar sem vergonha e reacender a relação a dois.',
+  w_new:'Já assinei, criar minha conta', w_login:'Já tenho conta', w_buy:'Ainda não assinei',
+  s_eyebrow:'Passo 1 de 3', s_title:'Vamos criar <em>sua conta</em>',
+  name:'Como quer ser chamada(o)?', name_ph:'Seu apelido', email:'Seu e-mail (o da compra)', email_ph:'voce@email.com', pemail:'E-mail do seu amor', pemail_ph:'Ele recebe o convite aqui', pem_hint:'A assinatura vale pros dois. Ele cria a senha dele pelo convite.', i_sent:e=>`Também mandamos o convite pro e-mail dele: ${e}`,
+  pass:'Senha', pass_ph:'Mínimo 6 caracteres', iam:'Eu sou', woman:'Mulher', man:'Homem',
+  iam_hint:'Serve pra escolher em qual mural você responde as perguntas da comunidade. Ninguém vê.',
+  next:'Continuar', err_fill:'Preencha apelido, os dois e-mails, senha e escolha mulher ou homem.',
+  p_eyebrow:'Passo 2 de 3', p_title:'Crie seu <em>PIN</em>', p_lead:'4 números pra abrir o app. Assim ninguém entra se pegar seu celular.',
+  p_confirm:'Confirme o PIN', p_wrong:'Os PINs não batem. Tente de novo.', del:'apagar',
+  t_eyebrow:'Passo 3 de 3', skip:'Pular', tnext:'Próximo', tdone:'Entendi',
+  tour:[
+    ['🤫','Pergunte sem vergonha','Mande sua dúvida anônima pras mulheres ou pros homens. Ninguém sabe que foi você.'],
+    ['🧭','Aprenda junto','Posições em 3D, preliminares, brinquedos e muito mais, com explicação clara e sem julgamento.'],
+    ['💞','Do casal','Lista de desejos secreta, jogos e o quadro “O que teremos na sexta?”. Tudo pensado pros dois.'],
+    ['🔒','Discreto','Nome neutro no celular, PIN pra abrir e nada aparece na fatura com nome estranho.']
+  ],
+  i_title:'Convide <em>seu amor</em>', i_lead:'Ele entra de graça com a sua assinatura e vocês passam a dividir a área do casal.',
+  i_link:'Link de convite', copy:'Copiar', copied:'Link copiado ✓', copy_fail:'Selecione o link e copie',
+  i_msg_t:'Mensagem pronta pra mandar:', i_msg:(n)=>`Amor, achei um app só nosso 💕\nÉ discreto e tem coisas pra gente fazer junto. Entra por aqui:\n`,
+  i_wa:'Copiar mensagem pro WhatsApp', i_later:'Convidar depois', msg_copied:'Mensagem copiada. É só colar no WhatsApp ✓',
+  l_title:'Bem-vinda de volta', l_lead:'Digite seu PIN', l_forgot:'Esqueci o PIN',
+  pa_eyebrow:'Você recebeu um convite', pa_title:(n)=>`<em>${n}</em> te chamou pro Entre Nós`,
+  pa_lead:'Um espaço discreto, só de vocês dois. Você não paga nada: entra pela assinatura dela.',
+  pa_btn:'Aceitar e criar meu login', pa_no:'Agora não',
+  h_hi:(n)=>`Oi, ${n}`, h_sub:'O que vocês querem descobrir hoje?',
+  h_wait:'Esperando seu amor entrar', h_wait2:'Toque pra reenviar o convite', h_ok:'Vocês estão conectados', h_ok2:'A área do casal está liberada',
+  h_main:'Pra começar', h_couple:'Do casal', h_learn:'Aprender', h_more:'Conta',
+  soon:'Essa parte vem nas próximas telas do protótipo ✨', bell:'3 novidades: desafio da semana, resposta da comunidade e dica nova',
+  tiles:{
+    ask:['🤫','Pergunte sem vergonha','Anônimo · mulheres ou homens'],
+    wish:['🎁','Lista de desejos','Tudo que você quer testar'],
+    games:['','Sala de jogos','Cenário, verdade ou desafio e mais'],
+    diary:['📖','Diário das posições','O que fizemos, nota e o que achamos'],
+    pos:['🧍','Posições em 3D','Gire e veja de todo ângulo'],
+    know:['🌸','Se conhecer','Corpo, orgasmo, o que atrapalha'],
+    talk:['💬','Conversar','Provocações e desejos revelados'],
+    fore:['🕯️','Preliminares','Pra ela e pra ele'],
+    heat:['🔥','Esquentar a relação','Surpresas dos dois lados'],
+    bdsm:['🚦','BDSM com segurança','Limites, semáforo, cuidado'],
+    toys:['🧸','Brinquedos','Guia e meus brinquedos'],
+    acc:['⚙️','Minha conta','PIN, idioma, assinatura']
+  },
+  g2:{room:'Sala de jogos', wlTitle:'Lista de <em>desejos</em>', wlTabs:['Minha lista','Deu match'], pickTitle:'Qual desejo você quer revelar?', pickHint:'Toque no item pra levar pra conversa.', tkReady:'Pronto pra revelar:', tkChange:'Trocar',
+    wlNote:'Coloque aqui tudo do app que você quer testar: posições, preliminares, brinquedos, BDSM e ideias. Só você vê. Você escolhe o que revelar na conversa.',
+    secs:{pos:'Posições',pre:'Preliminares',toys:'Brinquedos',bdsm:'BDSM',ideas:'Ideias e clima'}, empty:'Sua lista está vazia. Enquanto navega pelo app, toque em “Adicionar à lista de desejos” no que quiser testar.',
+    reveal:'Revelar na conversa', remove:'Tirar da lista', removed:'Saiu da sua lista', see3d:'Ver em 3D', matchLead:'Isso está na lista dos dois. Ninguém precisa ter vergonha: vocês dois querem.', noMatch:'Ainda não tem nada em comum nas listas. Continuem adicionando!', talkAbout:'Conversar sobre isso', addLead:'Marque as ideias que você quer pôr na sua lista. Pode marcar e desmarcar à vontade.',
+    tkTitle:'Conversar', tkLead:'Aqui vocês falam do que querem fazer. As mensagens se apagam sozinhas em 24 horas.', tkTease:'Provocar', tkReveal:'Revelar um desejo', tkPh:'Escreva uma mensagem…', tkSend:'Enviar',
+    tkRevealLead:'Escolha um item da sua lista de desejos pra revelar:', tkRevealEmpty:'Sua lista de desejos está vazia. Adicione itens primeiro.', tkRevealMsg:'Sempre tive vontade de testar isso…', tkRevealMsgPh:'Escreva junto, se quiser…', tkRevealSend:'Revelar', tkWishTag:'Desejo revelado', tkTeaseTag:'Provocação', tkCancel:'Cancelar',
+    dyTitle:'Diário das <em>posições</em>', dyTabs:['Minhas','Compartilhado'], dyEmpty:'Quando vocês fizerem uma posição, toquem em “Já fizemos” nela e ela aparece aqui.', dyNotePh:'O que funcionou, o que não funcionou pra você…', dyShare:'Compartilhar com seu parceiro', dyShared:'Compartilhado ✓', dySharedToast:'Compartilhado com seu amor 💞', dyOpen:'Abrir posição', dyYou:'Você', dyThem:'Seu amor', dySharedEmpty:'Nada compartilhado ainda.', dyRate:'Sua nota', dyCmtPh:'Comente (só uma vez)…', dyCmtBtn:'Comentar', dyCmtYou:'Seu comentário', dyCmtThem:'Comentário do seu amor', dyCmtSent:'Comentário enviado 💬', dyTheyCmt:'Seu amor comentou no diário 💬'},
+  w:{title:'Lista de <em>desejos</em>', back:'← Voltar', tabs:['Responder','Deu match','Fim de semana'],
+    secret:'Só você vê o que marca. Seu amor nunca vê os seus “não” nem o que só você quer.', q:'Quero', t:'Talvez', n:'Não', of:(a,b)=>`${a} de ${b}`,
+    catDone:'Você respondeu tudo desse tema ✓', own:'Escrever uma ideia minha', ownPh:'Ex.: café da manhã na cama depois', ownSend:'Mandar pra lista dele',
+    ownSent:'Sua ideia entrou na lista do seu amor, sem dizer quem escreveu 💌', matchT:'Vocês dois querem', talkT:'Vale conversar', talkHint:'Um quer e o outro talvez.',
+    noMatch:'Ainda não tem match. Respondam mais ideias!', toFriday:'Pro quadro da sexta', sentFriday:'Foi pro quadro “O que teremos na sexta?” 📅', see3d:'Ver em 3D',
+    wkTitle:'Jogo do fim de semana', wkLead:'Sexta, sábado e domingo chega uma rodada nova, com aviso no celular. Cada um responde sozinho e, quando os dois terminam, abre o plano da noite.',
+    wkToday:'Sexta · jogo novo pra hoje', wkStart:'Começar a rodada', wkWait:'Pronto! Esperando seu amor terminar…', wkPlan:'O plano de vocês pra hoje',
+    wkNone:'Hoje não deu match. Que tal conversar sobre os “talvez”?', wkAgain:'Jogar de novo (exemplo)', partnerDone:'Seu amor terminou a rodada 🔥', answered:n=>`${n} respondidas`, homeWk:'Toque pra jogar com seu amor'},
+  mg:{title:'Jogo do <em>Match</em>', free:'Grátis · 3 jogos pra experimentar', lead:'Convide quem você quiser pra jogar com você, cada um no seu celular: cenários, verdade ou desafio, provocações e o plano da noite.',
+    mood:'Qual o clima da noite?', name:'Seu nome ou apelido', namePh:'Como a pessoa te conhece', start:'Criar meu jogo', errName:'Escreva seu nome.', openRoom:'Entrar na sala de jogos',
+    linkT:'Mande este link pra pessoa', copy:'Copiar', copied:'Link copiado ✓', msg:'Mensagem pronta:', msgTxt:n=>`${n} te chamou pra um jogo a dois 🔥 Cada um escolhe sozinho e só aparece o que os dois querem:\n`,
+    copyMsg:'Copiar mensagem', msgCopied:'Mensagem copiada ✓', preview:'Ver como a pessoa recebe', left:n=>`Restam ${n} de 3`,
+    invTitle:n=>`<em>${n}</em> te convidou para um jogo +18 a dois`, invLead:'Cada um responde sozinho. Só aparece o que os dois quiserem. Ninguém vê o seu “não”.',
+    age:'Confirmo que tenho 18 anos ou mais', join:'Quero jogar', decline:'Não, obrigado', report:'Bloquear e denunciar', declined:'Tudo bem. Ninguém vai saber que você recusou.',
+    reported:'Convite bloqueado e denunciado.', ageReq:'Confirme que você tem 18 anos ou mais.', playLead:'Responda com sinceridade. Ninguém vê o que você marcar.',
+    resT:'Deu match! 🔥', resLead:'É isso que vocês dois querem pra essa noite:', resNone:'Dessa vez não deu match. Que tal outro clima?',
+    cta:'Gostou? No Entre Nós completo tem 60 posições em 3D, a lista de desejos e um jogo novo todo fim de semana.', ctaBtn:'Conhecer o Entre Nós', again:'Jogar de novo',
+    limit:'Você usou os 3 jogos grátis desta semana. Assine o Entre Nós pra jogar sem limite.', welcomeBtn:'Jogar grátis: Jogo do Match'},
+  p:{title:'Posições <em>em 3D</em>', back:'← Voltar', lead:'Gire o boneco com o dedo e veja cada posição de todos os ângulos.', from:'De onde vêm', all:'Todas',
+    cats:['Pra ela','Pra ele','Pros dois'], pHer:'Prazer dela', pHim:'Prazer dele', inten:'Intensidade', open3d:'Ver em 3D', howT:'Como fazer', lvls:['Iniciante','Intermediária','Avançada'], allLv:'Todos os níveis', level:'Nível', newTag:'Nova da semana', count:n=>`${n} posições · uma nova toda semana`, note:'“Favorece” vale pra maioria. Cada corpo é um: o diário do casal vai mostrar o que funciona pra vocês.',
+    stim:'Pra ela', effort:'Esforço', inti:'Intimidade', need:'Precisa de', none:'Só a cama', fromOne:'Vem de', her:'Dica pra ela', him:'Dica pra ele',
+    drag:'Arraste pra girar', she:'ela', he:'ele', done:'Já fizemos', doneOn:'Fizemos ✓', addWish:'Adicionar à lista de desejos', inWish:'Na sua lista de desejos ✓', addedWish:'Foi pra sua lista de desejos 🎁', removedWish:'Saiu da sua lista de desejos',
+    doneToast:'Foi pro diário das posições ⭐ Dê sua nota lá.', openDiary:'Abrir no diário',
+    empty:'Nenhuma posição dessa fonte nesse tópico. Tente outro tópico.', no3d:'O boneco 3D não carregou. Verifique a internet e abra de novo.'},
+  q:{title:'Pergunte <em>sem vergonha</em>', back:'← Voltar', tabs:['Perguntar','Ajudar','Minhas'],
+    anon:'Anônimo: ninguém vê seu nome, e-mail ou perfil.', your:'Sua pergunta', ph:'Escreva sua dúvida aqui… pode perguntar qualquer coisa.',
+    who:'Quem vai responder?', boxF:'Mulheres', boxM:'Homens', boxB:'Ambos', boxHint:'Em “Ambos”, mulheres e homens podem responder.',
+    rec:'Gravar áudio', recLimit:'Áudio de no máximo 30 segundos.', recMax:'Chegou a 30 segundos. Seu áudio está pronto.', recStop:'Parar', recDone:s=>`Áudio de 0:${s} pronto`, recDel:'Apagar áudio',
+    voiceWarn:'Lembrete: sua voz pode ser reconhecida. Se preferir, escreva.',
+    send:'Enviar pergunta anônima', errQ:'Escreva ou grave sua pergunta e escolha quem vai responder.', sent:'Pergunta enviada 💌 Você recebe aviso quando responderem.',
+    muralF:'Mural das mulheres', muralM:'Mural dos homens', muralHint:'Ajude quem perguntou. Com 3 respostas a pergunta sai do mural.', rules:'Respeito, sem julgamento e nada explícito.',
+    of3:n=>`${n} de 3 respostas`, answer:'Responder', report:'Denunciar', reported:'Denúncia enviada. Vamos revisar.',
+    ansPh:'Sua resposta, com carinho e sem julgamento…', sendAns:'Enviar resposta', errA:'Escreva ou grave sua resposta.',
+    ansSent:'Resposta enviada. Obrigada por ajudar ❤️', ansDone:'Com essa, a pergunta completou 3 respostas e saiu do mural ✓',
+    muralEmpty:'Nenhuma pergunta esperando agora. Volte mais tarde ✨',
+    toF:'pras mulheres', toM:'pros homens', toB:'pra ambos', waiting:'Aguardando', answered:'Respondida', team:'Resposta da equipe',
+    helped:'Isso me ajudou ❤️', thanks:'Obrigada! Quem respondeu vai saber que ajudou.', audio:'Áudio',
+    mineEmpty:'Você ainda não fez nenhuma pergunta.', playing:'▶ Tocando o áudio (no app de verdade)',
+    more:'↩ Pedir mais detalhes', moreLeft:n=>`pode pedir mais ${n} ${n===1?'vez':'vezes'}`, moreNone:'Você já usou as 2 perguntas extras dessa resposta',
+    morePh:'O que ficou faltando? Pergunte pra mesma pessoa…', moreSend:'Enviar pra mesma pessoa', moreSent:'Enviado pra mesma pessoa, anônimo 💌',
+    moreGot:'Quem te respondeu mandou mais detalhes 💌', you:'Você perguntou', them:'Resposta',
+    fuTitle:'Pediram mais detalhes pra você', fuHint:'Quem perguntou quer entender melhor a sua resposta.', fuQ:'Pergunta', fuYour:'Sua resposta', fuAsk:'Pergunta extra',
+    fuPh:'Complete sua resposta…', fuSend:'Enviar complemento', fuSent:'Enviado. Obrigada por ajudar de novo ❤️',
+    rq:'Como escrever sua pergunta', ra:'Como escrever sua resposta', ok:'Pode assim', no:'Assim não',
+    exQok:'Nunca consegui gozar com meu marido, só quando estou sozinha. O que pode estar acontecendo?',
+    exQno:'Meu marido só pensa em [palavrão] e eu nunca [palavrão]. Me chama no (31) 9 8765-4321',
+    exAok:'Isso é muito comum. Muitas mulheres precisam de estímulo no clitóris, não só da penetração. Conversa com ele e explorem juntos, com calma.',
+    exAno:'Isso é [palavrão], amiga. Me segue no @fulana ou entra em www.site.com que eu te explico',
+    rules1:'Pode falar de tudo e usar os nomes das partes do corpo: vagina, clitóris, pênis, seio, orgasmo, gozar, penetração.',
+    rules2:'Sem palavrão e sem descrição vulgar.', rules3:'Não aceita link, @ de rede social nem telefone.', rules4:'Cada pergunta recebe até 3 respostas, por texto ou áudio de até 30 segundos. Você pode pedir mais detalhes pra quem respondeu no máximo 2 vezes.',
+    errLink:'Não é permitido link, @ ou telefone. Tire e tente de novo.', errBad:'Sem palavrão, por favor. Pode usar os nomes das partes do corpo normalmente.',
+    s:{m1:'É normal não sentir quase nada só com a penetração?', m2:'Como falar pro meu marido que eu quero mais preliminar sem ele ficar chateado?', m3:'Nunca usei brinquedo. Por qual eu começo?',
+      h1:'Como eu sei se ela está gostando de verdade?', h2:'Ela tem vergonha de deixar a luz acesa. Como deixar ela à vontade?', h3:'Termino rápido demais. Tem como melhorar?',
+      y1:'Homem repara em celulite e peito caído?', y1a:'Sinceramente? Na hora a gente nem pensa nisso. O que chama atenção é ver você à vontade e gostando.',
+      y1team:'A maioria dos homens está muito mais preocupada em agradar do que em reparar no corpo. Quanto mais à vontade você fica, melhor pros dois.',
+      t1:'E se a vergonha de deixar a luz acesa for minha?', t2:'Começa com meia luz: uma luminária ou uma vela. Aos poucos você vai ficando à vontade, e ele vai adorar.',
+      auto:'Claro! O mais importante é ir com calma e conversar antes. Comece por algo pequeno e vão ajustando juntos, do jeito que for bom pros dois.',
+      f1q:'Como pedir pro meu marido ir mais devagar?', f1a:'Fala na hora, com carinho: “assim, mais devagar, tá bom”. Homem gosta de saber que está agradando.', f1x:'E se ele ficar chateado e achar que é crítica?',
+      b1:'Com que frequência é normal um casal ter relação?',
+      y2:'Como eu sei se já tive um orgasmo?', y2a:'Eu também tinha essa dúvida! Quando acontece é como uma onda que cresce e depois relaxa o corpo todo. Se ficou na dúvida, vale explorar com calma, sem pressa.'}
+  }
+},
+es:{
+  brand:['Entre','Nosotros'], proto:'Prototipo · ir a:', jump:['Inicio','Pantalla de PIN','Invitación (vista de él)','Página principal'],
+  w_eyebrow:'Solo para ustedes dos', w_title:'Aquí no existen <em>preguntas tontas.</em>',
+  w_lead:'Un rincón seguro para conocerse, hablar sin vergüenza y reavivar la relación en pareja.',
+  w_new:'Ya me suscribí, crear mi cuenta', w_login:'Ya tengo cuenta', w_buy:'Todavía no me suscribí',
+  s_eyebrow:'Paso 1 de 3', s_title:'Vamos a crear <em>tu cuenta</em>',
+  name:'¿Cómo quieres que te llamemos?', name_ph:'Tu apodo', email:'Correo de la compra', email_ph:'tu@correo.com', pemail:'Correo de tu amor', pemail_ph:'Recibirá la invitación aquí', pem_hint:'La suscripción vale para los dos. Él crea su contraseña con la invitación.', i_sent:e=>`También enviamos la invitación a su correo: ${e}`,
+  pass:'Contraseña', pass_ph:'Mínimo 6 caracteres', iam:'Soy', woman:'Mujer', man:'Hombre',
+  iam_hint:'Sirve para elegir en qué muro respondes las preguntas de la comunidad. Nadie lo ve.',
+  next:'Continuar', err_fill:'Completa apodo, los dos correos, contraseña y elige mujer u hombre.',
+  p_eyebrow:'Paso 2 de 3', p_title:'Crea tu <em>PIN</em>', p_lead:'4 números para abrir la app. Así nadie entra si toma tu móvil.',
+  p_confirm:'Confirma el PIN', p_wrong:'Los PIN no coinciden. Inténtalo otra vez.', del:'borrar',
+  t_eyebrow:'Paso 3 de 3', skip:'Saltar', tnext:'Siguiente', tdone:'Entendido',
+  tour:[
+    ['🤫','Pregunta sin vergüenza','Envía tu duda anónima a las mujeres o a los hombres. Nadie sabe que fuiste tú.'],
+    ['🧭','Aprendan juntos','Posturas en 3D, preliminares, juguetes y mucho más, explicado con claridad y sin juicios.'],
+    ['💞','De la pareja','Lista de deseos secreta, juegos y el tablero “¿Qué tendremos el viernes?”. Todo pensado para los dos.'],
+    ['🔒','Discreto','Nombre neutro en el móvil, PIN para abrir y nada raro en el extracto de la tarjeta.']
+  ],
+  i_title:'Invita a <em>tu amor</em>', i_lead:'Entra gratis con tu suscripción y comparten el área de la pareja.',
+  i_link:'Enlace de invitación', copy:'Copiar', copied:'Enlace copiado ✓', copy_fail:'Selecciona el enlace y cópialo',
+  i_msg_t:'Mensaje listo para enviar:', i_msg:(n)=>`Amor, encontré una app solo nuestra 💕\nEs discreta y tiene cosas para hacer juntos. Entra por aquí:\n`,
+  i_wa:'Copiar mensaje para WhatsApp', i_later:'Invitar después', msg_copied:'Mensaje copiado. Solo pégalo en WhatsApp ✓',
+  l_title:'Bienvenida de nuevo', l_lead:'Escribe tu PIN', l_forgot:'Olvidé el PIN',
+  pa_eyebrow:'Recibiste una invitación', pa_title:(n)=>`<em>${n}</em> te invitó a Entre Nosotros`,
+  pa_lead:'Un espacio discreto, solo de ustedes dos. No pagas nada: entras con su suscripción.',
+  pa_btn:'Aceptar y crear mi acceso', pa_no:'Ahora no',
+  h_hi:(n)=>`Hola, ${n}`, h_sub:'¿Qué quieren descubrir hoy?',
+  h_wait:'Esperando que tu amor entre', h_wait2:'Toca para reenviar la invitación', h_ok:'Están conectados', h_ok2:'El área de la pareja está activa',
+  h_main:'Para empezar', h_couple:'De la pareja', h_learn:'Aprender', h_more:'Cuenta',
+  soon:'Esta parte llega en las próximas pantallas del prototipo ✨', bell:'3 novedades: reto de la semana, respuesta de la comunidad y consejo nuevo',
+  tiles:{
+    ask:['🤫','Pregunta sin vergüenza','Anónimo · mujeres u hombres'],
+    wish:['🎁','Lista de deseos','Todo lo que quieres probar'],
+    games:['','Sala de juegos','Escena, verdad o reto y más'],
+    diary:['📖','Diario de posturas','Hecho, nota y qué me pareció'],
+    pos:['🧍','Posturas en 3D','Gira y mira desde todo ángulo'],
+    know:['🌸','Conocerse','Cuerpo, orgasmo, qué lo dificulta'],
+    talk:['💬','Hablar','Provocaciones y deseos revelados'],
+    fore:['🕯️','Preliminares','Para ella y para él'],
+    heat:['🔥','Encender la relación','Sorpresas de los dos lados'],
+    bdsm:['🚦','BDSM con seguridad','Límites, semáforo, cuidado'],
+    toys:['🧸','Juguetes','Guía y mis juguetes'],
+    acc:['⚙️','Mi cuenta','PIN, idioma, suscripción']
+  },
+  g2:{room:'Sala de juegos', wlTitle:'Lista de <em>deseos</em>', wlTabs:['Mi lista','Match'], pickTitle:'¿Qué deseo quieres revelar?', pickHint:'Toca el elemento para llevarlo a la conversación.', tkReady:'Listo para revelar:', tkChange:'Cambiar',
+    wlNote:'Pon aquí todo lo de la app que quieres probar: posturas, preliminares, juguetes, BDSM e ideas. Solo tú lo ves. Tú eliges qué revelar en la conversación.',
+    secs:{pos:'Posturas',pre:'Preliminares',toys:'Juguetes',bdsm:'BDSM',ideas:'Ideas y ambiente'}, empty:'Tu lista está vacía. Mientras navegas por la app, toca “Añadir a la lista de deseos” en lo que quieras probar.',
+    reveal:'Revelar en la conversación', remove:'Quitar de la lista', removed:'Salió de tu lista', see3d:'Ver en 3D', matchLead:'Esto está en la lista de los dos. Nadie tiene que sentir vergüenza: los dos lo quieren.', noMatch:'Todavía no hay nada en común en las listas. ¡Sigan añadiendo!', talkAbout:'Hablar de esto', addLead:'Marca las ideas que quieres poner en tu lista. Puedes marcar y desmarcar cuando quieras.',
+    tkTitle:'Hablar', tkLead:'Aquí hablan de lo que quieren hacer. Los mensajes se borran solos en 24 horas.', tkTease:'Provocar', tkReveal:'Revelar un deseo', tkPh:'Escribe un mensaje…', tkSend:'Enviar',
+    tkRevealLead:'Elige un elemento de tu lista de deseos para revelar:', tkRevealEmpty:'Tu lista de deseos está vacía. Añade elementos primero.', tkRevealMsg:'Siempre tuve ganas de probar esto…', tkRevealMsgPh:'Escribe algo, si quieres…', tkRevealSend:'Revelar', tkWishTag:'Deseo revelado', tkTeaseTag:'Provocación', tkCancel:'Cancelar',
+    dyTitle:'Diario de <em>posturas</em>', dyTabs:['Mías','Compartido'], dyEmpty:'Cuando hagan una postura, toquen “Ya lo hicimos” en ella y aparecerá aquí.', dyNotePh:'Qué funcionó, qué no funcionó para ti…', dyShare:'Compartir con tu pareja', dyShared:'Compartido ✓', dySharedToast:'Compartido con tu amor 💞', dyOpen:'Abrir postura', dyYou:'Tú', dyThem:'Tu amor', dySharedEmpty:'Nada compartido todavía.', dyRate:'Tu nota', dyCmtPh:'Comenta (solo una vez)…', dyCmtBtn:'Comentar', dyCmtYou:'Tu comentario', dyCmtThem:'Comentario de tu amor', dyCmtSent:'Comentario enviado 💬', dyTheyCmt:'Tu amor comentó en el diario 💬'},
+  w:{title:'Lista de <em>deseos</em>', back:'← Volver', tabs:['Responder','Match','Fin de semana'],
+    secret:'Solo tú ves lo que marcas. Tu amor nunca ve tus “no” ni lo que solo tú quieres.', q:'Quiero', t:'Quizás', n:'No', of:(a,b)=>`${a} de ${b}`,
+    catDone:'Respondiste todo este tema ✓', own:'Escribir una idea mía', ownPh:'Ej.: desayuno en la cama después', ownSend:'Enviar a su lista',
+    ownSent:'Tu idea entró en la lista de tu amor, sin decir quién la escribió 💌', matchT:'Los dos quieren', talkT:'Vale la pena hablarlo', talkHint:'Uno quiere y el otro quizás.',
+    noMatch:'Todavía no hay match. ¡Respondan más ideas!', toFriday:'Al tablero del viernes', sentFriday:'Se fue al tablero “¿Qué tendremos el viernes?” 📅', see3d:'Ver en 3D',
+    wkTitle:'Juego del fin de semana', wkLead:'Viernes, sábado y domingo llega una ronda nueva, con aviso en el móvil. Cada uno responde solo y, cuando los dos terminan, se abre el plan de la noche.',
+    wkToday:'Viernes · juego nuevo para hoy', wkStart:'Empezar la ronda', wkWait:'¡Listo! Esperando a que tu amor termine…', wkPlan:'El plan de hoy',
+    wkNone:'Hoy no hubo match. ¿Qué tal hablar de los “quizás”?', wkAgain:'Jugar otra vez (ejemplo)', partnerDone:'Tu amor terminó la ronda 🔥', answered:n=>`${n} respondidas`, homeWk:'Toca para jugar con tu amor'},
+  mg:{title:'Juego del <em>Match</em>', free:'Gratis · 3 juegos para probar', lead:'Invita a quien quieras a jugar contigo, cada uno en su móvil: escenas, verdad o reto, provocaciones y el plan de la noche.',
+    mood:'¿Qué ambiente para esta noche?', name:'Tu nombre o apodo', namePh:'Como te conoce esa persona', start:'Crear mi juego', errName:'Escribe tu nombre.', openRoom:'Entrar en la sala de juegos',
+    linkT:'Envía este enlace a la persona', copy:'Copiar', copied:'Enlace copiado ✓', msg:'Mensaje listo:', msgTxt:n=>`${n} te invitó a un juego para dos 🔥 Cada uno elige solo y solo aparece lo que los dos quieren:\n`,
+    copyMsg:'Copiar mensaje', msgCopied:'Mensaje copiado ✓', preview:'Ver cómo lo recibe la persona', left:n=>`Quedan ${n} de 3`,
+    invTitle:n=>`<em>${n}</em> te invitó a un juego +18 para dos`, invLead:'Cada uno responde solo. Solo aparece lo que los dos quieran. Nadie ve tu “no”.',
+    age:'Confirmo que tengo 18 años o más', join:'Quiero jugar', decline:'No, gracias', report:'Bloquear y denunciar', declined:'Está bien. Nadie sabrá que rechazaste.',
+    reported:'Invitación bloqueada y denunciada.', ageReq:'Confirma que tienes 18 años o más.', playLead:'Responde con sinceridad. Nadie ve lo que marcas.',
+    resT:'¡Hubo match! 🔥', resLead:'Esto es lo que los dos quieren para esta noche:', resNone:'Esta vez no hubo match. ¿Qué tal otro ambiente?',
+    cta:'¿Te gustó? En Entre Nosotros completo hay 60 posturas en 3D, la lista de deseos y un juego nuevo cada fin de semana.', ctaBtn:'Conocer Entre Nosotros', again:'Jugar otra vez',
+    limit:'Usaste los 3 juegos gratis de esta semana. Suscríbete a Entre Nosotros para jugar sin límite.', welcomeBtn:'Jugar gratis: Juego del Match'},
+  p:{title:'Posturas <em>en 3D</em>', back:'← Volver', lead:'Gira el muñeco con el dedo y mira cada postura desde todos los ángulos.', from:'De dónde vienen', all:'Todas',
+    cats:['Para ella','Para él','Los dos'], pHer:'Placer de ella', pHim:'Placer de él', inten:'Intensidad', open3d:'Ver en 3D', howT:'Cómo hacerlo', lvls:['Principiante','Intermedia','Avanzada'], allLv:'Todos los niveles', level:'Nivel', newTag:'Nueva de la semana', count:n=>`${n} posturas · una nueva cada semana`, note:'“Favorece” vale para la mayoría. Cada cuerpo es distinto: el diario de la pareja mostrará lo que les funciona.',
+    stim:'Para ella', effort:'Esfuerzo', inti:'Intimidad', need:'Necesitan', none:'Solo la cama', fromOne:'Viene de', her:'Consejo para ella', him:'Consejo para él',
+    drag:'Arrastra para girar', she:'ella', he:'él', done:'Ya lo hicimos', doneOn:'Hecho ✓', addWish:'Añadir a la lista de deseos', inWish:'En tu lista de deseos ✓', addedWish:'Se fue a tu lista de deseos 🎁', removedWish:'Salió de tu lista de deseos',
+    doneToast:'Se fue al diario de posturas ⭐ Pon tu nota allí.', openDiary:'Abrir en el diario',
+    empty:'No hay posturas de esta fuente en este tema. Prueba otro tema.', no3d:'El muñeco 3D no cargó. Revisa la conexión y vuelve a abrir.'},
+  q:{title:'Pregunta <em>sin vergüenza</em>', back:'← Volver', tabs:['Preguntar','Ayudar','Mías'],
+    anon:'Anónimo: nadie ve tu nombre, correo ni perfil.', your:'Tu pregunta', ph:'Escribe tu duda aquí… puedes preguntar lo que sea.',
+    who:'¿Quién va a responder?', boxF:'Mujeres', boxM:'Hombres', boxB:'Ambos', boxHint:'En “Ambos”, pueden responder mujeres y hombres.',
+    rec:'Grabar audio', recLimit:'Audio de máximo 30 segundos.', recMax:'Llegaste a 30 segundos. Tu audio está listo.', recStop:'Parar', recDone:s=>`Audio de 0:${s} listo`, recDel:'Borrar audio',
+    voiceWarn:'Recuerda: tu voz puede ser reconocida. Si prefieres, escribe.',
+    send:'Enviar pregunta anónima', errQ:'Escribe o graba tu pregunta y elige quién va a responder.', sent:'Pregunta enviada 💌 Te avisamos cuando respondan.',
+    muralF:'Muro de las mujeres', muralM:'Muro de los hombres', muralHint:'Ayuda a quien preguntó. Con 3 respuestas la pregunta sale del muro.', rules:'Respeto, sin juicios y nada explícito.',
+    of3:n=>`${n} de 3 respuestas`, answer:'Responder', report:'Denunciar', reported:'Denuncia enviada. La vamos a revisar.',
+    ansPh:'Tu respuesta, con cariño y sin juicios…', sendAns:'Enviar respuesta', errA:'Escribe o graba tu respuesta.',
+    ansSent:'Respuesta enviada. Gracias por ayudar ❤️', ansDone:'Con esta, la pregunta completó 3 respuestas y salió del muro ✓',
+    muralEmpty:'No hay preguntas esperando ahora. Vuelve más tarde ✨',
+    toF:'para mujeres', toM:'para hombres', toB:'para ambos', waiting:'Esperando', answered:'Respondida', team:'Respuesta del equipo',
+    helped:'Esto me ayudó ❤️', thanks:'¡Gracias! Quien respondió sabrá que te ayudó.', audio:'Audio',
+    mineEmpty:'Todavía no hiciste ninguna pregunta.', playing:'▶ Reproduciendo el audio (en la app real)',
+    more:'↩ Pedir más detalles', moreLeft:n=>`puedes pedir ${n} ${n===1?'vez':'veces'} más`, moreNone:'Ya usaste las 2 preguntas extra de esta respuesta',
+    morePh:'¿Qué faltó? Pregúntale a la misma persona…', moreSend:'Enviar a la misma persona', moreSent:'Enviado a la misma persona, anónimo 💌',
+    moreGot:'Quien te respondió envió más detalles 💌', you:'Preguntaste', them:'Respuesta',
+    fuTitle:'Te pidieron más detalles', fuHint:'Quien preguntó quiere entender mejor tu respuesta.', fuQ:'Pregunta', fuYour:'Tu respuesta', fuAsk:'Pregunta extra',
+    fuPh:'Completa tu respuesta…', fuSend:'Enviar complemento', fuSent:'Enviado. Gracias por ayudar otra vez ❤️',
+    rq:'Cómo escribir tu pregunta', ra:'Cómo escribir tu respuesta', ok:'Así sí', no:'Así no',
+    exQok:'Nunca he llegado al orgasmo con mi marido, solo cuando estoy sola. ¿Qué puede estar pasando?',
+    exQno:'Mi marido solo piensa en [palabrota] y yo nunca [palabrota]. Escríbeme al 612 345 678',
+    exAok:'Es muy común. Muchas mujeres necesitan estimulación en el clítoris, no solo la penetración. Habla con él y exploren juntos, con calma.',
+    exAno:'Eso es una [palabrota], amiga. Sígueme en @fulana o entra en www.sitio.com y te explico',
+    rules1:'Puedes hablar de todo y usar los nombres de las partes del cuerpo: vagina, clítoris, pene, pecho, orgasmo, penetración.',
+    rules2:'Sin palabrotas ni descripciones vulgares.', rules3:'No se aceptan enlaces, @ de redes sociales ni teléfonos.', rules4:'Cada pregunta recibe hasta 3 respuestas, por texto o audio de hasta 30 segundos. Puedes pedir más detalles a quien respondió como máximo 2 veces.',
+    errLink:'No se permiten enlaces, @ ni teléfonos. Quítalos e inténtalo de nuevo.', errBad:'Sin palabrotas, por favor. Puedes usar los nombres de las partes del cuerpo con normalidad.',
+    s:{m1:'¿Es normal casi no sentir nada solo con la penetración?', m2:'¿Cómo le digo a mi marido que quiero más preliminares sin que se moleste?', m3:'Nunca usé un juguete. ¿Por cuál empiezo?',
+      h1:'¿Cómo sé si ella lo está disfrutando de verdad?', h2:'A ella le da vergüenza dejar la luz encendida. ¿Cómo hago que se sienta cómoda?', h3:'Termino demasiado rápido. ¿Se puede mejorar?',
+      y1:'¿Los hombres se fijan en la celulitis y el pecho caído?', y1a:'¿Sinceramente? En ese momento ni lo pensamos. Lo que llama la atención es verte cómoda y disfrutando.',
+      y1team:'La mayoría de los hombres está mucho más preocupada por complacer que por fijarse en el cuerpo. Cuanto más cómoda estés, mejor para los dos.',
+      t1:'¿Y si la vergüenza de dejar la luz encendida es mía?', t2:'Empieza con luz tenue: una lámpara o una vela. Poco a poco te vas sintiendo cómoda, y a él le va a encantar.',
+      auto:'¡Claro! Lo más importante es ir con calma y hablarlo antes. Empiecen por algo pequeño y vayan ajustando juntos, como les guste a los dos.',
+      f1q:'¿Cómo le pido a mi marido que vaya más despacio?', f1a:'Díselo en el momento, con cariño: “así, más despacio, me gusta”. A los hombres les gusta saber que lo están haciendo bien.', f1x:'¿Y si se molesta y lo toma como una crítica?',
+      b1:'¿Con qué frecuencia es normal que una pareja tenga relaciones?',
+      y2:'¿Cómo sé si ya tuve un orgasmo?', y2a:'¡Yo también tenía esa duda! Cuando pasa es como una ola que crece y después relaja todo el cuerpo. Si te quedaste con la duda, vale la pena explorar con calma, sin prisa.'}
+  }
+}};
+
+let lang='pt';
+const S={name:'Taynara',email:'',gender:'f',pin:'',pin1:'',pinStage:1,tour:0,partner:true,screen:'home',
+  askTab:'ask',draft:'',box:null,rec:false,recSecs:0,audio:null,replying:-1,ansDraft:'',ansAudio:false,
+  mural:{f:[{k:'m1',n:1},{k:'m2',n:0},{k:'m3',n:2}],m:[{k:'h1',n:0},{k:'h2',n:1},{k:'h3',n:2}],b:[{k:'b1',n:1}]},
+  mine:[{k:'y1',box:'m',open:true,helped:false,answers:[{type:'text',k:'y1a',thread:[{who:'me',k:'t1'},{who:'them',k:'t2'}]},{type:'audio',secs:'24',thread:[]},{type:'team',k:'y1team'}]},
+        {k:'y2',box:'f',open:false,helped:false,answers:[{type:'text',k:'y2a',thread:[]}]}],
+  fuOpen:null,fuDraft:'',frDraft:'',followIn:[{q:'f1q',a:'f1a',x:'f1x'}]};
+let recTimer=null,viewer=null;
+S.pcat='f';S.porig=null;S.plv=0;
+S.wtab='mine';S.wl=new Set(['pos:cowgirl','pos:lotus','w:p1','w:m2','w:t2','w:s1']);S.prew='f';S.preb='day';S.tray=[];S.compose=false;S.trMsg='';S.trMode='ask';S.cg={sel:new Set(),contact:'wa',ct:'',msg:'',done:false};S.pexp=null;S.toyw='f';S.texp=null;S.scDraft={};S.sh=[{keys:['pre:dm4','pre:dm7','pre:mo4'],from:'them',mode:'ask',msg:'Hoje eu quero tudo isso 😏'},{key:'pre:fo1',from:'them',mode:'sur',open:false},{key:'toy:vring',from:'them',mode:'share'},{key:'toy:wand',from:'me',mode:'share'}];S.shc={3:{them:'Esse eu topo 😏'}};S.wl.add('toy:suction');S.wl.add('pre:fs2');
+S.dpc={missionary:'Foi a melhor noite do mês ❤️'};S.dmc={};S.dcDraft={};S.dtab='mine';S.diary={missionary:{rating:5,note:'Olho no olho, amei.',shared:true},cowgirl:{rating:4,note:'',shared:false}};S.tk={mode:null,sel:null,msgs:[{who:'them',kind:'tease',text:'Hoje eu tô com uma vontade… adivinha de quê?'}]};S.tkDraft='';S.tkRevDraft='';S.wcat='pre';S.wans={p1:'q',m2:'q',o1:'q',l1:'t',g1:'q',p3:'q',t2:'t'};S.ownDraft='';
+S.wk={stage:'ready',items:['p1','o3','g3','l2','m3','t2','s4','p5','l5','g1'],i:0,ans:{}};
+S.mg={stage:'intro',mood:null,name:'',items:[],i:0,ans:{},age:false,left:3};
+S.free=false;S.gdraft='';S.gm={game:null,left:3,scene:0,chat:[],turn:'me',ideas:false,plan:{sel:{},stage:'pick'},tod:{lv:1,kind:null,i:0,skip:true,theirs:null,stage:'pick'},tease:{sel:0,sent:false}};const NEW_ID='table';S.pid=null;S.done={};
+try{const l=localStorage.getItem('en_lang'); if(l==='es'||l==='pt') lang=l;}catch(e){}
+const t=()=>T[lang];
+const view=document.getElementById('view');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const inviteLink=()=>window.inviteLinkReal?window.inviteLinkReal():'entrenos.app/convite/'+(S.name||'amor').toLowerCase().normalize('NFD').replace(/[^a-z]/g,'').slice(0,10)+'-7K2Q';
+
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2600)}
+async function copyText(txt,ok){try{await navigator.clipboard.writeText(txt);toast(ok)}catch(e){toast(t().copy_fail)}}
+
+function chrome(){
+  const L=t();
+  document.getElementById('mark').innerHTML=`${L.brand[0]} <b>${L.brand[1]}</b>`;
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===lang));
+  document.getElementById('pnote').textContent=L.proto;
+  document.querySelectorAll('[data-go]').forEach((b,i)=>{if(L.jump[i])b.textContent=L.jump[i]});
+  document.documentElement.lang=lang==='pt'?'pt-BR':'es';
+}
+
+function steps(n){return `<div class="steps" aria-hidden="true">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>`}
+
+function pinPad(){
+  const L=t();const k=[1,2,3,4,5,6,7,8,9];
+  return `<div class="dots" id="dots">${[0,1,2,3].map(i=>`<span class="${i<S.pin.length?'f':''}"></span>`).join('')}</div>
+  <div class="pad">${k.map(n=>`<button type="button" class="key" data-k="${n}">${n}</button>`).join('')}
+  <span></span><button type="button" class="key" data-k="0">0</button><button type="button" class="key sm" data-k="del">${L.del}</button></div>`;
+}
+
+const R={
+welcome(){const L=t();return `<section class="screen">
+  <div class="eyebrow">${L.w_eyebrow}</div>
+  <h1>${L.w_title}</h1>
+  <p class="lead">${L.w_lead}</p>
+  <div class="spacer"></div>
+  <div class="btns">
+    <button type="button" class="btn pri" data-act="signup">${L.w_new}</button>
+    <button type="button" class="btn ghost" data-act="login">${L.w_login}</button>
+    <button type="button" class="btn link" data-act="buy">${L.w_buy}</button>
+    <button type="button" class="btn gold" data-act="mg">${ic('both',18)} ${t().mg.welcomeBtn}</button>
+  </div></section>`},
+signup(){const L=t();return `<section class="screen">
+  ${steps(1)}<div class="eyebrow">${L.s_eyebrow}</div><h2>${L.s_title}</h2>
+  <form id="f" novalidate class="btns" style="gap:14px">
+    <div class="field"><label for="nm">${L.name}</label><input id="nm" autocomplete="nickname" placeholder="${L.name_ph}" value="${esc(S.name)}"></div>
+    <div class="field"><label for="em">${L.email}</label><input id="em" type="email" autocomplete="email" placeholder="${L.email_ph}" value="${esc(S.email)}"></div>
+    <div class="field"><label for="pem">${L.pemail}</label><input id="pem" type="email" autocomplete="off" placeholder="${L.pemail_ph}" value="${esc(S.pemail||'')}"><span class="hint">${L.pem_hint}</span></div>
+    <div class="field"><label for="pw">${L.pass}</label><input id="pw" type="password" autocomplete="new-password" placeholder="${L.pass_ph}"></div>
+    <div class="field"><label>${L.iam}</label>
+      <div class="opts" role="group" aria-label="${L.iam}">
+        <button type="button" class="opt" data-g="f" aria-pressed="${S.gender==='f'}"><span class="ic">${ic('fem',26)}</span>${L.woman}</button>
+        <button type="button" class="opt" data-g="m" aria-pressed="${S.gender==='m'}"><span class="ic">${ic('male',26)}</span>${L.man}</button>
+      </div><span class="hint">${L.iam_hint}</span></div>
+    <button class="btn pri" type="submit">${L.next}</button>
+  </form></section>`},
+pin(){const L=t();return `<section class="screen center">
+  <div style="align-self:stretch">${steps(2)}</div><div class="eyebrow">${L.p_eyebrow}</div>
+  <h2>${S.pinStage===1?L.p_title:L.p_confirm}</h2><p>${L.p_lead}</p>${pinPad()}</section>`},
+lock(){const L=t();return `<section class="screen center">
+  <div class="spacer"></div><div class="bigic">${ic('lock',40)}</div><h2>${L.l_title}</h2><p>${L.l_lead}</p>${pinPad()}
+  <button type="button" class="btn link" data-act="forgot">${L.l_forgot}</button><div class="spacer"></div></section>`},
+tour(){const L=t();const s=L.tour[S.tour];const last=S.tour===L.tour.length-1;return `<section class="screen">
+  ${steps(3)}<div style="display:flex;justify-content:space-between;align-items:center"><div class="eyebrow">${L.t_eyebrow}</div>
+  <button type="button" class="btn link" style="width:auto" data-act="tourskip">${L.skip}</button></div>
+  <div class="tour"><div class="bigic">${ic(TOUR_IC[S.tour],44)}</div><h2>${s[1]}</h2><p class="lead" style="color:var(--muted)">${s[2]}</p></div>
+  <div class="tdots" aria-hidden="true">${L.tour.map((_,i)=>`<i class="${i===S.tour?'on':''}"></i>`).join('')}</div>
+  <div class="spacer"></div>
+  <button type="button" class="btn pri" data-act="tournext">${last?L.tdone:L.tnext}</button></section>`},
+invite(){const L=t();const link=inviteLink();return `<section class="screen">
+  <div class="bigic">${ic('mail',38)}</div><h2>${L.i_title}</h2><p>${L.i_lead}</p>${S.pemail?`<div class="note">${ic('mail',16)} ${L.i_sent(esc(S.pemail))}</div>`:''}
+  <div class="invite">
+    <label>${L.i_link}</label>
+    <div class="linkbox"><code id="lk">${link}</code><button type="button" class="copy" data-act="copylink">${L.copy}</button></div>
+    <label>${L.i_msg_t}</label>
+    <div class="msg">${esc(L.i_msg(S.name))}${link}</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="btns"><button type="button" class="btn gold" data-act="copymsg">${L.i_wa}</button>
+  <button type="button" class="btn ghost" data-act="later">${L.i_later}</button></div></section>`},
+partner(){const L=t();return `<section class="screen">
+  <div class="eyebrow">${L.pa_eyebrow}</div><h1 style="font-size:40px">${L.pa_title(esc(S.name||'Taynara'))}</h1>
+  <p class="lead">${L.pa_lead}</p>
+  <div class="couple"><span class="av a">${esc((S.name||'T')[0].toUpperCase())}</span><span class="av b">?</span>
+  <div><strong>${esc(S.name||'Taynara')} + ?</strong><small>${L.tiles.wish[1]} · ${L.tiles.games[1]}</small></div></div>
+  <div class="spacer"></div>
+  <div class="btns"><button type="button" class="btn pri" data-act="accept">${L.pa_btn}</button>
+  <button type="button" class="btn link" data-act="welcome">${L.pa_no}</button></div></section>`},
+home(){const L=t();const tl=k=>{const x=L.tiles[k];return `<button type="button" class="tile" data-tile="${k}"><span class="ic">${ic(k)}</span><strong>${x[1]}</strong><span>${x[2]}</span></button>`};
+  return `<section class="screen">
+  <div class="hello"><div><h2>${L.h_hi(esc(S.name||'Taynara'))}</h2><p>${L.h_sub}</p></div>
+  <button type="button" class="bell" data-act="bell" aria-label="Novidades">${ic('bell',20)}<b></b></button></div>
+  <button type="button" class="couple" data-act="${S.partner?'none':'resend'}" style="text-align:left;color:inherit;font:inherit;cursor:pointer;width:100%">
+    <span class="av a">${esc((S.name||'T')[0].toUpperCase())}</span><span class="av b ${S.partner?'ok':''}">${S.partner?'♥':'?'}</span>
+    <div><strong>${S.partner?L.h_ok:L.h_wait}</strong><small>${S.partner?L.h_ok2:L.h_wait2}</small></div></button>
+  <div class="sec-t">${L.h_main}</div>
+  <div class="grid"><button type="button" class="tile hero" data-tile="ask"><span class="ic">${ic('ask',26)}</span><strong>${L.tiles.ask[1]}</strong><span>${L.tiles.ask[2]}</span></button>${L.tiles.guide?tl('guide').replace('class="tile"','class="tile wide1"'):''}</div>
+  <button type="button" class="wkban" data-act="gowk"><span class="tagc gold">${ic('games',14)} ${L.w.wkToday}</span><strong>${L.g2.room}</strong><span>${L.w.homeWk}</span></button>
+  <div class="sec-t">${L.h_couple}</div>
+  <div class="grid">${['wish','games','diary','talk'].map(tl).join('')}</div>
+  <div class="sec-t">${L.h_learn}</div>
+  <div class="grid">${['pos','fore','heat','bdsm','toys'].map(tl).join('')}${tl('acc')}</div>
+  </section>`}
+};
+
+function rulesBox(kind,open){const Q=t().q;const a=kind==='q';
+  return `<details class="rules" ${open?'open':''}><summary>${a?Q.rq:Q.ra}</summary><div class="rbody">
+  <ul class="rlist"><li>${Q.rules1}</li><li>${Q.rules2}</li><li>${Q.rules3}</li>${a?`<li>${Q.rules4}</li>`:''}</ul>
+  <div class="ex ok"><b>✓ ${Q.ok}</b>${a?Q.exQok:Q.exAok}</div>
+  <div class="ex no"><b>✕ ${Q.no}</b><span>${a?Q.exQno:Q.exAno}</span></div></div></details>`}
+const BAD=/\b(porra|caralho|buceta|xoxota|piroca|pica|rola|foder|fode|fodendo|puta|puto|merda|cu|viado|coño|joder|polla|mierda|follar|verga|pendejo|cabr[oó]n)\b/i;
+function checkText(x){if(/(https?:\/\/|www\.|\.(com|net|br|es|app|me)\b|@\w)/i.test(x)||/(\d[\s().-]*){8,}/.test(x))return 'link';if(BAD.test(x))return 'bad';return null}
+R.ask=function(){
+  const L=t(),Q=L.q,ids=['ask','help','mine'];
+  const qt=x=>x.text||(x.k?Q.s[x.k]:'');
+  const tabs=Q.tabs.map((n,i)=>`<button type="button" class="seg-b" data-askt="${ids[i]}" aria-pressed="${S.askTab===ids[i]}">${n}</button>`).join('');
+  let body='';
+  if(S.askTab==='ask'){
+    const recUI=S.rec?`<button type="button" class="rec live" data-act="recstop">${ic('rec',14)} <span id="rect">0:${String(S.recSecs).padStart(2,'0')} / 0:30</span> · ${Q.recStop}</button>`
+      :S.audio?`<button type="button" class="rec on" data-act="none">${ic('mic',16)} ${Q.recDone(S.audio)}</button><button type="button" class="btn link" style="width:auto" data-act="recdel">${Q.recDel}</button>`
+      :`<button type="button" class="rec" data-act="rec">${ic('mic',16)} ${Q.rec}</button>`;
+    body=`<div class="note">${Q.anon}</div>${rulesBox('q',true)}
+    <div class="field"><label for="qt">${Q.your}</label><textarea id="qt" rows="5" placeholder="${Q.ph}">${esc(S.draft)}</textarea></div>
+    <div class="row">${recUI}</div><p class="hint">${Q.recLimit}</p>${(S.rec||S.audio)?`<p class="hint">${Q.voiceWarn}</p>`:''}
+    <div class="field"><label>${Q.who}</label><div class="opts three" role="group" aria-label="${Q.who}">
+      <button type="button" class="opt" data-box="f" aria-pressed="${S.box==='f'}"><span class="ic">${ic('fem',24)}</span>${Q.boxF}</button>
+      <button type="button" class="opt" data-box="m" aria-pressed="${S.box==='m'}"><span class="ic">${ic('male',24)}</span>${Q.boxM}</button>
+      <button type="button" class="opt" data-box="b" aria-pressed="${S.box==='b'}"><span class="ic">${ic('both',24)}</span>${Q.boxB}</button></div><span class="hint">${Q.boxHint}</span></div>
+    <button type="button" class="btn pri" data-act="sendq">${Q.send}</button>`;
+  } else if(S.askTab==='help'){
+    const g=S.gender||'f';const list=[...S.mural[g].map((x,i)=>({x,arr:g,i})),...S.mural.b.map((x,i)=>({x,arr:'b',i}))];
+    body=S.followIn.map((f,i)=>`<article class="qcard fu"><div class="sec-t" style="margin:0;color:var(--honey)">${Q.fuTitle}</div><p class="hint">${Q.fuHint}</p>
+      <div class="bub"><small>${Q.fuQ}</small>${esc(Q.s[f.q])}</div><div class="bub"><small>${Q.fuYour}</small>${esc(Q.s[f.a])}</div>
+      <div class="bub me"><small>${Q.fuAsk}</small>${esc(Q.s[f.x])}</div>
+      <textarea id="fr" rows="3" placeholder="${Q.fuPh}">${esc(S.frDraft)}</textarea>
+      <button type="button" class="btn pri" data-act="fureply" data-i="${i}">${Q.fuSend}</button></article>`).join('')+
+    `<div><div class="sec-t">${S.gender==='m'?Q.muralM:Q.muralF}</div><p class="hint">${Q.muralHint} ${Q.rules}</p></div>`+
+    (list.length?list.map(({x,arr,i},idx)=>`<article class="qcard">${arr==='b'?`<span class="tag" style="align-self:flex-start">${Q.boxB}</span>`:''}<p class="qtext">“${esc(qt(x))}”</p>
+      <div class="meter"><span class="pips" aria-hidden="true">${[0,1,2].map(j=>`<i class="${j<x.n?'on':''}"></i>`).join('')}</span><small>${Q.of3(x.n)}</small></div>
+      ${S.replying===arr+i?`${rulesBox('a',false)}<textarea id="at" rows="3" placeholder="${Q.ansPh}">${esc(S.ansDraft)}</textarea>
+        <div class="row"><button type="button" class="rec ${S.ansAudio?'on':''}" data-act="ansrec">${ic('mic',16)} ${S.ansAudio?Q.recDone('09'):Q.rec}</button></div><p class="hint">${Q.recLimit}</p>
+        <button type="button" class="btn pri" data-act="sendans" data-arr="${arr}" data-i="${i}">${Q.sendAns}</button>`
+      :`<div class="row"><button type="button" class="btn ghost sm" data-act="reply" data-arr="${arr}" data-i="${i}">${Q.answer}</button>
+        <button type="button" class="btn link" style="width:auto" data-act="report" data-arr="${arr}" data-i="${i}">${Q.report}</button></div>`}
+      </article>`).join(''):`<p class="empty">${Q.muralEmpty}</p>`);
+  } else {
+    body=S.mine.length?S.mine.map((m,i)=>{
+      const done=m.answers.length>=3||m.answers.some(a=>a.type==='team');
+      const status=done?Q.answered:`${Q.waiting} · ${Q.of3(m.answers.length)}`;
+      const text=qt(m)?`“${esc(qt(m))}”`:`${Q.audio} 0:${m.audio}`;
+      return `<article class="qcard"><button type="button" class="qhead" data-act="toggle" data-i="${i}" aria-expanded="${!!m.open}">
+        <span class="qmeta"><span class="tag ${done?'ok':''}">${status}</span><span class="to">${m.box==='m'?Q.toM:m.box==='b'?Q.toB:Q.toF}</span></span>
+        <p class="qtext">${text}</p></button>
+        ${m.open&&m.answers.length?`<div class="answers">${m.answers.map((a,j)=>{
+          const main=a.type==='audio'
+          ?`<div class="ans audio"><button type="button" class="play" data-act="play" aria-label="${Q.audio}">▶</button><span class="wave" aria-hidden="true"></span><small>0:${a.secs}</small></div>`
+          :`<div class="ans ${a.type==='team'?'team':''}">${a.type==='team'?`<span class="badge">✦ ${Q.team}</span>`:''}<p>${esc(a.text||Q.s[a.k])}</p></div>`;
+          if(a.type==='team')return main;
+          const th=a.thread||[],used=th.filter(x=>x.who==='me').length,key=i+'-'+j;
+          const bubbles=th.map(x=>`<div class="bub ${x.who==='me'?'me':''}"><small>${x.who==='me'?Q.you:Q.them}</small>${esc(x.text||Q.s[x.k])}</div>`).join('');
+          const ctl=S.fuOpen===key?`<textarea id="ft" rows="2" placeholder="${Q.morePh}">${esc(S.fuDraft)}</textarea><button type="button" class="btn pri sm" data-act="fusend" data-i="${i}" data-j="${j}">${Q.moreSend}</button>`
+            :used<2?`<button type="button" class="more" data-act="fuopen" data-i="${i}" data-j="${j}">${Q.more} · ${Q.moreLeft(2-used)}</button>`:`<span class="limit">${Q.moreNone}</span>`;
+          return main+`<div class="thread">${bubbles}${ctl}</div>`}).join('')}
+          <button type="button" class="btn ghost sm" data-act="helped" data-i="${i}" ${m.helped?'disabled':''}>${m.helped?'❤️':Q.helped}</button></div>`:''}
+      </article>`}).join(''):`<p class="empty">${Q.mineEmpty}</p>`;
+  }
+  return `<section class="screen"><button type="button" class="back" data-act="back">${Q.back}</button>
+  <h2>${Q.title}</h2><div class="seg" role="group">${tabs}</div>${body}</section>`;
+};
+
+const CATIC={f:'fem',m:'male',b:'both'};
+function mrows(x,big){const P=t().p;const r=[];
+  if(x.c!=='m')r.push([P.pHer,x.s[0],'her']);if(x.c!=='f')r.push([P.pHim,x.hm,'him']);
+  r.push([P.inten,x.it,'int'],[P.effort,x.s[1],''],[P.inti,x.s[2],'']);
+  return `<div class="mrows ${big?'big':''}">${r.map(([l,v,c])=>`<div class="mrow"><span>${l}</span><span class="bol ${c}" aria-label="${v}/5">${[1,2,3,4,5].map(i=>`<i class="${i<=v?'on':''}"></i>`).join('')}</span></div>`).join('')}</div>`}
+const THUMBS={};let thumbViewer=null;
+const TOY3={};let toyThumbV=null;
+function toyPic(k,sz){if(!window.THREE||!window.makeToyViewer)return toySvg(k,sz);return `<img class="toyimg${TOY3[k]?' ok':''}" data-toy="${k}" alt="" width="${sz}" height="${sz}" ${TOY3[k]?`src="${TOY3[k]}"`:''}>`}
+function fillToys(){const imgs=[...document.querySelectorAll('img[data-toy]:not(.ok)')];if(!imgs.length)return;let k=0;
+  const step=()=>{if(k>=imgs.length)return;const im=imgs[k++],id=im.dataset.toy;
+    if(!TOY3[id]){try{if(!toyThumbV){toyThumbV=makeToyViewer(document.createElement('div'),240,240)}toyThumbV.setToy(id,.5);TOY3[id]=toyThumbV.snapshot()}catch(e){im.outerHTML=toySvg(id,im.width);requestAnimationFrame(step);return}}
+    im.src=TOY3[id];im.classList.add('ok');requestAnimationFrame(step)};requestAnimationFrame(step)}
+function fillThumbs(){const imgs=[...document.querySelectorAll('img[data-thumb]')];if(!imgs.length||!window.THREE)return;
+  let k=0;const step=()=>{if(k>=imgs.length)return;const im=imgs[k++];const id=im.dataset.thumb;
+    if(!THUMBS[id]){try{if(!thumbViewer){const d=document.createElement('div');thumbViewer=makeViewer(d,360,270)}thumbViewer.setPose(id,.65);THUMBS[id]=thumbViewer.snapshot()}catch(e){return}}
+    im.src=THUMBS[id];im.classList.add('ok');requestAnimationFrame(step)};requestAnimationFrame(step)}
+const meterHTML=(lbl,v,cls)=>`<span class="mt ${cls||''}"><small>${lbl}</small><span class="dots5" aria-label="${v}/5">${[1,2,3,4,5].map(i=>`<i class="${i<=v?'on':''}"></i>`).join('')}</span></span>`;
+R.posl=function(){const P=t().p,lg=lang;
+  const list=POS.filter(x=>x.c===S.pcat&&(!S.plv||x.lv===S.plv));
+  const lvchips=`<div class="chips"><button type="button" class="chip" data-plv="0" aria-pressed="${!S.plv}">${P.allLv}</button>${[1,2,3].map(n=>`<button type="button" class="chip" data-plv="${n}" aria-pressed="${S.plv===n}"><span class="lvd l${n}"></span>${P.lvls[n-1]}</button>`).join('')}</div>`;
+  return `<section class="screen"><button type="button" class="back" data-act="back">${P.back}</button><h2>${P.title}</h2><p>${P.lead} <span class="count">${P.count(POS.length)}</span></p>
+  <div class="seg" role="group">${['f','m','b'].map((c,i)=>`<button type="button" class="seg-b" data-pcat="${c}" aria-pressed="${S.pcat===c}">${ic(CATIC[c],16)} ${P.cats[i]}</button>`).join('')}</div>
+  ${lvchips}
+  <p class="hint">${P.note}</p>
+  <div class="plist">${list.length?list.map(x=>`<button type="button" class="pcard" data-pid="${x.id}">
+    <span class="thumb"><img data-thumb="${x.id}" alt="" ${THUMBS[x.id]?`src="${THUMBS[x.id]}" class="ok"`:''}><span class="t3d">${ic('rot',13)} 3D</span></span>
+    <span class="pbody"><span class="po"><span class="lvd l${x.lv}"></span>${P.lvls[x.lv-1]}${x.id===NEW_ID?` · <b class="newb">${P.newTag}</b>`:''}</span><span class="pt">${x[lg][0]}${S.diary[x.id]?' <em class="dn">✓</em>':''}</span>
+    <span class="pd">${x[lg][1]}</span>${mrows(x)}</span></button>`).join(''):`<p class="empty">${P.empty}</p>`}</div></section>`};
+R.pos=function(){const P=t().p,lg=lang,x=POS.find(p=>p.id===S.pid),o=ORIGINS[x.o][lg];
+  return `<section class="screen"><button type="button" class="back" data-act="back">${P.back}</button>
+  <div class="posdetail"><div class="stage" id="stage"><span class="drag">${P.drag}</span><span class="legend"><i class="lw"></i>${P.she} <i class="lm"></i>${P.he}</span></div>
+  <div class="pinfo"><div class="tags"><span class="tagc">${ic(CATIC[x.c],14)} ${P.cats[['f','m','b'].indexOf(x.c)]}</span><span class="tagc"><span class="lvd l${x.lv}"></span>${P.lvls[x.lv-1]}</span><span class="tagc gold">${o[0]}</span>${x.id===NEW_ID?`<span class="tagc gold">${P.newTag}</span>`:''}</div>
+  <h2>${x[lg][0]}</h2>
+  <p class="lead">${x[lg][1]}</p>
+  ${(window.HOW&&HOW[x.id])?`<div class="how"><div class="sec-t">${P.howT}</div><ol>${HOW[x.id][lg].map(t=>`<li>${t}</li>`).join('')}</ol></div>`:''}
+  ${mrows(x,true)}
+  <div class="facts"><div><small>${P.need}</small>${x.need?x.need[lg==='pt'?0:1]:P.none}</div><div><small>${P.level}</small>${P.lvls[x.lv-1]}</div></div>
+  <div class="tip her"><b>${P.her}</b>${x[lg][2]}</div><div class="tip him"><b>${P.him}</b>${x[lg][3]}</div>
+  <p class="hint"><strong>${o[0]}:</strong> ${o[1]}</p>
+  <div class="btns"><button type="button" class="btn ${S.diary[x.id]?'gold':'pri'}" data-act="pdone">${S.diary[x.id]?P.doneOn:P.done}</button>
+  <button type="button" class="btn ${S.wl.has('pos:'+x.id)?'gold':'ghost'}" data-act="pwish">${ic('wish',18)} ${S.wl.has('pos:'+x.id)?P.inWish:P.addWish}</button>
+  ${S.diary[x.id]?`<button type="button" class="btn link" data-act="godiary">${P.openDiary}</button>`:''}</div></div></div></section>`};
+let toyV=null;
+function mountViewer(){if(toyV){toyV.dispose();toyV=null}
+  const ts=document.getElementById('toystage');if(ts&&window.THREE&&window.makeToyViewer){try{const w=Math.min(ts.clientWidth-20,320)||240;toyV=makeToyViewer(ts,w,Math.round(w*.85));toyV.setToy(ts.dataset.k);toyV.start()}catch(e){ts.innerHTML=toySvg(ts.dataset.k,110)}}
+  if(viewer){viewer.dispose();viewer=null}
+  if(S.screen!=='pos')return;const st=document.getElementById('stage');if(!st)return;
+  if(window.THREE&&window.makeViewer){try{viewer=makeViewer(st,st.clientWidth,st.clientHeight);viewer.setPose(S.pid,.6);viewer.start()}catch(e){st.insertAdjacentHTML('beforeend',`<p class="no3d">${t().p.no3d}</p>`)}}
+  else st.insertAdjacentHTML('beforeend',`<p class="no3d">${t().p.no3d}</p>`)}
+const WBY=Object.fromEntries(WISH.map(x=>[x.id,x]));
+const PSEED={p1:'q',m2:'q',o1:'t',l1:'q',g1:'q',p3:'q',t2:'q',o3:'q',l2:'q',m3:'q',s4:'t',p5:'q',l5:'n',g3:'q'};
+function partnerAns(id){if(PSEED[id])return PSEED[id];let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))%97;return h%4===0?'n':h%4===1?'t':'q'}
+const lgi=()=>lang==='pt'?0:1;
+function wcard(item,i,n,ctx){const W=t().w;return `<div class="wcard"><div class="wtop"><span class="po">${WCATS[item.c][lgi()]}</span><span class="hint">${W.of(i+1,n)}</span></div>
+  <p class="wtext">${item[lang]}</p><div class="wbtns"><button type="button" class="wb no" data-wa="n" data-ctx="${ctx}" data-id="${item.id}">${W.n}</button>
+  <button type="button" class="wb maybe" data-wa="t" data-ctx="${ctx}" data-id="${item.id}">${W.t}</button>
+  <button type="button" class="wb yes" data-wa="q" data-ctx="${ctx}" data-id="${item.id}">${ic('toys',16)} ${W.q}</button></div></div>`}
+function matchSplit(ids,mine){const m=[],tk=[];ids.forEach(id=>{const a=mine[id],b=partnerAns(id);if(!a||a==='n'||b==='n')return;if(a==='q'&&b==='q')m.push(id);else if(a!=='t'||b!=='t')tk.push(id)});return [m,tk]}
+const PWL=new Set(['pos:lotus','pos:doggy','w:p1','w:m2','w:t2','w:g1']);
+const PDIARY=[{id:'missionary',rating:5,note:{pt:'Também amei. Vamos repetir sábado?',es:'También me encantó. ¿Repetimos el sábado?'}},{id:'spoon',rating:4,note:{pt:'Perfeita pra domingo de manhã.',es:'Perfecta para el domingo por la mañana.'}}];
+const WSEC={pre:'pre',toys:'toys',spicy:'bdsm',pos:'pos',play:'ideas',place:'ideas',mood:'ideas'};
+function info(key){const [t0,id]=key.split(':');if(t0==='bdsm'){const x=(typeof BDP!=='undefined')&&BDP.find(p=>p.id===id);return {sec:'bdsm',title:x?x[lang][0]:id,pos:null}}if(t0==='pre'){const x=PRE.find(p=>p.id===id);return {sec:'pre',title:x?x[lang][0]:id,pos:null}}if(t0==='toy'){const x=TOYS.find(p=>p.id===id);return {sec:'toys',title:x?x[lang][0]:id,pos:null,svg:x&&x.svg}}if(t0==='pos'){const x=POS.find(p=>p.id===id);return {sec:'pos',title:x?x[lang][0]:id,pos:id}}const w=WBY[id];return {sec:WSEC[w.c],title:w[lang],pos:w.pos||null}}
+function witem(id,withBtns){const G=t().g2,key='w:'+id,x=info(key);return `<div class="witem"><div><span class="po">${G.secs[x.sec]}</span><p>${x.title}</p></div>${withBtns?`<div class="row">${x.pos?`<button type="button" class="btn ghost sm" data-act="w3d" data-pos="${x.pos}">${ic('pos',15)} ${G.see3d}</button>`:''}<button type="button" class="btn ghost sm" data-act="wtalk" data-key="${key}">${ic('talk',15)} ${G.talkAbout}</button></div>`:''}</div>`}
+function wlRow(key,mode){const G=t().g2,x=info(key);return `<div class="witem"><div><span class="po">${G.secs[x.sec]}</span><p>${x.title}</p></div><div class="row">${x.pos?`<button type="button" class="btn ghost sm" data-act="w3d" data-pos="${x.pos}">${ic('pos',15)} ${G.see3d}</button>`:''}
+  <button type="button" class="btn ghost sm" data-act="wtalk" data-key="${key}">${ic('talk',15)} ${mode==='match'?G.talkAbout:G.reveal}</button>${mode==='mine'?`<button type="button" class="btn link" style="width:auto" data-act="wrm" data-key="${key}">${G.remove}</button>`:''}</div></div>`}
+const SECIC={pos:'pos',pre:'fore',toys:'toys',bdsm:'bdsm',ideas:'heat'};
+function wtile(key){const x=info(key);return `<button type="button" class="wtile ${S.wexp===key?'on':''}" data-wexp="${key}">${x.pos?`<span class="wthumb"><img data-thumb="${x.pos}" alt="" ${THUMBS[x.pos]?`src="${THUMBS[x.pos]}" class="ok"`:''}></span>`:(x.svg?`<span class="wtic">${toyPic(x.svg,56)}</span>`:`<span class="wtic">${ic(SECIC[x.sec],28)}</span>`)}<span class="wtt">${x.title}</span></button>`}
+function wdetail(key,mode){const G=t().g2,x=info(key);return `<div class="wdet"><strong>${x.title}</strong><div class="row">${x.pos?`<button type="button" class="btn ghost sm" data-act="w3d" data-pos="${x.pos}">${ic('pos',15)} ${G.see3d}</button>`:''}
+  <button type="button" class="btn pri sm" data-act="wtalk" data-key="${key}">${ic('talk',15)} ${mode==='match'?G.talkAbout:G.reveal}</button>${mode==='mine'?`<button type="button" class="btn link" style="width:auto" data-act="wrm" data-key="${key}">${G.remove}</button>`:''}</div></div>`}
+function wsections(keys,mode){const G=t().g2;return ['pos','pre','toys','bdsm','ideas'].map(sec=>{const ks=keys.filter(k=>info(k).sec===sec);if(!ks.length)return '';
+  const open=ks.includes(S.wexp)&&mode!=='pick';return `<div class="wsec"><div class="wsech">${ic(SECIC[sec],18)}<span>${G.secs[sec]}</span><b>${ks.length}</b></div><div class="hscroll">${ks.map(wtile).join('')}</div>${open?wdetail(S.wexp,mode):''}</div>`}).join('')}
+R.wish=function(){const G=t().g2;
+  if(S.wmode==='pick'){const keys=[...S.wl];return `<section class="screen"><button type="button" class="back" data-act="back">${t().w.back}</button><h2>${G.pickTitle}</h2><p class="hint">${G.pickHint}</p>${keys.length?wsections(keys,'pick'):`<p class="empty">${G.tkRevealEmpty}</p>`}</section>`}
+  const ids=['mine','match'];if(!ids.includes(S.wtab))S.wtab='mine';
+  const tabs=G.wlTabs.map((n,i)=>`<button type="button" class="seg-b" data-wt="${ids[i]}" aria-pressed="${S.wtab===ids[i]}">${n}</button>`).join('');
+  let body='';
+  if(S.wtab==='mine'){const keys=[...S.wl];body=`<div class="note">${ic('lock',16)} ${G.wlNote}</div>${keys.length?wsections(keys,'mine'):`<p class="empty">${G.empty}</p>`}`}
+  else{const keys=[...S.wl].filter(k=>PWL.has(k));body=keys.length?`<p class="hint">${G.matchLead}</p>${wsections(keys,'match')}`:`<p class="empty">${G.noMatch}</p>`}
+  return `<section class="screen"><button type="button" class="back" data-act="back">${t().w.back}</button><h2>${G.wlTitle}</h2><div class="seg" role="group" style="grid-template-columns:1fr 1fr">${tabs}</div>${body}</section>`};
+const CT=()=>CTX[lang];const PTIC={sex:'both',oral:'heat',anal:'fore'};
+const PREBY=Object.fromEntries(PRE.map(x=>[x.id,x])),TOYBY=Object.fromEntries(TOYS.map(x=>[x.id,x]));
+function lvTag(lv){return `<span class="tagc"><span class="lvd l${lv}"></span>${CT().lv[lv-1]}</span>`}
+function shCmt(e,i){const C=CT();const c=S.shc[i]||{};
+  if(e.from==='me')return c.them?`<div class="cmt gold"><span class="po">${C.cmtThem}</span>${esc(c.them)}</div>`:'';
+  return c.me?`<div class="cmt"><span class="po">${C.cmtYou}</span>${esc(c.me)}</div>`:`<div class="row" style="flex-wrap:nowrap"><input id="sc-${i}" data-sc="${i}" placeholder="${C.cmtPh}" value="${esc(S.scDraft[i]||'')}"><button type="button" class="btn ghost sm" data-act="shcmt" data-i="${i}">${C.cmtBtn}</button></div>`}
+function shItemHTML(key){const [t0,id]=key.split(':');const isPre=t0==='pre';const x=isPre?PREBY[id]:TOYBY[id];if(!x)return '';
+  return `<div class="shitem">${isPre?`<span class="wtic sm">${ic(x.b==='day'?DTIC[x.t]:PTIC[x.t],22)}</span>`:`<span class="wtic sm">${toyPic(x.svg,34)}</span>`}<div><strong>${x[lang][0]}</strong>${x[lang][1]?`<p>${x[lang][1]}</p>`:''}</div></div>`}
+function sharedList(prefix){const C=CT();const rows=S.sh.map((e,i)=>({e,i,keys:e.keys||[e.key]})).filter(({keys})=>keys[0].startsWith(prefix)).reverse();
+  if(!rows.length)return `<p class="empty">${C.none}</p>`;
+  return rows.map(({e,i,keys})=>{const tag=e.mode==='sur'?C.modeSur:e.mode==='ask'?C.modeAsk:C.shared.replace(' ✓','');
+    const hidden=e.from==='them'&&e.mode==='sur'&&!e.open;
+    return `<div class="dcard"><div class="dhead"><span class="tagc ${e.from==='me'?'':'gold'}">${e.from==='me'?C.sentByYou:C.sentByThem}</span><span class="tagc">${tag}${keys.length>1?` · ${C.items(keys.length)}`:''}</span></div>
+    ${e.msg&&!hidden?`<p class="dnote">“${esc(e.msg)}”</p>`:''}
+    ${hidden?`<div class="mystery">${ic('wish',28)}<strong>${C.surHidden}</strong>${e.msg?`<p class="dnote">“${esc(e.msg)}”</p>`:''}<button type="button" class="btn gold sm" data-act="shopen" data-i="${i}">${C.surOpen}</button><span class="hint">${C.surWhen}</span></div>`:keys.map(shItemHTML).join('')}
+    ${e.from==='me'&&e.mode==='sur'?`<p class="hint">${C.surForThem}</p>`:''}${hidden?'':shCmt(e,i)}</div>`}).join('')}
+const DTIC={home:'heat',out:'mail',far:'talk'};
+R.pre=function(){const C=CT(),ids=['f','m','sh'],labels=[C.forHer,C.forHim,C.sharedTab];
+  const tabs=`<div class="seg" role="group">${ids.map((k,i)=>`<button type="button" class="seg-b" data-prew="${k}" aria-pressed="${S.prew===k}">${k==='f'?ic('fem',15):k==='m'?ic('male',15):ic('both',15)} ${labels[i]}</button>`).join('')}</div>`;
+  let body='';
+  if(S.prew==='sh')body=sharedList('pre:');
+  else{const day=S.preb==='day',tops=day?DAY_TOPICS:PRE_TOPICS,icn=day?DTIC:PTIC;
+    const blk=`<div class="seg" role="group" style="grid-template-columns:1fr 1fr"><button type="button" class="seg-b" data-preb="day" aria-pressed="${day}">${ic('heat',15)} ${C.dayB}</button><button type="button" class="seg-b" data-preb="act" aria-pressed="${!day}">${ic('both',15)} ${C.actB}</button></div>`;
+    body=blk+`<p class="hint">${day?C.dayLead:C.actLead}</p>`+Object.keys(tops).map(tp=>{const items=PRE.filter(x=>x.who===S.prew&&x.b===S.preb&&x.t===tp);const open=items.find(x=>x.id===S.pexp);
+    return `<div class="wsec"><div class="wsech">${ic(icn[tp],18)}<span>${tops[tp][lgi()]}</span><b>${items.length}</b></div><div class="hscroll">${items.map(x=>`<button type="button" class="wtile ${S.pexp===x.id?'on':''} ${S.tray.includes(x.id)?'intray':''}" data-pexp="${x.id}">${day?'':`<span class="wtic">${ic(icn[tp],28)}</span>`}<span class="wtt ${day?'long':''}"><span class="lvd l${x.lv}"></span>${x[lang][0]}</span>${S.tray.includes(x.id)?`<span class="trayck">✓</span>`:''}</button>`).join('')}</div>
+    ${open?`<div class="wdet"><div class="tags">${day?'':lvTag(open.lv)}</div><strong>${open[lang][0]}</strong>${open[lang][1]?`<p class="lead" style="font-size:15px">${open[lang][1]}</p>`:''}${open[lang][2]?`<div class="tip her"><b>${C.tip}</b>${open[lang][2]}</div>`:''}
+      <div class="row"><button type="button" class="btn ${S.tray.includes(open.id)?'gold':'pri'} sm" data-act="pretray">${ic('mail',15)} ${S.tray.includes(open.id)?C.inTray:C.addTray}</button>
+      <button type="button" class="btn ${S.wl.has('pre:'+open.id)?'gold':'ghost'} sm" data-act="prewish">${ic('wish',15)} ${S.wl.has('pre:'+open.id)?C.inWish:C.addWish}</button></div></div>`:''}</div>`}).join('');
+    if(S.compose&&S.tray.length)body+=`<div class="panel" id="comp"><strong class="ptitle">${C.compT} · ${C.items(S.tray.length)}</strong>${S.tray.map(id=>`<div class="witem"><p>${PREBY[id][lang][0]}</p></div>`).join('')}
+      <label for="trmsg">${C.compMsg}</label><textarea id="trmsg" rows="2" placeholder="${C.compPh}">${esc(S.trMsg)}</textarea>
+      <div class="opts"><button type="button" class="opt" data-trmode="ask" aria-pressed="${S.trMode==='ask'}"><strong>${C.compAsk}</strong><span class="hint">${C.compAskD}</span></button><button type="button" class="opt" data-trmode="sur" aria-pressed="${S.trMode==='sur'}"><strong>${C.compSur}</strong><span class="hint">${C.compSurD}</span></button></div>
+      <div class="row"><button type="button" class="btn pri" data-act="trsend">${ic('mail',16)} ${C.compGo}</button><button type="button" class="btn link" style="width:auto" data-act="trcancel">${C.compCancel}</button></div></div>`;
+  }
+  const bar=S.prew!=='sh'&&S.tray.length&&!S.compose?`<div class="traybar"><span>${ic('mail',16)} ${C.trayBar(S.tray.length)}</span><button type="button" class="btn pri sm" data-act="tropen">${C.traySend}</button></div>`:'';
+  return `<section class="screen"><button type="button" class="back" data-act="back">${t().w.back}</button><h2>${C.preTitle}</h2>${tabs}${body}${bar}</section>`};
+function toyMeters(x){const h=(typeof TOYHOW!=='undefined')&&TOYHOW[x.id];if(!h)return '';const L=TOYM[lang].m,cls=['int','her','','her'];
+  return `<div class="mrows big">${h.m.map((v,i)=>v==null?'':`<div class="mrow"><span>${L[i]}</span><span class="bol ${cls[i]}" aria-label="${v}/5">${[1,2,3,4,5].map(k=>`<i class="${k<=v?'on':''}"></i>`).join('')}</span></div>`).join('')}</div>`}
+R.toys=function(){const C=CT(),ids=['f','m','c','sh'],labels=[C.forHer,C.forHim,C.forUs,C.sharedTab];
+  const tabs=`<div class="seg" role="group" style="grid-template-columns:repeat(4,1fr)">${ids.map((k,i)=>`<button type="button" class="seg-b" data-toyw="${k}" aria-pressed="${S.toyw===k}">${labels[i]}</button>`).join('')}</div>`;
+  let body='';
+  if(S.toyw==='sh')body=sharedList('toy:');
+  const areas=w=>Object.entries(TOY_AREAS[w]).map(([ar,lb])=>{const items=TOYS.filter(x=>x.who===w&&x.a===ar);const open=items.find(x=>x.id===S.texp);
+    return `<div class="wsec"><div class="wsech">${ic('toys',18)}<span>${lb[lgi()]}</span><b>${items.length}</b></div><div class="hscroll">${items.map(x=>`<button type="button" class="wtile ${S.texp===x.id?'on':''}" data-texp="${x.id}"><span class="wtic">${toyPic(x.svg,56)}</span><span class="wtt"><span class="lvd l${x.lv}"></span>${x[lang][0]}</span></button>`).join('')}</div>
+    ${open?`<div class="wdet"><div class="toybig" id="toystage" data-k="${open.svg}">${window.THREE&&window.makeToyViewer?'':toySvg(open.svg,110)}</div><span class="hint" style="text-align:center">${C.illus}</span><div class="tags">${lvTag(open.lv)}</div><strong>${open[lang][0]}</strong>
+      ${toyMeters(open)}<div class="facts"><div><small>${C.what}</small>${open[lang][1]}</div><div><small>${C.ideal}</small>${open[lang][2]}</div></div>${((typeof TOYHOW!=='undefined')&&TOYHOW[open.id])?`<div class="how"><div class="sec-t">${TOYM[lang].how}</div><ol>${TOYHOW[open.id][lang].map(z=>`<li>${z}</li>`).join('')}</ol></div>`:`<div class="tip her"><b>${C.tip}</b>${open[lang][3]}</div>`}
+      <div class="row"><button type="button" class="btn ${S.wl.has('toy:'+open.id)?'gold':'ghost'} sm" data-act="toywish">${ic('wish',15)} ${S.wl.has('toy:'+open.id)?C.inWish:C.addWish}</button>
+      <button type="button" class="btn ${S.cg.sel.has(open.id)?'gold':'ghost'} sm" data-act="toycg">${ic('talk',15)} ${S.cg.sel.has(open.id)?C.cgIn:C.cgAdd}</button>
+      <button type="button" class="btn pri sm" data-act="toyshare">${ic('both',15)} ${S.sh.some(e=>e.from==='me'&&e.key==='toy:'+open.id)?C.shared:C.share}</button></div></div>`:''}</div>`}).join('');
+  if(S.toyw!=='sh'){const M=TOYM[lang];body=`<p class="hint">${C.toyLead}</p>`+areas(S.toyw)+`<button type="button" class="bdxban ${S.bdx?'on':''}" data-act="bdx" aria-expanded="${!!S.bdx}">${ic('lock',20)}<span><strong>${M.bdxT}</strong><span>${S.bdx?M.bdxO:M.bdxC}</span></span><b>${S.bdx?'−':'+'}</b></button>`+(S.bdx?`<div class="tip her"><b>BDSM</b>${M.bdxNote}</div>`+areas('x'):'')}
+  const cg=`<button type="button" class="cgban" data-act="gocg">${ic('talk',20)}<span><strong>${C.cgBtn}</strong><span>${S.cg.sel.size?C.cgCount(S.cg.sel.size):C.cgLead.split('.')[0]+'.'}</span></span></button>`;
+  return `<section class="screen"><button type="button" class="back" data-act="back">${t().w.back}</button><h2>${C.toyTitle}</h2>${cg}${tabs}${body}</section>`};
+R.concierge=function(){const C=CT(),c=S.cg;
+  if(c.done)return `<section class="screen"><button type="button" class="back" data-act="back">${t().w.back}</button><div class="wkhero center"><div class="bigic">${ic('mail',40)}</div><h2>${C.cgDone}</h2></div></section>`;
+  const groups=[['f',C.forHer],['m',C.forHim],['c',C.forUs],['x',TOYM[lang].bdxGroup]];
+  return `<section class="screen"><button type="button" class="back" data-act="back">${t().w.back}</button><h2>${C.cgTitle}</h2><p class="lead" style="font-size:15px">${C.cgLead}</p>
+  <div class="sec-t">${C.cgPick} · ${c.sel.size}</div>${groups.map(([w,l])=>`<div class="sec-t" style="color:var(--honey)">${l}</div><div class="plist2">${TOYS.filter(x=>x.who===w).map(x=>`<label class="pchk"><input type="checkbox" data-cg="${x.id}" ${c.sel.has(x.id)?'checked':''}><span class="cgt">${toyPic(x.svg,28)}${x[lang][0]}</span></label>`).join('')}</div>`).join('')}
+  <div class="field"><label>${C.cgContact}</label><div class="opts"><button type="button" class="opt" data-cgc="wa" aria-pressed="${c.contact==='wa'}">${C.cgWa}</button><button type="button" class="opt" data-cgc="mail" aria-pressed="${c.contact==='mail'}">${C.cgMail}</button></div>
+  <input id="cgct" placeholder="${c.contact==='wa'?C.cgPhonePh:C.cgMailPh}" value="${esc(c.ct)}"></div>
+  <textarea id="cgmsg" rows="3" placeholder="${C.cgMsgPh}">${esc(c.msg)}</textarea>
+  <button type="button" class="btn pri" data-act="cgsend">${ic('mail',16)} ${C.cgSend}</button></section>`};
+function shPush(key,mode){S.sh.push({key,from:'me',mode});const i=S.sh.length-1;setTimeout(()=>{S.shc[i]=Object.assign(S.shc[i]||{},{them:lang==='pt'?(mode==='sur'?'Fiquei curioso o dia todo 😏':'Bora testar hoje? 😏'):(mode==='sur'?'Me quedé con la intriga todo el día 😏':'¿Lo probamos hoy? 😏')});toast(CT().theyCmt);if(['pre','toys'].includes(S.screen))render()},2600)}
+R.talk=function(){const G=t().g2,GG=GTX(),k=S.tk;
+  const msgs=k.msgs.map(m=>{if(m.kind==='text')return `<div class="bub2 ${m.who}">${esc(m.text)}</div>`;
+    if(m.kind==='tease')return `<div class="bub2 ${m.who} special"><span class="po">${ic('heat',12)} ${G.tkTeaseTag}</span>${esc(m.text)}</div>`;
+    const x=info(m.key);return `<div class="bub2 ${m.who} special wishc"><span class="po">${ic('wish',12)} ${G.tkWishTag}</span>${m.text?`<span>${esc(m.text)}</span>`:''}<strong>${x.title}</strong>${x.pos?`<button type="button" class="btn ghost sm" data-act="w3d" data-pos="${x.pos}">${ic('pos',14)} ${G.see3d}</button>`:''}</div>`}).join('');
+  let panel='';
+  if(k.mode==='tease')panel=`<div class="panel"><div class="plist2">${TEASES[lang].map((tx,i)=>`<label class="pchk"><input type="radio" name="tkt" data-tkt="${i}" ${k.sel===i?'checked':''}><span>${tx}</span></label>`).join('')}</div><div class="row"><button type="button" class="btn pri sm" data-act="tkteasesend">${ic('heat',15)} ${GG.teaseSend}</button><button type="button" class="btn link" style="width:auto" data-act="tkcancel">${G.tkCancel}</button></div></div>`;
+  else if(k.mode==='compose'&&k.sel){const x=info(k.sel);panel=`<div class="panel"><p class="hint">${G.tkReady}</p><div class="wdet"><span class="po">${G.secs[x.sec]}</span><strong>${x.title}</strong></div>
+    <input id="tkrev" placeholder="${G.tkRevealMsgPh}" value="${esc(S.tkRevDraft||G.tkRevealMsg)}"><div class="row"><button type="button" class="btn pri sm" data-act="tkrevsend">${ic('wish',15)} ${G.tkRevealSend}</button><button type="button" class="btn ghost sm" data-act="tkpick">${G.tkChange}</button><button type="button" class="btn link" style="width:auto" data-act="tkcancel">${G.tkCancel}</button></div></div>`}
+  return `<section class="screen"><button type="button" class="back" data-act="back">${t().w.back}</button><h2>${G.tkTitle}</h2><p class="hint">${ic('lock',13)} ${G.tkLead}</p>
+  <div class="row"><button type="button" class="btn ${k.mode==='tease'?'gold':'ghost'} sm" data-act="tkmode" data-m="tease">${ic('heat',15)} ${G.tkTease}</button><button type="button" class="btn ${k.mode==='compose'?'gold':'ghost'} sm" data-act="tkpick">${ic('wish',15)} ${G.tkReveal}</button></div>
+  ${panel}<div class="chat">${msgs}${k.typing?`<div class="bub2 them typing">${GG.theirTurn}</div>`:''}</div>
+  <div class="row" style="flex-wrap:nowrap"><input id="tkin" placeholder="${G.tkPh}" value="${esc(S.tkDraft)}"><button type="button" class="btn pri sm" data-act="tksend">${G.tkSend}</button></div></section>`};
+const TALK_REPLIES={pt:['Sério? Eu também tava com vontade… 😏','Adorei você ter falado. Hoje à noite?','Hmm, fiquei curioso. Me conta mais…','Combinado. Vou separar uma almofada 😉'],es:['¿En serio? Yo también tenía ganas… 😏','Me encanta que lo hayas dicho. ¿Esta noche?','Mmm, me dio curiosidad. Cuéntame más…','Hecho. Voy a buscar un cojín 😉']};
+function talkReply(){S.tk.typing=true;render();setTimeout(()=>{S.tk.typing=false;const n=S.tk.msgs.filter(m=>m.who==='them').length;S.tk.msgs.push({who:'them',kind:'text',text:TALK_REPLIES[lang][n%4]});if(S.screen==='talk')render()},1500)}
+R.diary=function(){const G=t().g2,ids=['mine','shared'];const pn=id=>{const x=POS.find(p=>p.id===id);return x?x[lang][0]:id};
+  const stars=(id,v,edit)=>`<span class="stars">${[1,2,3,4,5].map(i=>edit?`<button type="button" class="star ${i<=v?'on':''}" data-star="${i}" data-id="${id}" aria-label="${i}">★</button>`:`<i class="star ${i<=v?'on':''}">★</i>`).join('')}</span>`;
+  const tabs=G.dyTabs.map((n,i)=>`<button type="button" class="seg-b" data-dt="${ids[i]}" aria-pressed="${S.dtab===ids[i]}">${n}</button>`).join('');
+  let body='';
+  if(S.dtab==='mine'){const ks=Object.keys(S.diary);body=ks.length?ks.map(id=>{const d=S.diary[id];return `<div class="dcard"><div class="dhead"><strong>${pn(id)}</strong><button type="button" class="btn link" style="width:auto" data-act="dopen" data-id="${id}">${G.dyOpen}</button></div>
+    <div class="mrow"><span>${G.dyRate}</span>${stars(id,d.rating,true)}</div><textarea id="dn-${id}" data-dn="${id}" rows="2" placeholder="${G.dyNotePh}">${esc(d.note)}</textarea>
+    <button type="button" class="btn ${d.shared?'gold':'ghost'} sm" data-act="dshare" data-id="${id}">${ic('both',15)} ${d.shared?G.dyShared:G.dyShare}</button></div>`}).join(''):`<p class="empty">${G.dyEmpty}</p>`}
+  else{const mine=Object.entries(S.diary).filter(([,d])=>d.shared).map(([id,d])=>({id,rating:d.rating,note:d.note,me:true}));const th=PDIARY.map(e=>({id:e.id,rating:e.rating,note:e.note[lang],me:false}));const all=[...mine,...th];
+    body=all.length?all.map(e=>{let cm='';
+      if(e.me){const c=S.dpc[e.id];cm=c?`<div class="cmt gold"><span class="po">${G.dyCmtThem}</span>${esc(c)}</div>`:''}
+      else{const c=S.dmc[e.id];cm=c?`<div class="cmt"><span class="po">${G.dyCmtYou}</span>${esc(c)}</div>`:`<div class="row" style="flex-wrap:nowrap"><input id="dc-${e.id}" data-dc="${e.id}" placeholder="${G.dyCmtPh}" value="${esc(S.dcDraft[e.id]||'')}"><button type="button" class="btn ghost sm" data-act="dcmt" data-id="${e.id}">${G.dyCmtBtn}</button></div>`}
+      return `<div class="dcard"><div class="dhead"><strong>${pn(e.id)}</strong><span class="tagc ${e.me?'':'gold'}">${e.me?G.dyYou:G.dyThem}</span></div>${stars(e.id,e.rating,false)}${e.note?`<p class="dnote">“${esc(e.note)}”</p>`:''}${cm}</div>`}).join(''):`<p class="empty">${G.dySharedEmpty}</p>`}
+  return `<section class="screen"><button type="button" class="back" data-act="back">${t().w.back}</button><h2>${G.dyTitle}</h2><div class="seg" role="group" style="grid-template-columns:1fr 1fr">${tabs}</div>${body}</section>`};
+const mgLink=()=>'entrenos.app/jogo/'+(S.mg.name||'voce').toLowerCase().normalize('NFD').replace(/[^a-z]/g,'').slice(0,10)+'-'+(S.mg.mood||'api');
+R.mgame=function(){const G=t().mg,g=S.mg,lg=lang;let body='';
+  if(g.stage==='intro'){
+    body=g.left<=0?`<div class="note">${G.limit}</div><button type="button" class="btn pri" data-act="welcome">${G.ctaBtn}</button>`:
+    `<p class="lead">${G.lead}</p><span class="tagc gold" style="align-self:flex-start">${G.free}</span>
+    <div class="field"><label for="mgn">${G.name}</label><input id="mgn" placeholder="${G.namePh}" value="${esc(g.name)}"></div>
+    <button type="button" class="btn pri" data-act="mgstart">${G.start}</button>`;
+  }else if(g.stage==='link'){const link=mgLink();
+    body=`<div class="invite"><label>${G.linkT}</label><div class="linkbox"><code>${link}</code><button type="button" class="copy" data-act="mgcopy">${G.copy}</button></div>
+    <label>${G.msg}</label><div class="msg">${esc(G.msgTxt(g.name))}${link}</div></div>
+    <button type="button" class="btn gold" data-act="mgcopymsg">${G.copyMsg}</button><button type="button" class="btn ghost" data-act="mgpreview">${G.preview}</button><button type="button" class="btn pri" data-act="mgroom">${G.openRoom}</button>
+    <p class="hint">${G.free}</p>`;
+  }else if(g.stage==='invite'){
+    body=`<h1 style="font-size:38px">${G.invTitle(esc(g.name))}</h1><p class="lead">${G.invLead}</p>
+    <label class="check"><input type="checkbox" id="mgage" ${g.age?'checked':''}> ${G.age}</label>
+    <div class="btns"><button type="button" class="btn pri" data-act="mgjoin">${G.join}</button><button type="button" class="btn ghost" data-act="mgdecline">${G.decline}</button>
+    <button type="button" class="btn link" data-act="mgreport">${G.report}</button></div>`;
+  }else if(g.stage==='play'){body=`<p class="hint">${G.playLead}</p>${wcard(WBY[g.items[g.i]],g.i,g.items.length,'mg')}`}
+  else{const [m]=matchSplit(g.items,g.ans);
+    body=`<div class="wkhero"><h2>${m.length?G.resT:''}</h2><p>${m.length?G.resLead:G.resNone}</p>${m.map(id=>witem(id,false)).join('')}</div>
+    <div class="cta"><p>${G.cta}</p><button type="button" class="btn pri" data-act="welcome">${G.ctaBtn}</button></div>
+    <button type="button" class="btn ghost" data-act="mgagain">${G.again}</button>`}
+  return `<section class="screen"><button type="button" class="back" data-act="back">← ${lang==='pt'?'Voltar':'Volver'}</button><h2>${G.title}</h2>${body}</section>`};
+const GTX=()=>GT[lang];const GIC={scene:'diary',plan:'wish',like:'toys',tod:'games',tease:'heat'};
+const PLAN_IDS=['p1','p2','p3','p4','o1','o3','o5','g1','g3','l1','m2','t2'];
+function chatHTML(){return `<div class="chat">${S.gm.chat.map(c=>`<div class="bub2 ${c.who}">${esc(c.text)}</div>`).join('')}${S.gm.turn==='them'?`<div class="bub2 them typing">${GTX().theirTurn}</div>`:''}</div>`}
+R.games=function(){const G=GTX(),g=S.gm;let body='';
+  const counter=S.free?`<span class="tagc gold" style="align-self:flex-start">${G.freeLeft(g.left)}</span>`:'';
+  if(!g.game){
+    if(S.free&&g.left<=0)body=`<div class="note">${G.paywall}</div><button type="button" class="btn pri" data-act="welcome">${G.subscribe}</button>`;
+    else body=`${counter}<div class="glist">${Object.entries(G.games).map(([k,v])=>`<button type="button" class="gcard" data-game="${k}"><span class="gic">${ic(GIC[k],24)}</span><span class="gbody"><strong>${v[0]}</strong><span>${typeof GUIDE_GAMES!=='undefined'?GUIDE_GAMES[lang][k]:v[1]}</span></span><span class="gplay">${G.play}</span></button>`).join('')}</div><p class="hint">${ic('lock',13)} ${G.erase}</p>`;
+    return `<section class="screen"><button type="button" class="back" data-act="back">${G.back}</button><h2>${G.title}</h2>${body}</section>`;
+  }
+  const title=G.games[g.game][0];
+  if(g.game==='scene'||g.game==='like'){
+    const isScene=g.game==='scene';
+    if(g.ended){
+      if(isScene)body=`<div class="wkhero center"><div class="bigic">${ic('heat',40)}</div><h2>${G.ended}</h2><p class="hint">${G.erase}</p><button type="button" class="btn pri" data-act="gnewscene">${G.newScene}</button></div>`;
+      else{const mine=g.chat.filter(c=>c.who==='me'),th=g.chat.filter(c=>c.who==='them');
+        body=`<div class="wkhero"><span class="tagc gold">${ic('toys',14)} ${G.mapT}</span><div class="sec-t">${G.mapYou}</div>${mine.map(c=>`<div class="witem"><p>${esc(c.text)}</p></div>`).join('')}<div class="sec-t">${G.mapThem}</div>${th.map(c=>`<div class="witem"><p>${esc(c.text)}</p></div>`).join('')}<button type="button" class="btn ghost" data-act="gsave">${G.mapSave}</button></div>`}
+    }else{
+      const st=Math.min(2,Math.floor(g.chat.filter(c=>c.who==='me').length/2));
+      body=`${isScene?`<div class="scene"><span class="po">${G.sceneT}</span><p>${SCENES[g.scene][lang]}</p></div>`:`<div class="note">${G.likeLead}</div><p class="hint">${G.likeEx}</p>`}
+      ${chatHTML()}
+      ${g.turn==='me'?`<div class="tturn">${G.yourTurn}</div><textarea id="gin" rows="2" placeholder="${isScene?G.scenePh:G.likePh}">${esc(S.gdraft)}</textarea>
+        ${isScene&&g.ideas?`<p class="hint">${G.ideaT}</p><div class="ideas">${IDEAS[lang][st].map((t,i)=>`<button type="button" class="ideab" data-idea="${i}">${t}</button>`).join('')}</div>`:''}
+        <div class="row"><button type="button" class="btn pri sm" data-act="gsend">${G.send}</button>${isScene?`<button type="button" class="btn ghost sm" data-act="gidea">${ic('fore',15)} ${G.idea}</button>`:''}</div>
+        ${g.chat.length>=2?`<button type="button" class="btn gold" data-act="gend">${isScene?G.end:G.likeEnd}</button>`:''}`:''}`;
+    }
+  }else if(g.game==='plan'){
+    const P2=g.plan;
+    if(P2.stage==='pick')body=`<p class="hint">${G.planLead}</p><div class="plist2">${PLAN_IDS.map(id=>`<label class="pchk"><input type="checkbox" data-pl="${id}" ${P2.sel[id]?'checked':''}><span>${WBY[id][lang]}</span></label>`).join('')}</div><button type="button" class="btn pri" data-act="gplansend">${G.planSend}</button>`;
+    else if(P2.stage==='wait')body=`<div class="wkhero center"><div class="bigic">${ic('both',40)}</div><h2>${G.planWait}</h2></div>`;
+    else{const m=PLAN_IDS.filter(id=>P2.sel[id]&&partnerAns(id)==='q');body=`<div class="wkhero"><span class="tagc gold">${ic('heat',14)} ${G.planRes}</span>${m.length?m.map(id=>witem(id,true)).join(''):`<p>${G.planNone}</p>`}</div>`}
+  }else if(g.game==='tod'){
+    const d=g.tod,lvl=`<div class="chips">${G.lv.map((l,i)=>`<button type="button" class="chip" data-tlv="${i}" aria-pressed="${d.lv===i}">${l}</button>`).join('')}</div>`;
+    const card=(k,i)=>TOD[lang][k][d.lv][i%3];
+    if(d.stage==='pick')body=`<p class="hint">${G.todLead}</p>${lvl}<div class="tturn">${G.yourTurn}</div><div class="wbtns2"><button type="button" class="wb maybe" data-tk="t">${G.truth}</button><button type="button" class="wb yes" data-tk="d">${G.dare}</button></div>`;
+    else if(d.stage==='card')body=`${lvl}<div class="wcard"><span class="po">${d.kind==='t'?G.truth:G.dare}</span><p class="wtext">${card(d.kind,d.i)}</p>${d.kind==='t'?`<textarea id="gin" rows="2" placeholder="${G.answerPh}">${esc(S.gdraft)}</textarea>`:''}<div class="row"><button type="button" class="btn pri sm" data-act="tdone">${G.done}</button><button type="button" class="btn ghost sm" data-act="tskip" ${d.skip?'':'disabled'}>${d.skip?G.skip:G.skipped}</button></div></div>`;
+    else body=`${lvl}<div class="wcard"><span class="po">${G.theyChose(d.theirs.k==='t'?G.truth:G.dare)}</span><p class="wtext">${card(d.theirs.k,d.theirs.i)}</p></div><button type="button" class="btn pri" data-act="tnext">${G.next}</button>`;
+  }else if(g.game==='tease'){
+    const T2=g.tease;
+    body=`<p class="hint">${G.teaseLead}</p><div class="plist2">${TEASES[lang].map((t,i)=>`<label class="pchk"><input type="radio" name="tz" data-tz="${i}" ${T2.sel===i&&!S.gdraft?'checked':''}><span>${t}</span></label>`).join('')}</div>
+      <textarea id="gin" rows="2" placeholder="${G.teasePh}">${esc(S.gdraft)}</textarea><button type="button" class="btn pri" data-act="tsend">${ic('heat',16)} ${G.teaseSend}</button>
+      ${T2.sent?`<p class="hint">${G.teasePrev}</p><div class="notif"><span class="gic">${ic('bell',18)}</span><div><strong>${G.teaseNotif(S.name||'Taynara')}</strong><span>${esc(T2.text)}</span></div></div>`:''}`;
+  }
+  return `<section class="screen"><button type="button" class="back" data-act="ghub">${G.back}</button><h2>${title}</h2>${S.free?counter:''}${body}</section>`};
+function partnerTurn(kind){S.gm.turn='them';render();setTimeout(()=>{const bank=kind==='like'?LIKE_REPLIES[lang]:REPLIES[lang];const n=S.gm.chat.filter(c=>c.who==='them').length;S.gm.chat.push({who:'them',text:bank[n%bank.length]});S.gm.turn='me';if(S.screen==='games')render()},1500)}
+function stopRec(){clearInterval(recTimer);recTimer=null;S.rec=false}
+S.hist=[];
+function go(s,opt){if(S.rec)stopRec();opt=opt||{};if(!opt.noPush&&S.screen!==s)S.hist.push({sc:S.screen,y:window.scrollY});if(opt.reset)S.hist=[];S.screen=s; if(s==='pin'||s==='lock'){S.pin='';} render(); window.scrollTo(0,opt.y||0)}
+function goBack(){if(S.screen==='wish')S.wmode=null;const h=S.hist.pop();if(!h){go('home',{noPush:true});return}go(h.sc,{noPush:true,y:h.y});requestAnimationFrame(()=>window.scrollTo(0,h.y))}
+const NARROW=['welcome','signup','pin','lock','tour','invite','partner','psignup','login','forgotpin'];
+function render(){chrome();view.className=NARROW.includes(S.screen)||S.screen==='mgame'?'narrow':(S.screen==='ask'||S.screen==='wish'||S.screen==='talk'||S.screen==='diary'||S.screen==='pre'||S.screen==='toys'||S.screen==='concierge'||['heat','chal','love','guide','guided','bdsm'].includes(S.screen)||(S.screen==='games'&&S.gm.game))?'mid':'wide';view.innerHTML=R[S.screen]();mountViewer();if(S.screen==='posl'||S.screen==='wish'||S.screen==='guided'||S.screen==='chal')fillThumbs();fillToys();}
+
+function onKey(k){
+  if(k==='del'){S.pin=S.pin.slice(0,-1);render();return}
+  if(S.pin.length>=4)return;
+  S.pin+=k;render();
+  if(S.pin.length===4){
+    setTimeout(()=>{
+      if(S.screen==='lock'){go('home');return}
+      if(S.pinStage===1){S.pin1=S.pin;S.pin='';S.pinStage=2;render()}
+      else if(S.pin===S.pin1){S.pinStage=1;S.tour=0;if(S.skipTour){S.skipTour=false;go('home',{reset:true})}else go('tour')}
+      else{S.pin='';S.pinStage=1;render();const d=document.getElementById('dots');d.classList.add('err');toast(t().p_wrong)}
+    },180);
+  }
+}
+
+document.addEventListener('click',e=>{
+  const lb=e.target.closest('[data-lang]');if(lb){lang=lb.dataset.lang;try{localStorage.setItem('en_lang',lang)}catch(_){}render();return}
+  const g=e.target.closest('[data-go]');if(g){S.pinStage=1;go(g.dataset.go,{reset:true});return}
+  const k=e.target.closest('[data-k]');if(k){onKey(k.dataset.k);return}
+  const gd=e.target.closest('[data-g]');if(gd){S.gender=gd.dataset.g;document.querySelectorAll('[data-g]').forEach(b=>b.setAttribute('aria-pressed',b===gd));return}
+  const tile=e.target.closest('[data-tile]');if(tile){if(tile.dataset.tile==='ask'){S.askTab='ask';go('ask')}else if(tile.dataset.tile==='pos'){S.posScroll=0;go('posl')}else if(tile.dataset.tile==='wish'){S.wtab='mine';S.wmode=null;S.wexp=null;go('wish')}else if(tile.dataset.tile==='games'){S.free=false;S.gm.game=null;go('games')}else if(tile.dataset.tile==='talk'){S.tk.mode=null;go('talk')}else if(tile.dataset.tile==='diary'){S.dtab='mine';go('diary')}else if(tile.dataset.tile==='fore'){S.pexp=null;go('pre')}else if(tile.dataset.tile==='toys'){S.texp=null;go('toys')}else if(tile.dataset.tile==='heat'){S.ch.edit=null;go('heat')}else if(tile.dataset.tile==='guide'){go('guide')}else if(tile.dataset.tile==='bdsm'){go('bdsm')}else toast(t().soon);return}
+  const gc=e.target.closest('[data-game]');if(gc){const g=S.gm;if(S.free){if(g.left<=0){render();return}g.left--}g.game=gc.dataset.game;g.chat=[];g.turn='me';g.ended=false;g.ideas=false;S.gdraft='';g.scene=(g.scene+1)%SCENES.length;g.plan={sel:{},stage:'pick'};g.tod={lv:g.tod.lv,kind:null,i:0,skip:true,theirs:null,stage:'pick'};g.tease={sel:0,sent:false};render();window.scrollTo(0,0);return}
+  const idb=e.target.closest('[data-idea]');if(idb){S.gdraft=idb.textContent;S.gm.ideas=false;render();return}
+  const tl=e.target.closest('[data-tlv]');if(tl){S.gm.tod.lv=+tl.dataset.tlv;render();return}
+  const tk=e.target.closest('[data-tk]');if(tk){const d=S.gm.tod;d.kind=tk.dataset.tk;d.stage='card';S.gdraft='';render();return}
+  const pw=e.target.closest('[data-prew]');if(pw){S.prew=pw.dataset.prew;S.pexp=null;render();return}
+  const tw=e.target.closest('[data-toyw]');if(tw){S.toyw=tw.dataset.toyw;S.texp=null;render();return}
+  const pb=e.target.closest('[data-preb]');if(pb){S.preb=pb.dataset.preb;S.pexp=null;render();return}
+  const tm=e.target.closest('[data-trmode]');if(tm){S.trMode=tm.dataset.trmode;render();return}
+  const cc=e.target.closest('[data-cgc]');if(cc){S.cg.contact=cc.dataset.cgc;render();return}
+  const pe=e.target.closest('[data-pexp]');if(pe){S.pexp=S.pexp===pe.dataset.pexp?null:pe.dataset.pexp;render();return}
+  const te=e.target.closest('[data-texp]');if(te){S.texp=S.texp===te.dataset.texp?null:te.dataset.texp;render();return}
+  const wx=e.target.closest('[data-wexp]');if(wx){const k=wx.dataset.wexp;if(S.wmode==='pick'){S.tk.mode='compose';S.tk.sel=k;S.tkRevDraft='';S.wmode=null;goBack();return}S.wexp=S.wexp===k?null:k;render();return}
+  const dt=e.target.closest('[data-dt]');if(dt){S.dtab=dt.dataset.dt;render();return}
+  const st=e.target.closest('[data-star]');if(st){S.diary[st.dataset.id].rating=+st.dataset.star;render();return}
+  const wt=e.target.closest('[data-wt]');if(wt){S.wtab=wt.dataset.wt;render();return}
+  const wc=e.target.closest('[data-wc]');if(wc){S.wcat=wc.dataset.wc;render();return}
+  const md=e.target.closest('[data-mood]');if(md){S.mg.mood=md.dataset.mood;render();return}
+  const wa=e.target.closest('[data-wa]');if(wa){const v=wa.dataset.wa,id=wa.dataset.id,ctx=wa.dataset.ctx;
+    if(ctx==='list'){S.wans[id]=v;render()}
+    else if(ctx==='wk'){const k=S.wk;k.ans[id]=v;k.i++;if(k.i>=k.items.length){k.stage='wait';render();setTimeout(()=>{k.stage='done';if(S.screen==='wish')render();toast(t().w.partnerDone)},2200)}else render()}
+    else{const g=S.mg;g.ans[id]=v;g.i++;if(g.i>=g.items.length){g.stage='result'}render()}
+    return}
+  const lvb=e.target.closest('[data-plv]');if(lvb){S.plv=+lvb.dataset.plv;render();return}
+  const pc=e.target.closest('[data-pcat]');if(pc){S.pcat=pc.dataset.pcat;render();return}
+  const pi=e.target.closest('[data-pid]');if(pi){S.posScroll=window.scrollY;S.pid=pi.dataset.pid;go('pos');return}
+  const at=e.target.closest('[data-askt]');if(at){if(S.rec)stopRec();S.askTab=at.dataset.askt;S.replying=-1;render();return}
+  const bx=e.target.closest('[data-box]');if(bx){S.box=bx.dataset.box;render();return}
+  const a=e.target.closest('[data-act]');if(!a)return;
+  const L=t(),Q=L.q,i=+a.dataset.i;
+  switch(a.dataset.act){
+    case 'home':go('home');break;
+    case 'back':goBack();break;
+    case 'gowk':S.free=false;S.gm.game=null;go('games');break;
+    case 'w3d':S.pid=a.dataset.pos;S.posScroll=0;go('pos');break;
+    case 'wfri':toast(L.w.sentFriday);break;
+    case 'ownsend':if(!S.ownDraft.trim()){toast(L.w.ownPh);break}{const c=checkText(S.ownDraft);if(c){toast(c==='link'?L.q.errLink:L.q.errBad);break}}S.ownDraft='';render();toast(L.w.ownSent);break;
+    case 'wkstart':S.wk.stage='play';S.wk.i=0;S.wk.ans={};render();break;
+    case 'wkagain':S.wk.stage='ready';render();break;
+    case 'mg':S.mg.stage='intro';go('mgame');break;
+    case 'mgstart':if(!S.mg.name.trim()){toast(L.mg.errName);break}S.mg.mood=S.mg.mood||'api';S.mg.stage='link';render();break;
+    case 'mgcopy':copyText('https://'+mgLink(),L.mg.copied);break;
+    case 'mgcopymsg':copyText(L.mg.msgTxt(S.mg.name)+'https://'+mgLink(),L.mg.msgCopied);break;
+    case 'mgpreview':S.mg.stage='invite';S.mg.age=false;render();break;
+    case 'mgjoin':if(!S.mg.age){toast(L.mg.ageReq);break}S.free=true;S.gm.game=null;go('games');break;
+    case 'mgdecline':toast(L.mg.declined);S.mg.stage='intro';go('welcome');break;
+    case 'mgreport':toast(L.mg.reported);S.mg.stage='intro';go('welcome');break;
+    case 'mgagain':S.mg.stage='intro';render();break;
+    case 'mgroom':S.free=true;S.gm.game=null;go('games');break;
+    case 'wrm':S.wl.delete(a.dataset.key);render();toast(t().g2.removed);break;
+    case 'wtalk':S.tk.mode='compose';S.tk.sel=a.dataset.key;S.tkRevDraft='';S.wexp=null;if(S.wmode==='pick'){S.wmode=null;goBack()}else go('talk');break;
+    case 'tkpick':S.wmode='pick';S.wexp=null;go('wish');break;
+    case 'tkmode':{const m=a.dataset.m;S.tk.mode=S.tk.mode===m?null:m;S.tk.sel=0;render();break}
+    case 'tkcancel':S.tk.mode=null;render();break;
+    case 'tkteasesend':S.tk.msgs.push({who:'me',kind:'tease',text:TEASES[lang][S.tk.sel||0]});S.tk.mode=null;talkReply();break;
+    case 'tkrevsend':if(!S.tk.sel)break;S.tk.msgs.push({who:'me',kind:'wish',key:S.tk.sel,text:(S.tkRevDraft||t().g2.tkRevealMsg).trim()});S.tk.mode=null;S.tkRevDraft='';talkReply();break;
+    case 'tksend':{const tx=S.tkDraft.trim();if(!tx)break;S.tk.msgs.push({who:'me',kind:'text',text:tx});S.tkDraft='';talkReply();break}
+    case 'dshare':{const id=a.dataset.id,d=S.diary[id];d.shared=!d.shared;render();if(d.shared){toast(t().g2.dySharedToast);if(!S.dpc[id])setTimeout(()=>{S.dpc[id]=lang==='pt'?'Topo repetir essa logo 😏':'Me apunto a repetirla pronto 😏';toast(t().g2.dyTheyCmt);if(S.screen==='diary')render()},2500)}break}
+    case 'dcmt':{const id=a.dataset.id,tx=(S.dcDraft[id]||'').trim();if(!tx)break;S.dmc[id]=tx;render();toast(t().g2.dyCmtSent);break}
+    case 'dopen':S.pid=a.dataset.id;S.posScroll=0;go('pos');break;
+    case 'pretray':{const id=S.pexp,j=S.tray.indexOf(id);j>=0?S.tray.splice(j,1):S.tray.push(id);render();break}
+    case 'tropen':S.compose=true;render();requestAnimationFrame(()=>{const c=document.getElementById('comp');if(c)c.scrollIntoView({behavior:'smooth',block:'start'})});break;
+    case 'trcancel':S.compose=false;render();break;
+    case 'trsend':{S.sh.push({keys:S.tray.map(id=>'pre:'+id),from:'me',mode:S.trMode,msg:S.trMsg.trim()});const i2=S.sh.length-1;const m=S.trMode;S.tray=[];S.trMsg='';S.compose=false;render();toast(m==='sur'?CT().surSent:CT().askSent);
+      setTimeout(()=>{S.shc[i2]=Object.assign(S.shc[i2]||{},{them:lang==='pt'?(m==='sur'?'Fiquei curioso o dia todo 😏':'Pode deixar, vou fazer tudinho 😏'):(m==='sur'?'Me quedé con la intriga todo el día 😏':'Déjamelo a mí, lo haré todo 😏')});toast(CT().theyCmt);if(S.screen==='pre')render()},2600);break}
+    case 'gocg':S.cg.done=false;go('concierge');break;
+    case 'toycg':{const id=S.texp;S.cg.sel.has(id)?S.cg.sel.delete(id):S.cg.sel.add(id);render();break}
+    case 'cgsend':if(!S.cg.sel.size||!S.cg.ct.trim()){toast(CT().cgErr);break}S.cg.done=true;render();toast(CT().cgDone);break;
+    case 'prewish':{const k='pre:'+S.pexp;S.wl.has(k)?S.wl.delete(k):S.wl.add(k);render();toast(S.wl.has(k)?L.p.addedWish:L.p.removedWish);break}
+    case 'bdx':{S.bdx=!S.bdx;S.texp=null;render();break}
+    case 'toywish':{const k='toy:'+S.texp;S.wl.has(k)?S.wl.delete(k):S.wl.add(k);render();toast(S.wl.has(k)?L.p.addedWish:L.p.removedWish);break}
+    case 'toyshare':{const k='toy:'+S.texp;if(!S.sh.some(e=>e.from==='me'&&e.key===k)){shPush(k,'share');render();toast(CT().sharedToast)}break}
+    case 'shopen':S.sh[i].open=true;render();break;
+    case 'shcmt':{const tx=(S.scDraft[i]||'').trim();if(!tx)break;S.shc[i]=Object.assign(S.shc[i]||{},{me:tx});render();toast(CT().cmtSent);break}
+    case 'ghub':S.gm.game=null;render();break;
+    case 'gidea':S.gm.ideas=!S.gm.ideas;render();break;
+    case 'gsend':{const tx=S.gdraft.trim();if(!tx)break;S.gm.chat.push({who:'me',text:tx});S.gdraft='';S.gm.ideas=false;partnerTurn(S.gm.game);break}
+    case 'gend':S.gm.ended=true;render();break;
+    case 'gnewscene':S.gm.scene=(S.gm.scene+1)%SCENES.length;S.gm.chat=[];S.gm.ended=false;S.gm.turn='me';render();break;
+    case 'gsave':toast(GTX().saved);break;
+    case 'gplansend':S.gm.plan.stage='wait';render();setTimeout(()=>{S.gm.plan.stage='done';if(S.screen==='games')render();toast(t().w.partnerDone)},1800);break;
+    case 'tdone':case 'tskip':{const d=S.gm.tod;if(a.dataset.act==='tskip'){if(!d.skip)break;d.skip=false;d.i++;render();break}d.theirs={k:d.i%2?'t':'d',i:d.i+1};d.stage='theirs';S.gdraft='';render();break}
+    case 'tnext':{const d=S.gm.tod;d.i+=2;d.stage='pick';d.kind=null;render();break}
+    case 'tsend':{const T2=S.gm.tease;T2.text=S.gdraft.trim()||TEASES[lang][T2.sel];T2.sent=true;S.gdraft='';render();toast(GTX().teaseSent);break}
+    case 'posl':go('posl');{const y=S.posScroll||0;requestAnimationFrame(()=>window.scrollTo(0,y))}break;
+    case 'pdone':if(!S.diary[S.pid]){S.diary[S.pid]={rating:0,note:'',shared:false};render();toast(L.p.doneToast)}else{S.dtab='mine';go('diary')}break;
+    case 'pwish':{const k='pos:'+S.pid;if(S.wl.has(k)){S.wl.delete(k);toast(L.p.removedWish)}else{S.wl.add(k);toast(L.p.addedWish)}render();break}
+    case 'godiary':S.dtab='mine';go('diary');break;
+    case 'rec':S.rec=true;S.recSecs=0;S.audio=null;render();recTimer=setInterval(()=>{S.recSecs=Math.min(S.recSecs+1,30);if(S.recSecs>=30){S.audio='30';stopRec();render();toast(t().q.recMax);return}const el=document.getElementById('rect');if(el)el.textContent='0:'+String(S.recSecs).padStart(2,'0')+' / 0:30'},1000);break;
+    case 'recstop':S.audio=String(Math.max(S.recSecs,3)).padStart(2,'0');stopRec();render();break;
+    case 'recdel':S.audio=null;render();break;
+    case 'sendq':{const txt=S.draft.trim();if((!txt&&!S.audio)||!S.box){toast(Q.errQ);break}
+      {const c=checkText(txt);if(c){toast(c==='link'?Q.errLink:Q.errBad);break}}
+      S.mine.unshift({text:txt,audio:S.audio,box:S.box,open:false,helped:false,answers:[]});
+      S.draft='';S.audio=null;S.box=null;S.askTab='mine';render();toast(Q.sent);break}
+    case 'reply':S.replying=a.dataset.arr+i;S.ansDraft='';S.ansAudio=false;render();break;
+    case 'ansrec':S.ansAudio=!S.ansAudio;render();break;
+    case 'sendans':{if(!S.ansDraft.trim()&&!S.ansAudio){toast(Q.errA);break}
+      {const c=checkText(S.ansDraft);if(c){toast(c==='link'?Q.errLink:Q.errBad);break}}
+      const list=S.mural[a.dataset.arr];list[i].n++;S.replying=-1;
+      if(list[i].n>=3){list.splice(i,1);toast(Q.ansDone)}else toast(Q.ansSent);render();break}
+    case 'report':S.mural[a.dataset.arr].splice(i,1);S.replying=-1;render();toast(Q.reported);break;
+    case 'toggle':S.mine[i].open=!S.mine[i].open;render();break;
+    case 'helped':S.mine[i].helped=true;render();toast(Q.thanks);break;
+    case 'play':toast(Q.playing);break;
+    case 'fuopen':S.fuOpen=a.dataset.i+'-'+a.dataset.j;S.fuDraft='';render();break;
+    case 'fusend':{const txt=S.fuDraft.trim();if(!txt){toast(Q.errA);break}
+      {const c=checkText(txt);if(c){toast(c==='link'?Q.errLink:Q.errBad);break}}
+      const ans=S.mine[i].answers[+a.dataset.j];ans.thread=ans.thread||[];ans.thread.push({who:'me',text:txt});
+      S.fuOpen=null;S.fuDraft='';render();toast(Q.moreSent);
+      setTimeout(()=>{ans.thread.push({who:'them',k:'auto'});if(S.screen==='ask'&&S.askTab==='mine')render();toast(t().q.moreGot)},2600);break}
+    case 'fureply':{const txt=S.frDraft.trim();if(!txt){toast(Q.errA);break}
+      {const c=checkText(txt);if(c){toast(c==='link'?Q.errLink:Q.errBad);break}}
+      S.followIn.splice(i,1);S.frDraft='';render();toast(Q.fuSent);break}
+    case 'signup':go('signup');break;
+    case 'login':go('login');break;
+    case 'buy':toast(lang==='pt'?'Aqui vai o botão pro checkout da Hotmart':'Aquí va el botón al checkout de Hotmart');break;
+    case 'forgot':toast(lang==='pt'?'Enviaremos um link pro seu e-mail':'Enviaremos un enlace a tu correo');break;
+    case 'tournext':if(S.tour<L.tour.length-1){S.tour++;render()}else finishEntry();break;
+    case 'tourskip':finishEntry();break;
+    case 'copylink':copyText('https://'+inviteLink(),L.copied);break;
+    case 'copymsg':copyText(L.i_msg(S.name)+'https://'+inviteLink(),L.msg_copied);break;
+    case 'later':go('home');break;
+    case 'resend':go('invite');break;
+    case 'accept':S.partner=true;go('home');toast(lang==='pt'?'Contas ligadas 💞':'Cuentas conectadas 💞');break;
+    case 'welcome':go('welcome');break;
+    case 'bell':toast(L.bell);break;
+  }
+});
+document.addEventListener('input',e=>{if(e.target.id==='qt')S.draft=e.target.value;else if(e.target.id==='at')S.ansDraft=e.target.value;else if(e.target.id==='ft')S.fuDraft=e.target.value;else if(e.target.id==='own')S.ownDraft=e.target.value;else if(e.target.id==='mgn')S.mg.name=e.target.value;else if(e.target.id==='mgage')S.mg.age=e.target.checked;else if(e.target.id==='gin')S.gdraft=e.target.value;else if(e.target.id==='tkin')S.tkDraft=e.target.value;else if(e.target.id==='tkrev')S.tkRevDraft=e.target.value;else if(e.target.dataset.dn){S.diary[e.target.dataset.dn].note=e.target.value}else if(e.target.dataset.dc){S.dcDraft[e.target.dataset.dc]=e.target.value}else if(e.target.dataset.sc!=null){S.scDraft[e.target.dataset.sc]=e.target.value}else if(e.target.id==='trmsg')S.trMsg=e.target.value;else if(e.target.id==='cgct')S.cg.ct=e.target.value;else if(e.target.id==='cgmsg')S.cg.msg=e.target.value;else if(e.target.dataset.cg){const id=e.target.dataset.cg;e.target.checked?S.cg.sel.add(id):S.cg.sel.delete(id)}else if(e.target.dataset.wl){const k=e.target.dataset.wl;e.target.checked?S.wl.add(k):S.wl.delete(k)}else if(e.target.dataset.tkt!=null){S.tk.sel=+e.target.dataset.tkt}else if(e.target.dataset.tkr){S.tk.sel=e.target.dataset.tkr}else if(e.target.dataset.pl)S.gm.plan.sel[e.target.dataset.pl]=e.target.checked;else if(e.target.dataset.tz!=null){S.gm.tease.sel=+e.target.dataset.tz;S.gdraft='';const gi=document.getElementById('gin');if(gi)gi.value=''}else if(e.target.id==='fr')S.frDraft=e.target.value;});
+document.addEventListener('submit',e=>{
+  if(e.target.id!=='f')return;e.preventDefault();
+  const nm=document.getElementById('nm').value.trim(),em=document.getElementById('em').value.trim(),pw=document.getElementById('pw').value,pe=document.getElementById('pem').value.trim();
+  if(!nm||!em||!pe||pw.length<6||!S.gender){toast(t().err_fill);return}
+  S.pemail=pe;
+  S.name=nm;S.email=em;S.pinStage=1;go('pin');
+});
+render();
+</script>
+<script src="heat.js"></script>
+<script src="bdsm.js"></script>
+<script src="entry.js"></script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="real.js"></script>
