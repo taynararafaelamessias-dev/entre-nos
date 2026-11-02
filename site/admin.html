@@ -84,7 +84,7 @@ label{display:block;font-size:13px;color:var(--muted);margin:0 0 4px}
 const sb=window.supabase.createClient(ENV.SUPABASE_URL,ENV.SUPABASE_ANON,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'en_admin_auth'}});
 const app=document.getElementById('app');
 let MK='ALL';try{MK=localStorage.getItem('en_admin_mk')||'ALL'}catch(_){}
-const A={tab:'painel',days:30,search:'',data:{},busy:false,open:null,mk:MK};
+const A={qf:'all',tab:'painel',days:30,search:'',data:{},busy:false,open:null,mk:MK};
 const MARKETS=[['ALL','🌎','Todos os países'],['BR','🇧🇷','Brasil'],['ES','🇪🇸','Espanha'],['CO','🇨🇴','Colômbia'],['AR','🇦🇷','Argentina'],['DE','🇩🇪','Alemanha'],['OUT','🌐','Outros países']];
 const mkName=k=>(MARKETS.find(m=>m[0]===k)||MARKETS[0]);
 const cash=(v,c)=>{try{return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:c&&c!=='?'?c:'BRL'})}catch(_){return (c||'')+' '+Number(v||0).toFixed(2)}};
@@ -93,7 +93,7 @@ const INV=new URLSearchParams(location.search).get('convite');
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const dt=d=>d?new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
-const ago=d=>{const h=Math.floor((Date.now()-new Date(d))/36e5);return h<24?`há ${h}h`:`há ${Math.floor(h/24)} dia${h>=48?'s':''}`};
+const ago=d=>{const h=Math.floor((Date.now()-new Date(d))/36e5);return h<1?"agora há pouco":h<24?`há ${h}h`:`há ${Math.floor(h/24)} dia${h>=48?'s':''}`};
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3200)}
 const SUB={trial:'Acesso de teste',active:'Assinatura ativa',canceled:'Cancelada',expired:'Vencida'};
 const AUD={f:'Mulheres',m:'Homens',b:'Todos'};
@@ -152,7 +152,8 @@ async function load(){const m=main();if(!m)return;m.innerHTML='<p class="empty">
       if(s.error)throw s.error;A.data.stats=s.data;A.data.stale=q.data||[];A.data.reports=r.data||[];A.data.con=c.data||[];A.data.fin=f.error?null:f.data}
     if(A.tab==='team'){const {data,error}=await sb.rpc('admin_team');if(error)throw error;A.data.team=data}
     if(A.tab==='users'){const {data,error}=await sb.rpc('admin_users',{p_search:A.search});if(error)throw error;A.data.users=data}
-    if(A.tab==='com'){const [q,r]=await Promise.all([sb.rpc('admin_stale_questions'),sb.rpc('admin_reports')]);if(q.error)throw q.error;A.data.stale=q.data||[];A.data.reports=r.data||[]}
+    if(A.tab==='com'){const [q,r]=await Promise.all([sb.rpc('admin_questions',{p_filter:A.qf}),sb.rpc('admin_reports')]);
+      if(q.error){const o=await sb.rpc('admin_stale_questions');A.data.qs=null;A.data.stale=o.data||[]}else A.data.qs=q.data||[];A.data.reports=r.data||[]}
     if(A.tab==='con'){const {data,error}=await sb.rpc('admin_concierge');if(error)throw error;A.data.con=data||[]}
     if(A.tab==='msg'){const {data,error}=await sb.from('announcements').select('*').order('send_at',{ascending:false});if(error)throw error;A.data.msg=data||[]}
     draw();
@@ -169,7 +170,7 @@ const stat=(n,l,cls='')=>`<div class="card stat ${cls}"><div class="n">${n}</div
 function vPainel(){const s=A.data.stats||{},stale=A.data.stale.length,rep=A.data.reports.filter(r=>!r.hidden).length,con=A.data.con.filter(c=>!c.handled_at).length;
   return `<h1>Painel</h1><p class="lead">Como o app está indo no período escolhido.</p>${period()}
   ${stale||rep||con?`<h2 style="margin-top:0">Precisa de você</h2><div class="grid">
-    ${stale?`<button class="card stat alert" data-tab="com" style="text-align:left;cursor:pointer"><div class="n">${stale}</div><div class="l">pergunta${stale>1?'s':''} sem resposta há mais de 24h</div></button>`:''}
+    ${stale?`<button class="card stat alert" data-tab="com" data-goqf="stale" style="text-align:left;cursor:pointer"><div class="n">${stale}</div><div class="l">pergunta${stale>1?'s':''} sem resposta há mais de 24h</div></button>`:''}
     ${rep?`<button class="card stat alert" data-tab="com" style="text-align:left;cursor:pointer"><div class="n">${rep}</div><div class="l">denúncia${rep>1?'s':''} pra olhar</div></button>`:''}
     ${con?`<button class="card stat alert" data-tab="con" style="text-align:left;cursor:pointer"><div class="n">${con}</div><div class="l">pedido${con>1?'s':''} de consultoria</div></button>`:''}</div>`:''}
   <h2>Pessoas</h2><div class="grid">
@@ -220,12 +221,21 @@ function vUsers(){const u=A.data.users||{couples:[],free:[]};
     <div class="meta em">${esc(f.email)}</div><div class="row" style="margin-top:8px"><button class="btn sm" data-a="pw" data-email="${esc(f.email)}">Mandar link de senha nova</button><button class="btn sm" data-a="block" data-id="${f.id}" data-b="${f.blocked?0:1}">${f.blocked?'Desbloquear':'Bloquear'}</button></div></div>`).join(''):'<p class="empty">Ninguém por aqui.</p>'}</div>`}
 
 // ---------- Comunidade ----------
-function vCom(){const st=A.data.stale,rp=A.data.reports;
-  return `<h1>Comunidade</h1><p class="lead">Perguntas que ninguém respondeu em 24 horas. Sua resposta aparece com o selo “Equipe Entre Nós”.</p>
-  <div class="list">${st.length?st.map(q=>`<div class="item"><div class="row"><span class="tag">pra ${AUD[q.audience]||q.audience}</span><span class="meta">${ago(q.created_at)} · ${q.answers} de 3 respostas</span></div>
-    <p class="quote">“${esc(q.body)}”</p><form data-ans="${q.id}"><textarea name="t" placeholder="Escreva a resposta da equipe…"></textarea><div class="row" style="margin-top:8px"><button class="btn pri sm">Responder como Equipe Entre Nós</button></div></form></div>`).join('')
-    :'<p class="empty">Nenhuma pergunta esperando. Tudo em dia ✓</p>'}</div>
-  <h2>Denúncias</h2><div class="list">${rp.length?rp.map(r=>`<div class="item"><div class="row"><span class="tag ${r.hidden?'':'bad'}">${r.hidden?'oculto':'visível'}</span><span class="meta">${r.target==='question'?'pergunta':r.target==='answer'?'resposta':r.target} · ${ago(r.created_at)}</span></div>
+const QF=[['all','Todas'],['stale','Sem resposta há +24h'],['waiting','Esperando respostas'],['answered','Respondidas']];
+function vCom(){const rp=A.data.reports,qs=A.data.qs;
+  const chips=`<div class="row" style="margin-bottom:14px">${QF.map(([k,n])=>`<button class="btn sm" data-qf="${k}" aria-pressed="${A.qf===k}">${n}</button>`).join('')}</div>`;
+  const list=qs===null?'<p class="empty">Rode o arquivo 009 no Supabase pra ver todas as perguntas.</p>':qs.length?qs.map(q=>{const vis=q.answers.filter(a=>!a.hidden),n=vis.length;
+    const st=q.hidden?'<span class="tag bad">oculta</span>':n===0?'<span class="tag bad">sem resposta</span>':n>=3||!q.open?'<span class="tag ok">respondida</span>':`<span class="tag gold">${n} de 3 respostas</span>`;
+    return `<div class="item"><div class="row">${st}<span class="tag">pra ${AUD[q.audience]||q.audience}</span><div class="sp"></div><span class="meta">${dt(q.created_at)} · ${ago(q.created_at)}</span></div>
+    <p class="quote">“${esc(q.body)}”</p>
+    ${q.answers.length?`<div class="list" style="gap:6px;margin-bottom:10px">${q.answers.map(a=>`<div style="background:var(--night-3);border-radius:10px;padding:8px 12px${a.hidden?';opacity:.5':''}">
+      <div class="row">${a.staff?'<span class="tag gold">✦ Equipe Entre Nós</span>':''}${a.hidden?'<span class="tag bad">oculta</span>':''}<span class="meta">${dt(a.created_at)}</span></div><div>${esc(a.body)}</div></div>`).join('')}</div>`:''}
+    ${!q.hidden&&q.open&&n<3?`<details><summary class="btn sm" style="display:inline-block;list-style:none">Responder como Equipe</summary><form data-ans="${q.id}" style="margin-top:8px"><textarea name="t" placeholder="Escreva a resposta da equipe…"></textarea><div class="row" style="margin-top:8px"><button class="btn pri sm">Publicar resposta</button></div></form></details>`:''}
+    <div class="row" style="margin-top:8px"><button class="btn sm" data-a="hide" data-t="question" data-id="${q.id}" data-h="${q.hidden?0:1}">${q.hidden?'Mostrar de novo':'Ocultar pergunta'}</button></div></div>`}).join('')
+    :`<p class="empty">Nenhuma pergunta ${A.qf==='all'?'ainda':'neste filtro'}.</p>`;
+  return `<h1>Comunidade</h1><p class="lead">Todas as perguntas, com dia e hora. Ninguém aparece com nome: é anônimo pra você também. Sua resposta sai com o selo “Equipe Entre Nós”.</p>${chips}
+  <div class="list">${list}</div>
+  <h2>Denúncias</h2><div class="list">${rp.length?rp.map(r=>`<div class="item"><div class="row"><span class="tag ${r.hidden?'':'bad'}">${r.hidden?'oculto':'visível'}</span><span class="meta">${r.target==='question'?'pergunta':r.target==='answer'?'resposta':r.target} · ${dt(r.created_at)}</span></div>
     <p class="quote">“${esc(r.content||'(conteúdo apagado)')}”</p>${r.reason?`<p class="meta">Motivo: ${esc(r.reason)}</p>`:''}
     ${r.target==='question'||r.target==='answer'?`<button class="btn sm" data-a="hide" data-t="${r.target}" data-id="${r.target_id}" data-h="${r.hidden?0:1}">${r.hidden?'Mostrar de novo':'Ocultar do app'}</button>`:''}</div>`).join('')
     :'<p class="empty">Nenhuma denúncia.</p>'}</div>`}
@@ -272,7 +282,8 @@ function vTeam(){const T=A.data.team||{admins:[],invites:[]};
 // ---------- ações ----------
 async function rpc(name,args,okMsg){const {data,error}=await sb.rpc(name,args);if(error){toast('Não deu certo: '+error.message);return null}if(okMsg)toast(okMsg);return data===null?true:data}
 document.addEventListener('click',async e=>{
-  const t=e.target.closest('[data-tab]');if(t){A.tab=t.dataset.tab;A.open=null;load();return}
+  const t=e.target.closest('[data-tab]');if(t){A.tab=t.dataset.tab;if(t.dataset.goqf)A.qf=t.dataset.goqf;A.open=null;load();return}
+  const qf=e.target.closest('[data-qf]');if(qf){A.qf=qf.dataset.qf;load();return}
   const d=e.target.closest('[data-days]');if(d){A.days=+d.dataset.days;load();return}
   const mk=e.target.closest('[data-mk]');if(mk){A.mk=mk.dataset.mk;try{localStorage.setItem('en_admin_mk',A.mk)}catch(_){}shell();if(A.tab!=='fin'&&A.tab!=='painel')A.tab='fin';load();return}
   const b=e.target.closest('[data-a]');if(!b||b.tagName==='SELECT')return;const a=b.dataset.a;

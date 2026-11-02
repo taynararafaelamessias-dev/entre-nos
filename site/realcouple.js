@@ -107,6 +107,22 @@ R.inbox=function(){const x=X(),list=S.bellList||[];
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="bell"]');if(!b||!S.uid)return;e.stopImmediatePropagation();
   const {data,error}=await sb.rpc('my_announcements');S.bellList=error?[]:(data||[]);try{localStorage.setItem('en_bell_seen',String(Date.now()))}catch(_){}go('inbox')},true);
 
+// avisos novos: bolinha no sininho só quando tem novidade + aviso na página inicial
+let bellNew=null;
+const seenAt=()=>{try{return +localStorage.getItem('en_bell_seen')||0}catch(_){return 0}};
+async function checkBell(){const {data}=await sb.rpc('my_announcements');const l=data||[];S.bellList=l;
+  bellNew=l.find(n=>new Date(n.shown_at).getTime()>seenAt())||null;if(S.screen==='home')decorateHome()}
+function decorateHome(){if(bellNew&&new Date(bellNew.shown_at).getTime()<=seenAt())bellNew=null;
+  const old=document.querySelector('#view .annc');if(old&&!bellNew)old.remove();const bell=document.querySelector('.bell');if(bell)bell.classList.toggle('new',!!bellNew);
+  const v=document.getElementById('view');if(!v||!bellNew||v.querySelector('.annc'))return;const sec=v.querySelector('section');if(!sec)return;
+  const d=document.createElement('button');d.type='button';d.className='annc';d.dataset.act='bell';
+  d.innerHTML=`<span>${ic('bell',18)}</span><span><strong>${esc(bellNew.title)}</strong><small>${esc(bellNew.body)}</small></span>`;
+  const top=sec.querySelector('.bell');const anchor=top?top.closest('div'):null;
+  if(anchor&&anchor.parentNode===sec)anchor.after(d);else sec.prepend(d)}
+const _rb=window.render;window.render=function(){_rb();if(S.screen==='home'&&S.uid)decorateHome()};
+document.addEventListener('click',e=>{if(e.target.closest('[data-act="bell"]'))bellNew=null},true);
+setInterval(()=>{if(S.uid&&!S.isFree&&S.screen==='home')checkBell()},60000);
+
 // carregar ao entrar nas telas
-const _go=window.go;window.go=function(s,o){const r=_go(s,o);if(S.uid){if(s==='chal')loadChal();if(s==='love')loadLove();if(s==='bdsm')loadLimits()}return r};
+const _go=window.go;window.go=function(s,o){const r=_go(s,o);if(S.uid){if(s==='home'&&!S.isFree)checkBell();if(s==='chal')loadChal();if(s==='love')loadLove();if(s==='bdsm')loadLimits()}return r};
 })();

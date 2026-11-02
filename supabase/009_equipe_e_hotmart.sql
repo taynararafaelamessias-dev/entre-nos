@@ -174,3 +174,24 @@ do $$ declare f record; begin
     execute format('grant execute on function %s to authenticated', f.sig);
   end loop;
 end $$;
+
+-- ---------- comunidade: todas as perguntas, com data, hora e respostas (sem mostrar quem perguntou) ----------
+create or replace function public.admin_questions(p_filter text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'sem permissão'; end if;
+  return (select coalesce(jsonb_agg(x order by (x->>'created_at') desc), '[]'::jsonb) from (
+    select jsonb_build_object('id', q.id, 'audience', q.audience, 'body', q.body, 'created_at', q.created_at, 'open', q.open, 'hidden', q.hidden,
+      'answers', (select coalesce(jsonb_agg(jsonb_build_object('id', a.id, 'body', a.body, 'staff', a.staff, 'hidden', a.hidden, 'created_at', a.created_at) order by a.created_at), '[]'::jsonb)
+                  from answers a where a.question_id = q.id)) x
+    from questions q
+    where case p_filter
+      when 'stale'    then q.open and not q.hidden and q.created_at < now() - interval '24 hours'
+                           and not exists (select 1 from answers a where a.question_id = q.id and not a.hidden)
+      when 'waiting'  then q.open and not q.hidden and (select count(*) from answers a where a.question_id = q.id and not a.hidden) < 3
+      when 'answered' then exists (select 1 from answers a where a.question_id = q.id and not a.hidden)
+      else true end
+    order by q.created_at desc limit 300) s);
+end $$;
+revoke execute on function public.admin_questions(text) from public, anon;
+grant execute on function public.admin_questions(text) to authenticated;
