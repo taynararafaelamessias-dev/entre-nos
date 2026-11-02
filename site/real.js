@@ -108,7 +108,11 @@ document.addEventListener('submit',async e=>{const id=e.target.id;if(!['f2','f3'
      await finishPending();S.pinStage=1;S.skipTour=false;go('pin');toast(E.sentTo(pe))}
    else if(id==='f3'){const nm=v('pnm').trim(),pw=v('ppw');if(!nm||pw.length<6){toast(E.ps_err);return}if(!S.page){toast(E.ageErr);return}if(!S.psens){toast(E.sensErr);return}
      const reg={kind:'partner',code:S.inviteCode,nm,lang};try{localStorage.setItem('en_pending',JSON.stringify(reg))}catch(_){}
-     const {data,error}=await sb.auth.signUp({email:S.pemail,password:pw});if(error)throw error;
+     let {data,error}=await sb.auth.signUp({email:S.pemail,password:pw});
+     // já tem conta (ex.: entrou antes pelo jogo grátis): entra com a senha dele e aceita o convite
+     if(error&&/already|registered|exists/i.test(error.message)){const r=await sb.auth.signInWithPassword({email:S.pemail,password:pw});
+       if(r.error){toast(lang==='pt'?'Este e-mail já tem conta. Digite a senha que você já usa nela.':'Este correo ya tiene cuenta. Escribe la contraseña que ya usas.');return}data=r.data;error=null}
+     if(error)throw error;
      if(!data.session){showCheckMail(S.pemail,'login');return}
      await finishPending();S.pinStage=1;S.skipTour=false;go('pin')}
    else if(id==='f4'){const em=v('lem').trim().toLowerCase(),pw=v('lpw');if(!em||!pw){toast(E.lg_err);return}
@@ -173,7 +177,7 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='f6')return;e.prev
 // ---------- início ----------
 async function boot(){
   const q=new URLSearchParams(location.search);const code=q.get('convite');
-  if(q.get('jogo')){const {data:{session}}=await sb.auth.getSession();if(session)await loadAccount().catch(()=>{});return}
+  if(q.get('jogo')){const {data:{session}}=await sb.auth.getSession();if(session)await loadAccount().catch(()=>{});else clearDemo();if(S.screen==='home')render();return}
   if(code){const {data}=await sb.rpc('invite_info',{p_code:code});const r=data&&data[0];
     if(r&&!r.already_used){S.inviteCode=code;S.name=r.inviter_nickname;S.gender=r.inviter_gender;S.pemail=r.partner_email;S.pgender=r.partner_gender;
       history.replaceState(null,'',location.pathname);go('partner',{reset:true});return}

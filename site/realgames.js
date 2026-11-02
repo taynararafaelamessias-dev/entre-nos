@@ -136,7 +136,7 @@ function bodyTease(){const G=GTX(),X=R2(),ev=S.rm.events.filter(e=>e.kind==='tea
    <div class="sec-t"></div>${ev.length?[...ev].reverse().map(e=>`<div class="notif"><span class="gic">${ic('bell',18)}</span><div><strong>${e.user_id===me()?(lang==='pt'?'Você mandou':'Tú enviaste'):G.teaseNotif(esc(otherName()))}</strong>${bub(e,'plain')}</div></div>`).join(''):`<p class="hint">${X.teaseNone}</p>`}`}
 
 const FREE_MAX=20;
-function history(){const ev=S.rm.events,G=GTX(),X=R2();const rounds=[];let cur={game:S.rm.game,items:[]};
+function roundsHistory(){const ev=S.rm.events,G=GTX(),X=R2();const rounds=[];let cur={game:S.rm.game,items:[]};
   ev.forEach(e=>{if(e.kind==='reset'||e.kind==='switch'){if(cur.items.length)rounds.push(cur);cur={game:e.kind==='switch'?e.data.game:cur.game,items:[]}}
     else if(['msg','tease','tsend'].includes(e.kind)&&e.body)cur.items.push(e);else if(e.kind==='tans')cur.items.push(Object.assign({},e,{body:e.body||(e.data&&e.data.ok?R2().accepted:R2().refused)}));else if(e.kind==='plan')cur.items.push(Object.assign({},e,{body:[...(e.data.sel||[]).map(id=>WBY[id][lang]),...(e.data.own||[])].join(', ')}))});
   if(!rounds.length)return '';
@@ -151,7 +151,7 @@ R.groom=function(){const G=GTX(),X=R2(),r=S.rm;if(!r.id)return R.games();
   else{body=(cg==='scene'?bodyScene(true):cg==='like'?bodyScene(false):cg==='plan'?bodyPlan():cg==='tod'?bodyTod():bodyTease())+`<div class="sec-t">${X.switchT}</div><div class="chips wrap">${Object.entries(G.games).filter(([k])=>k!==cg).map(([k,v])=>`<button type="button" class="chip" data-rgsw="${k}">${ic(GIC[k],14)} ${v[0]}</button>`).join('')}</div><p class="hint">${X.switchHint}</p>`}
   return `<section class="screen"><button type="button" class="back" data-rg="leave">${G.back}</button><h2>${title}</h2>
    ${otherId()?`<span class="tagc" style="align-self:flex-start">${ic('both',14)} ${esc(S.rm.people[me()]||'')} + ${esc(otherName())}</span>`:''}
-   ${r.free&&otherId()?`<span class="tagc gold" style="align-self:flex-start">${X.playsLeft(Math.max(0,FREE_MAX-plays()))}</span>`:''}${body}${otherId()?history():''}<p class="hint">${ic('lock',13)} ${X.erased}</p></section>`};
+   ${r.free&&otherId()?`<span class="tagc gold" style="align-self:flex-start">${X.playsLeft(Math.max(0,FREE_MAX-plays()))}</span>`:''}${body}${otherId()?roundsHistory():''}<p class="hint">${ic('lock',13)} ${X.erased}</p></section>`};
 
 // ---------- jogo grátis: cadastro rápido, escolha do jogo, convite ----------
 R.mgame=function(){const X=R2(),G=t().mg,f=S.mf;
