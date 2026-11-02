@@ -58,7 +58,7 @@ document.addEventListener('click',e=>{if(!isFree())return;
   const tl=e.target.closest('.tile.locked');if(tl){e.stopImmediatePropagation();openLock(tl.dataset.tile)}},true);
 
 // se a tela inicial abriu antes de saber que a conta é grátis, redesenha
-setInterval(()=>{if(S.screen==='home'&&isFree()&&!document.querySelector('#view .tile.locked'))render()},800);
+let fixN=0;const fixIv=setInterval(()=>{if(++fixN>15){clearInterval(fixIv);return}if(S.screen==='home'&&isFree()&&!document.querySelector('#view .tile.locked'))render()},800);
 
 // ---------- Minha conta da conta grátis ----------
 S.fa={inv:false,code:''};

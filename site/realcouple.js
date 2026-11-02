@@ -13,7 +13,7 @@ async function getPartner(){if(partnerId)return partnerId;const {data}=await sb.
 
 // ===================== DESAFIO DO CASAL =====================
 const split=items=>{const o={pos:[],pre:[],toy:[],game:[]};(items||[]).forEach(k=>{const c=k.split(':')[0];if(o[c])o[c].push(k)});return o};
-async function loadChal(){if(!S.uid)return;const c=S.ch;
+async function loadChal(){if(!S.uid)return;const c=S.ch;const before=JSON.stringify([c.stage,c.d,c.chId,c.cm]);
   const {data:ch}=await sb.from('challenges').select('id,days').eq('active',true).order('created_at',{ascending:false}).limit(1);
   if(!ch||!ch.length){if(c.stage!=='setup'&&c.edit==null){c.stage='setup';c.d=[]}c.chId=null;if(S.screen==='chal')render();return}
   const chal=ch[0];const {data:days}=await sb.from('challenge_days').select('id,day_no,picker,items,sent,done').eq('challenge_id',chal.id).order('day_no');
@@ -22,7 +22,7 @@ async function loadChal(){if(!S.uid)return;const c=S.ch;
   c.chId=chal.id;c.n=chal.days;c.stage='run';
   c.d=(days||[]).map(d=>{const cm={me:'',them:''};(cms||[]).filter(x=>x.day_id===d.id).forEach(x=>{cm[x.user_id===S.uid?'me':'them']=x.body});
     return Object.assign({id:d.id,who:d.picker===S.uid?'me':'them',sent:d.sent,done:d.done,cm},split(d.items))});
-  c.who=c.d.map(d=>d.who);if(S.screen==='chal'){const y=window.scrollY;render();window.scrollTo(0,y)}}
+  c.who=c.d.map(d=>d.who);if(S.screen==='chal'&&JSON.stringify([c.stage,c.d,c.chId,c.cm])!==before){const y=window.scrollY;render();window.scrollTo(0,y)}}
 let edIdx=null,wasConfirm=false;
 document.addEventListener('click',e=>{const b=e.target.closest('[data-hx]');if(!b)return;edIdx=S.ch.edit;wasConfirm=S.ch.confirm;
   if(b.dataset.hx==='start'&&S.uid&&!S.partner){e.stopImmediatePropagation();toast(lang==='pt'?'Seu par precisa entrar no app antes de vocês começarem o desafio.':'Tu pareja tiene que entrar en la app antes de empezar el reto.')}},true);
@@ -47,7 +47,7 @@ setInterval(()=>{if(S.uid&&S.screen==='chal'&&S.ch.edit==null&&!document.activeE
 
 // ===================== PRO MEU AMOR =====================
 async function loadLove(){if(!S.uid)return;const {data}=await sb.from('love_messages').select('id,from_user,body,reply,created_at').order('created_at');
-  S.lv.msgs=(data||[]).map(r=>({id:r.id,from:r.from_user===S.uid?'me':'them',text:r.body,reply:r.reply||''}));if(S.screen==='love'){const y=window.scrollY;render();window.scrollTo(0,y)}}
+  const nm=(data||[]).map(r=>({id:r.id,from:r.from_user===S.uid?'me':'them',text:r.body,reply:r.reply||''}));if(JSON.stringify(nm)===JSON.stringify(S.lv.msgs))return;S.lv.msgs=nm;if(S.screen==='love'){const y=window.scrollY;render();window.scrollTo(0,y)}}
 
 // ===================== BDSM: NOSSOS LIMITES =====================
 async function checkCouple(){const b=S.bd;const {data}=await sb.rpc('couple_limits');
