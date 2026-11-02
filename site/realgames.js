@@ -21,7 +21,7 @@ const RG={
   planWait:n=>`Esperando ${n} enviar…`,planMine:'Você já enviou. Assim que a outra pessoa enviar, aparece o que deu match.',
   todWait:n=>`${n} está escolhendo…`,todTheirs:(n,k)=>`${n} escolheu ${k}:`,answer:'Responder',teaseNone:'Nenhuma provocação ainda.',
   call:n=>`${n} te chamou pra jogar`,callGo:'Entrar no jogo',endAsk:'Encerrar o jogo',paywall:'Você usou seus 3 jogos grátis. Assine o Entre Nós pra jogar sem limite.',subscribe:'Conhecer o Entre Nós',
-  err:'Algo deu errado. Tente de novo.',locked:'Essa parte é do Entre Nós completo. No grátis, só os jogos.',overT:'Esse jogo grátis chegou ao fim 🔥',overL:'Cada jogo grátis tem 20 jogadas. Pra continuar jogando sem limite e liberar posições em 3D, preliminares, brinquedos e tudo mais, assine o Entre Nós.',backFree:'Voltar aos jogos grátis',playsLeft:n=>`${n} jogadas restantes neste jogo grátis`,switchT:'Jogar outra coisa com a mesma pessoa',switchHint:'Trocar de jogo aqui não gasta outro jogo grátis.',openT:'Continuar de onde parou',openWait:'esperando alguém entrar',openWith:n=>`com ${n}`,notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
+  err:'Algo deu errado. Tente de novo.',locked:'Essa parte é do Entre Nós completo. No grátis, só os jogos.',overT:'Esse jogo grátis chegou ao fim 🔥',overL:'Cada jogo grátis tem 20 jogadas. Pra continuar jogando sem limite e liberar posições em 3D, preliminares, brinquedos e tudo mais, assine o Entre Nós.',backFree:'Voltar aos jogos grátis',playsLeft:n=>`${n} jogadas restantes neste jogo grátis`,expired2:'Seu acesso antigo não existe mais. Crie sua conta de novo.',switchT:'Jogar outra coisa com a mesma pessoa',switchHint:'Trocar de jogo aqui não gasta outro jogo grátis.',openT:'Continuar de onde parou',openWait:'esperando alguém entrar',openWith:n=>`com ${n}`,notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
  es:{signT:'Antes de jugar, crea tu acceso',signLead:'Es rapidito y sirve para tus 3 juegos gratis. Nadie ve tus datos.',haveAcc:'Ya tengo cuenta',noAcc:'Crear cuenta',
   nick:'Tu apodo',nickPh:'Como te conoce la otra persona',email:'Tu correo',pass:'Contraseña',passPh:'Mínimo 6 caracteres',iam:'Soy',w:'Mujer',m:'Hombre',
   age:'Tengo 18 años o más y acepto los <a href="#" data-en="terms">términos de uso</a> y la <a href="#" data-en="terms">política de privacidad</a>.',
@@ -36,7 +36,7 @@ const RG={
   planWait:n=>`Esperando a que ${n} envíe…`,planMine:'Ya enviaste. En cuanto la otra persona envíe, aparece el match.',
   todWait:n=>`${n} está eligiendo…`,todTheirs:(n,k)=>`${n} eligió ${k}:`,answer:'Responder',teaseNone:'Todavía no hay provocaciones.',
   call:n=>`${n} te invitó a jugar`,callGo:'Entrar al juego',endAsk:'Terminar el juego',paywall:'Usaste tus 3 juegos gratis. Suscríbete a Entre Nosotros para jugar sin límite.',subscribe:'Conocer Entre Nosotros',
-  err:'Algo salió mal. Inténtalo de nuevo.',locked:'Esta parte es de Entre Nosotros completo. En la versión gratis, solo los juegos.',overT:'Este juego gratis llegó al final 🔥',overL:'Cada juego gratis tiene 20 jugadas. Para seguir jugando sin límite y desbloquear posturas en 3D, preliminares, juguetes y todo lo demás, suscríbete a Entre Nosotros.',backFree:'Volver a los juegos gratis',playsLeft:n=>`Quedan ${n} jugadas en este juego gratis`,switchT:'Jugar a otra cosa con la misma persona',switchHint:'Cambiar de juego aquí no gasta otro juego gratis.',openT:'Seguir donde lo dejaste',openWait:'esperando a que alguien entre',openWith:n=>`con ${n}`,notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
+  err:'Algo salió mal. Inténtalo de nuevo.',locked:'Esta parte es de Entre Nosotros completo. En la versión gratis, solo los juegos.',overT:'Este juego gratis llegó al final 🔥',overL:'Cada juego gratis tiene 20 jugadas. Para seguir jugando sin límite y desbloquear posturas en 3D, preliminares, juguetes y todo lo demás, suscríbete a Entre Nosotros.',backFree:'Volver a los juegos gratis',playsLeft:n=>`Quedan ${n} jugadas en este juego gratis`,expired2:'Tu acceso anterior ya no existe. Crea tu cuenta de nuevo.',switchT:'Jugar a otra cosa con la misma persona',switchHint:'Cambiar de juego aquí no gasta otro juego gratis.',openT:'Seguir donde lo dejaste',openWait:'esperando a que alguien entre',openWith:n=>`con ${n}`,notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
 const R2=()=>RG[lang];
 
 // ---------- estado da sala ----------
@@ -176,7 +176,8 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='fg')return;e.prev
   try{
     const em=v('gem').trim().toLowerCase(),pw=v('gpw');
     if(f.mode==='finish'){const nm=v('gnm').trim();if(!nm||!f.g){toast(X.errFill);return}if(!f.age||!f.sens){toast(X.errAge);return}
-      const r=await sb.rpc('register_free',{p_nickname:nm,p_gender:f.g,p_lang:lang,p_adult:true,p_sensitive:true});if(r.error)throw r.error;S.name=nm}
+      const r=await sb.rpc('register_free',{p_nickname:nm,p_gender:f.g,p_lang:lang,p_adult:true,p_sensitive:true});
+      if(r.error){if(/foreign key|violates|não autenticado|JWT/i.test(r.error.message||'')){await sb.auth.signOut().catch(()=>{});S.uid=null;S.hasProfile=false;f.mode='new';toast(X.expired2);render();return}throw r.error}S.name=nm}
     else if(f.mode==='new'){const nm=v('gnm').trim();if(!nm||!em||pw.length<6||!f.g){toast(X.errFill);return}if(!f.age||!f.sens){toast(X.errAge);return}
       const {data,error}=await sb.auth.signUp({email:em,password:pw});if(error)throw error;
       if(!data.session){try{localStorage.setItem('en_free_pending',JSON.stringify({nm,g:f.g}))}catch(_){}f.mode='old';showCheckMail(em,'mgame');return}
@@ -241,7 +242,9 @@ document.addEventListener('click',e=>{const c=e.target.closest('[data-rgcall]');
 // ---------- início: link de jogo e conta ----------
 (async()=>{
   const q=new URLSearchParams(location.search),code=q.get('jogo');
-  const {data:{session}}=await sb.auth.getSession();if(session){S.uid=session.user.id;await refreshFree();
+  let {data:{session}}=await sb.auth.getSession();
+  if(session){const {data:u,error:ue}=await sb.auth.getUser();if(ue||!u||!u.user){await sb.auth.signOut().catch(()=>{});session=null;S.uid=null;S.hasProfile=false}}
+  if(session){S.uid=session.user.id;await refreshFree();
     if(!S.hasProfile){let pend=null;try{pend=JSON.parse(localStorage.getItem('en_free_pending')||'null')}catch(_){}
       if(pend){const r=await sb.rpc('register_free',{p_nickname:pend.nm,p_gender:pend.g,p_lang:lang,p_adult:true,p_sensitive:true});if(!r.error){try{localStorage.removeItem('en_free_pending')}catch(_){}await refreshFree();if(!code)setTimeout(()=>go('mgame',{reset:true}),400)}}}
     watchCalls()}

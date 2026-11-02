@@ -153,7 +153,8 @@ async function boot(){
     if(r&&!r.already_used){S.inviteCode=code;S.name=r.inviter_nickname;S.gender=r.inviter_gender;S.pemail=r.partner_email;S.pgender=r.partner_gender;
       history.replaceState(null,'',location.pathname);go('partner',{reset:true});return}
     toast(RT().invalidInvite)}
-  const {data:{session}}=await sb.auth.getSession();
+  let {data:{session}}=await sb.auth.getSession();
+  if(session){const {data:u,error:ue}=await sb.auth.getUser();if(ue||!u||!u.user){await sb.auth.signOut().catch(()=>{});session=null}}
   if(session){await finishPending().catch(()=>{});const ok=await loadAccount();
     if(ok===true&&S.isFree){go('mgame',{reset:true});return}
     if(ok===true){if(getPin(S.uid)){S.pin='';go('lock',{reset:true})}else{S.pinStage=1;S.skipTour=true;go('pin',{reset:true})}return}}
