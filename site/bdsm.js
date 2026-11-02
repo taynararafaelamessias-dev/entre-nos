@@ -127,7 +127,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-bd]');if(
    case 'pain':b.pain=+p;render();break;
    case 'yn':b.ans[p]=q;{const y=window.scrollY;render();window.scrollTo(0,y)}break;
    case 'send':{const left=BDP.filter(x=>!b.ans[x.id]).length;if(left){toast(BXT().needAll(left));break}b.stage='wait';render();
-     setTimeout(()=>{b.their=Object.fromEntries(BDP.map((x,i)=>[x.id,x.lv===1?'y':(x.lv===2?(i%2?'y':'m'):(i%3?'n':'m'))]));b.stage='done';if(S.screen==='bdsm')render();toast(t().w.partnerDone)},1800);break}
+     if(!window.REAL)setTimeout(()=>{b.their=Object.fromEntries(BDP.map((x,i)=>[x.id,x.lv===1?'y':(x.lv===2?(i%2?'y':'m'):(i%3?'n':'m'))]));b.stage='done';if(S.screen==='bdsm')render();toast(t().w.partnerDone)},1800);break}
    case 'redo':b.stage='pick';render();break;
    case 'lv':b.lv=+p;b.exp=null;render();break;
    case 'exp':b.exp=b.exp===p?null:p;render();if(b.exp){const o=document.getElementById('bdopen');if(o)o.scrollIntoView({behavior:'smooth',block:'start'})}break;

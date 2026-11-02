@@ -208,18 +208,18 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-hx]');if(!
    case 'go':if(p==='chal'){c.edit=null}go(p);break;
    case 'n':c.n=+p;while(c.who.length<c.n)c.who.push(c.who.length%2?'them':'me');render();break;
    case 'who':c.who[+p]=q;render();break;
-   case 'start':c.d=c.who.slice(0,c.n).map(w=>({who:w,pos:[],pre:[],toy:[],game:[],sent:false,done:false,cm:{me:'',them:''}}));c.stage='run';c.confirm=false;render();c.d.forEach((d,i)=>{if(d.who==='them')partnerBuild(i)});break;
+   case 'start':c.d=c.who.slice(0,c.n).map(w=>({who:w,pos:[],pre:[],toy:[],game:[],sent:false,done:false,cm:{me:'',them:''}}));c.stage='run';c.confirm=false;render();if(!window.REAL)c.d.forEach((d,i)=>{if(d.who==='them')partnerBuild(i)});break;
    case 'restart':if(!c.confirm){c.confirm=true;render();break}c.stage='setup';c.d=[];c.confirm=false;render();break;
    case 'edit':{const d=c.d[+p];c.edit=+p;c.cat='pos';c.sel={pos:[...d.pos],pre:[...d.pre],toy:[...d.toy],game:[...d.game]};render();window.scrollTo(0,0);break}
    case 'cat':c.cat=p;render();break;
    case 'edcancel':c.edit=null;render();break;
    case 'edsave':{const s=c.sel;if(!(s.pos.length+s.pre.length+s.toy.length+s.game.length)){toast(H.needOne);break}Object.assign(c.d[c.edit],s,{sent:true});c.edit=null;render();window.scrollTo(0,0);toast(H.saved);break}
    case 'done':c.d[+p].done=!c.d[+p].done;render();break;
-   case 'cm':{const i=+p,tx=((S.chcmd||{})[i]||'').trim();if(!tx)break;c.d[i].cm.me=tx;delete S.chcmd[i];render();setTimeout(()=>{if(!c.d[i])return;c.d[i].cm.them=CHCMT[lang][i%3];if(S.screen==='chal')render();toast(CT().theyCmt)},1500);break}
+   case 'cm':{const i=+p,tx=((S.chcmd||{})[i]||'').trim();if(!tx)break;c.d[i].cm.me=tx;delete S.chcmd[i];render();if(!window.REAL)setTimeout(()=>{if(!c.d[i])return;c.d[i].cm.them=CHCMT[lang][i%3];if(S.screen==='chal')render();toast(CT().theyCmt)},1500);break}
    case 'ltab':v.tab=p;render();break;
    case 'lcat':v.cat=p;v.draft='';render();break;
    case 'lpick':v.draft=LOVEMSG[lang][v.cat][+p];render();break;
-   case 'lsend':{const tx=v.draft.trim();if(!tx)break;v.msgs.push({from:'me',text:tx,reply:''});v.draft='';v.tab='box';render();toast(H.sent);const m=v.msgs[v.msgs.length-1];setTimeout(()=>{m.reply=LOVEREPLY[lang][Math.floor(Math.random()*4)];if(S.screen==='love')render()},2000);break}
+   case 'lsend':{const tx=v.draft.trim();if(!tx)break;v.msgs.push({from:'me',text:tx,reply:''});v.draft='';v.tab='box';render();toast(H.sent);const m=v.msgs[v.msgs.length-1];if(!window.REAL)setTimeout(()=>{m.reply=LOVEREPLY[lang][Math.floor(Math.random()*4)];if(S.screen==='love')render()},2000);break}
    case 'lrep':{const i=+p,tx=(v.rdraft[i]||'').trim();if(!tx)break;v.msgs[i].reply=tx;delete v.rdraft[i];render();break}
   }});
 document.addEventListener('click',e=>{const x=e.target.closest('[data-chk]');if(!x)return;const c=S.ch,k=x.dataset.chk,arr=c.sel[k.split(':')[0]],j=arr.indexOf(k);
