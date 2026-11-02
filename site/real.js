@@ -53,7 +53,7 @@ async function loadAccount(){
   const {data:profs}=await sb.from('profiles').select('id,nickname,gender,lang,couple_id,role');
   const me=(profs||[]).find(p=>p.id===user.id);if(!me)return 'noprofile';
   const pa=(profs||[]).find(p=>p.id!==user.id);
-  S.name=me.nickname;S.gender=me.gender;S.isPartner=me.role==='partner';
+  S.name=me.nickname;S.gender=me.gender;S.isPartner=me.role==='partner';S.isFree=!me.couple_id;
   if(me.lang&&me.lang!==lang){lang=me.lang;try{localStorage.setItem('en_lang',lang)}catch(_){}}
   clearDemo();
   if(me.couple_id){const {data:c}=await sb.from('couples').select('partner_email,partner_gender,invite_code,partner_id,sub_status').eq('id',me.couple_id).maybeSingle();
@@ -111,7 +111,7 @@ document.addEventListener('submit',async e=>{const id=e.target.id;if(!['f2','f3'
      await finishPending();S.pinStage=1;S.skipTour=false;go('pin')}
    else if(id==='f4'){const em=v('lem').trim().toLowerCase(),pw=v('lpw');if(!em||!pw){toast(E.lg_err);return}
      const {error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;
-     await finishPending();const ok=await loadAccount();if(ok==='noprofile'){go('welcome',{reset:true});return}
+     await finishPending();const ok=await loadAccount();if(ok==='noprofile'){go('mgame',{reset:true});return}if(S.isFree){go('mgame',{reset:true});return}
      S.pinStage=1;S.skipTour=true;go('pin')}
    else if(id==='f5'){const pw=v('fpw');if(!pw){toast(E.fp_err);return}
      const {error}=await sb.auth.signInWithPassword({email:S.email,password:pw});if(error)throw error;
@@ -155,6 +155,7 @@ async function boot(){
     toast(RT().invalidInvite)}
   const {data:{session}}=await sb.auth.getSession();
   if(session){await finishPending().catch(()=>{});const ok=await loadAccount();
+    if(ok===true&&S.isFree){go('mgame',{reset:true});return}
     if(ok===true){if(getPin(S.uid)){S.pin='';go('lock',{reset:true})}else{S.pinStage=1;S.skipTour=true;go('pin',{reset:true})}return}}
   clearDemo();go('welcome',{reset:true})}
 boot().catch(()=>{clearDemo();go('welcome',{reset:true})});

@@ -21,7 +21,7 @@ const RG={
   planWait:n=>`Esperando ${n} enviar…`,planMine:'Você já enviou. Assim que a outra pessoa enviar, aparece o que deu match.',
   todWait:n=>`${n} está escolhendo…`,todTheirs:(n,k)=>`${n} escolheu ${k}:`,answer:'Responder',teaseNone:'Nenhuma provocação ainda.',
   call:n=>`${n} te chamou pra jogar`,callGo:'Entrar no jogo',endAsk:'Encerrar o jogo',paywall:'Você usou seus 3 jogos grátis. Assine o Entre Nós pra jogar sem limite.',subscribe:'Conhecer o Entre Nós',
-  err:'Algo deu errado. Tente de novo.',notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
+  err:'Algo deu errado. Tente de novo.',locked:'Essa parte é do Entre Nós completo. No grátis, só os jogos.',overT:'Esse jogo grátis chegou ao fim 🔥',overL:'Cada jogo grátis tem 20 jogadas. Pra continuar jogando sem limite e liberar posições em 3D, preliminares, brinquedos e tudo mais, assine o Entre Nós.',backFree:'Voltar aos jogos grátis',playsLeft:n=>`${n} jogadas restantes neste jogo grátis`,switchT:'Jogar outra coisa com a mesma pessoa',switchHint:'Trocar de jogo aqui não gasta outro jogo grátis.',openT:'Continuar de onde parou',openWait:'esperando alguém entrar',openWith:n=>`com ${n}`,notConf:'Seu e-mail ainda não foi confirmado. Abra o e-mail de confirmação e toque no link, depois entre aqui.',finT:'Falta só completar seu perfil',finBtn:'Concluir e continuar'},
  es:{signT:'Antes de jugar, crea tu acceso',signLead:'Es rapidito y sirve para tus 3 juegos gratis. Nadie ve tus datos.',haveAcc:'Ya tengo cuenta',noAcc:'Crear cuenta',
   nick:'Tu apodo',nickPh:'Como te conoce la otra persona',email:'Tu correo',pass:'Contraseña',passPh:'Mínimo 6 caracteres',iam:'Soy',w:'Mujer',m:'Hombre',
   age:'Tengo 18 años o más y acepto los <a href="#" data-en="terms">términos de uso</a> y la <a href="#" data-en="terms">política de privacidad</a>.',
@@ -36,7 +36,7 @@ const RG={
   planWait:n=>`Esperando a que ${n} envíe…`,planMine:'Ya enviaste. En cuanto la otra persona envíe, aparece el match.',
   todWait:n=>`${n} está eligiendo…`,todTheirs:(n,k)=>`${n} eligió ${k}:`,answer:'Responder',teaseNone:'Todavía no hay provocaciones.',
   call:n=>`${n} te invitó a jugar`,callGo:'Entrar al juego',endAsk:'Terminar el juego',paywall:'Usaste tus 3 juegos gratis. Suscríbete a Entre Nosotros para jugar sin límite.',subscribe:'Conocer Entre Nosotros',
-  err:'Algo salió mal. Inténtalo de nuevo.',notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
+  err:'Algo salió mal. Inténtalo de nuevo.',locked:'Esta parte es de Entre Nosotros completo. En la versión gratis, solo los juegos.',overT:'Este juego gratis llegó al final 🔥',overL:'Cada juego gratis tiene 20 jugadas. Para seguir jugando sin límite y desbloquear posturas en 3D, preliminares, juguetes y todo lo demás, suscríbete a Entre Nosotros.',backFree:'Volver a los juegos gratis',playsLeft:n=>`Quedan ${n} jugadas en este juego gratis`,switchT:'Jugar a otra cosa con la misma persona',switchHint:'Cambiar de juego aquí no gasta otro juego gratis.',openT:'Seguir donde lo dejaste',openWait:'esperando a que alguien entre',openWith:n=>`con ${n}`,notConf:'Tu correo todavía no está confirmado. Abre el correo de confirmación y toca el enlace, después entra aquí.',finT:'Solo falta completar tu perfil',finBtn:'Terminar y continuar'}};
 const R2=()=>RG[lang];
 
 // ---------- estado da sala ----------
@@ -50,26 +50,29 @@ const roomLink=()=>location.host+'/?jogo='+(S.rm.code||'');
 
 async function enterRoom(roomId){
   const r=S.rm;leaveRoom(true);
-  const {data:room}=await sb.from('game_rooms').select('id,code,game,created_by,state').eq('id',roomId).maybeSingle();
+  const {data:room}=await sb.from('game_rooms').select('id,code,game,created_by,state,free').eq('id',roomId).maybeSingle();
   if(!room){toast(R2().expired);return}
-  Object.assign(r,{id:room.id,code:room.code,game:room.game,host:room.created_by,events:[],lastId:0,draft:'',ideas:false,planSel:{}});
+  Object.assign(r,{id:room.id,code:room.code,game:room.game,host:room.created_by,free:room.free,over:false,events:[],lastId:0,draft:'',ideas:false,planSel:{}});
   await loadPeople();await pullEvents();
   r.ch=sb.channel('room-'+room.id)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'game_events',filter:'room_id=eq.'+room.id},p=>addEvents([p.new]))
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'game_members',filter:'room_id=eq.'+room.id},async()=>{const before=Object.keys(r.people).length;await loadPeople();if(Object.keys(r.people).length>before&&otherId())toast(R2().joined(otherName()));rr()})
     .subscribe();
-  r.poll=setInterval(async()=>{await pullEvents();if(!otherId()){await loadPeople();rr()}},4000);
+  r.poll=setInterval(async()=>{await pullEvents();if(!otherId()){await loadPeople();if(otherId()){toast(R2().joined(otherName()));rr()}}},4000);
   go('groom')}
 function leaveRoom(silent){const r=S.rm;if(r.ch){sb.removeChannel(r.ch);r.ch=null}if(r.poll){clearInterval(r.poll);r.poll=null}if(!silent)r.id=null}
 async function loadPeople(){const {data}=await sb.rpc('room_people',{p_room:S.rm.id});S.rm.people={};(data||[]).forEach(p=>S.rm.people[p.user_id]=p.nickname)}
 async function pullEvents(){const r=S.rm;if(!r.id)return;const {data}=await sb.from('game_events').select('id,user_id,kind,body,data,created_at').eq('room_id',r.id).gt('id',r.lastId).order('id');if(data&&data.length)addEvents(data)}
 function addEvents(list){const r=S.rm;let changed=false;list.forEach(e=>{if(e.room_id&&e.room_id!==r.id)return;if(r.events.some(x=>x.id===e.id))return;r.events.push(e);r.lastId=Math.max(r.lastId,e.id);changed=true});
   if(changed){r.events.sort((a,b)=>a.id-b.id);rr()}}
-function rr(){if(S.screen==='groom'){const y=window.scrollY;const ta=document.getElementById('rgin');const foc=ta&&document.activeElement===ta;render();window.scrollTo(0,y);if(foc){const n=document.getElementById('rgin');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}}}}
-async function send(kind,body,data){const {error}=await sb.from('game_events').insert({room_id:S.rm.id,kind,body:body||null,data:data||null});if(error){toast(R2().err);return false}await pullEvents();return true}
+function rr(){if(S.screen==='groom'){const vw=document.getElementById('view');if(vw)vw.classList.add('still');setTimeout(()=>{if(vw)vw.classList.remove('still')},50);const y=window.scrollY;const ta=document.getElementById('rgin');const foc=ta&&document.activeElement===ta;render();window.scrollTo(0,y);if(foc){const n=document.getElementById('rgin');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}}}}
+const PLAYK=['msg','tod','tdone','plan','tease'];const plays=()=>S.rm.events.filter(e=>PLAYK.includes(e.kind)).length;
+async function send(kind,body,data){if(S.rm.free&&PLAYK.includes(kind)&&plays()>=FREE_MAX){S.rm.over=true;rr();return false}
+  const {error}=await sb.from('game_events').insert({room_id:S.rm.id,kind,body:body||null,data:data||null});if(error){if(/limite/.test(error.message||'')){S.rm.over=true;rr();return false}toast(R2().err);return false}await pullEvents();return true}
 
 // ---------- regras de cada jogo, a partir dos eventos ----------
-function sinceReset(){const ev=S.rm.events;let i=-1;ev.forEach((e,k)=>{if(e.kind==='reset')i=k});return ev.slice(i+1)}
+function sinceReset(){const ev=S.rm.events;let i=-1;ev.forEach((e,k)=>{if(e.kind==='reset'||e.kind==='switch')i=k});return ev.slice(i+1)}
+function curGame(){const sw=S.rm.events.filter(e=>e.kind==='switch');return sw.length?sw[sw.length-1].data.game:S.rm.game}
 function sceneIdx(){const ev=S.rm.events.filter(e=>e.kind==='reset');const base=parseInt(S.rm.code.replace(/[^0-9]/g,'')||'0',10);return (base+ev.length)%SCENES.length}
 function chatTurn(msgs){if(!msgs.length)return S.rm.host;const last=msgs[msgs.length-1].user_id;return last===me()?otherId():me()}
 
@@ -111,15 +114,18 @@ function bodyTease(){const G=GTX(),X=R2(),ev=S.rm.events.filter(e=>e.kind==='tea
    <textarea id="rgin" rows="2" placeholder="${G.teasePh}">${esc(S.rm.draft)}</textarea><button type="button" class="btn pri" data-rg="tease">${ic('heat',16)} ${G.teaseSend}</button>
    <div class="sec-t"></div>${ev.length?[...ev].reverse().map(e=>`<div class="notif"><span class="gic">${ic('bell',18)}</span><div><strong>${e.user_id===me()?(lang==='pt'?'Você mandou':'Tú enviaste'):G.teaseNotif(esc(otherName()))}</strong><span>${esc(e.body)}</span></div></div>`).join(''):`<p class="hint">${X.teaseNone}</p>`}`}
 
+const FREE_MAX=20;
 R.groom=function(){const G=GTX(),X=R2(),r=S.rm;if(!r.id)return R.games();
-  const title=G.games[r.game]?G.games[r.game][0]:'';let body='';
+  if(r.free&&(r.over||plays()>=FREE_MAX))return `<section class="screen"><button type="button" class="back" data-rg="leave">${G.back}</button><div class="wkhero center"><div class="bigic">${ic('heat',40)}</div><h2>${X.overT}</h2><p>${X.overL}</p>
+    <button type="button" class="btn pri" data-act="welcome">${X.subscribe}</button><button type="button" class="btn ghost" data-rg="leave">${X.backFree}</button></div></section>`;
+  const cg=curGame();const title=G.games[cg]?G.games[cg][0]:'';let body='';
   if(!otherId()){const link=roomLink();
     body=`<div class="note">${X.waitLead(null)}</div><div class="invite"><label>${X.waitT}</label><div class="linkbox"><code>${link}</code><button type="button" class="copy" data-rg="copy">${X.copy}</button></div></div>
       <button type="button" class="btn gold" data-rg="copymsg">${X.copyMsg}</button><div class="wkhero center"><div class="bigic">${ic('both',36)}</div><p>${X.waiting}</p></div>`}
-  else if(r.game==='scene')body=bodyScene(true);else if(r.game==='like')body=bodyScene(false);else if(r.game==='plan')body=bodyPlan();else if(r.game==='tod')body=bodyTod();else body=bodyTease();
+  else{body=(cg==='scene'?bodyScene(true):cg==='like'?bodyScene(false):cg==='plan'?bodyPlan():cg==='tod'?bodyTod():bodyTease())+`<div class="sec-t">${X.switchT}</div><div class="chips wrap">${Object.entries(G.games).filter(([k])=>k!==cg).map(([k,v])=>`<button type="button" class="chip" data-rgsw="${k}">${ic(GIC[k],14)} ${v[0]}</button>`).join('')}</div><p class="hint">${X.switchHint}</p>`}
   return `<section class="screen"><button type="button" class="back" data-rg="leave">${G.back}</button><h2>${title}</h2>
    ${otherId()?`<span class="tagc" style="align-self:flex-start">${ic('both',14)} ${esc(S.rm.people[me()]||'')} + ${esc(otherName())}</span>`:''}
-   ${r.freeLeft!=null?`<span class="tagc gold" style="align-self:flex-start">${X.left(r.freeLeft)}</span>`:''}${body}<p class="hint">${ic('lock',13)} ${X.erased}</p></section>`};
+   ${r.free&&otherId()?`<span class="tagc gold" style="align-self:flex-start">${X.playsLeft(Math.max(0,FREE_MAX-plays()))}</span>`:''}${body}<p class="hint">${ic('lock',13)} ${X.erased}</p></section>`};
 
 // ---------- jogo grátis: cadastro rápido, escolha do jogo, convite ----------
 R.mgame=function(){const X=R2(),G=t().mg,f=S.mf;
@@ -148,12 +154,17 @@ R.mgame=function(){const X=R2(),G=t().mg,f=S.mf;
       <button class="btn pri" type="submit">${newAcc?X.create:X.enter}</button></form></section>`}
   const left=S.freeLeft;
   if(!S.isPaid&&left===0)return `${head}<div class="note">${X.paywall}</div><button type="button" class="btn pri" data-act="welcome">${X.subscribe}</button></section>`;
-  return `${head}${!S.isPaid&&left!=null?`<span class="tagc gold" style="align-self:flex-start">${X.left(left)}</span>`:''}<div class="sec-t">${X.pick}</div>
+  const op=(S.openRooms||[]).length?`<div class="sec-t" style="color:var(--honey)">${X.openT}</div><div class="glist">${S.openRooms.map(o=>`<button type="button" class="gcard" data-rgresume="${o.id}"><span class="gic">${ic(GIC[o.game]||'games',24)}</span><span class="gbody"><strong>${(GTX().games[o.game]||[''])[0]}</strong><span>${o.with?X.openWith(esc(o.with)):X.openWait}</span></span><span class="gplay">${GTX().play}</span></button>`).join('')}</div>`:'';
+  return `${head}${!S.isPaid&&left!=null?`<span class="tagc gold" style="align-self:flex-start">${X.left(left)}</span>`:''}${op}<div class="sec-t">${X.pick}</div>
    <div class="glist">${Object.entries(GTX().games).map(([k,v])=>`<button type="button" class="gcard" data-rgopen="${k}"><span class="gic">${ic(GIC[k],24)}</span><span class="gbody"><strong>${v[0]}</strong><span>${typeof GUIDE_GAMES!=='undefined'?GUIDE_GAMES[lang][k]:v[1]}</span></span><span class="gplay">${GTX().play}</span></button>`).join('')}</div></section>`};
 
 async function refreshFree(){if(!S.uid)return;S.hasProfile=!!(await sb.from('profiles').select('id').eq('id',S.uid).maybeSingle()).data;
-  const {data:p}=await sb.rpc('has_active_plan');S.isPaid=!!p;
-  const {data:fp}=await sb.from('free_plays').select('used').eq('user_id',S.uid).maybeSingle();S.freeLeft=3-((fp&&fp.used)||0)}
+  const {data:p}=await sb.rpc('has_active_plan');S.isPaid=!!p;S.isFree=!S.isPaid;
+  const {data:fp}=await sb.from('free_plays').select('used').eq('user_id',S.uid).maybeSingle();S.freeLeft=3-((fp&&fp.used)||0);await loadOpenRooms()}
+async function loadOpenRooms(){const since=new Date(Date.now()-864e5).toISOString();
+  const {data:rooms}=await sb.from('game_rooms').select('id,game,created_at').gt('created_at',since).order('created_at',{ascending:false}).limit(5);
+  const out=[];for(const r of rooms||[]){const {data:pp}=await sb.rpc('room_people',{p_room:r.id});const o=(pp||[]).find(p=>p.user_id!==S.uid);out.push({id:r.id,game:r.game,with:o?o.nickname:null})}
+  S.openRooms=out}
 
 async function openRoom(game){const {data,error}=await sb.rpc('open_room',{p_game:game});
   if(error){toast(/3 jogos/.test(error.message)?R2().paywall:R2().err);return}
@@ -187,6 +198,8 @@ async function joinPending(){const code=S.pendingRoom.code;S.pendingRoom=null;co
 document.addEventListener('click',async e=>{
   const o=e.target.closest('[data-rgopen]');if(o){e.stopImmediatePropagation();openRoom(o.dataset.rgopen);return}
   const g=e.target.closest('[data-rgg]');if(g){S.mf.g=g.dataset.rgg;document.querySelectorAll('[data-rgg]').forEach(b=>b.setAttribute('aria-pressed',b===g));return}
+  const sw=e.target.closest('[data-rgsw]');if(sw){S.rm.planSel={};S.rm.draft='';send('switch',null,{game:sw.dataset.rgsw});window.scrollTo(0,0);return}
+  const rs=e.target.closest('[data-rgresume]');if(rs){e.stopImmediatePropagation();enterRoom(rs.dataset.rgresume);return}
   const lv=e.target.closest('[data-rglv]');if(lv){S.rm.todLv=+lv.dataset.rglv;rr();return}
   const tk=e.target.closest('[data-rgtk]');if(tk){const n=S.rm.events.filter(x=>x.kind==='tod').length;send('tod',null,{k:tk.dataset.rgtk,lv:S.rm.todLv,i:n});return}
   const tz=e.target.closest('[data-rgtz]');if(tz){S.rm.draft=TEASES[lang][+tz.dataset.rgtz];rr();return}
@@ -196,7 +209,7 @@ document.addEventListener('click',async e=>{
    case 'fmode':S.mf.mode=p;render();break;
    case 'invgo':S.pendingRoom.go=true;render();break;
    case 'invno':S.pendingRoom=null;go('welcome',{reset:true});break;
-   case 'leave':leaveRoom();if(S.hist.length)goBack();else go(S.isPaid?'games':'mgame',{reset:true});break;
+   case 'leave':leaveRoom();refreshFree().then(()=>{if(S.screen==='mgame')render()});go('mgame',{reset:true});break;
    case 'copy':copyText('https://'+roomLink(),X.copied);break;
    case 'copymsg':copyText(X.msg(S.rm.people[me()]||S.name||'',GTX().games[r.game][0])+'https://'+roomLink(),X.copied);break;
    case 'ideas':r.ideas=!r.ideas;rr();break;
@@ -241,5 +254,6 @@ document.addEventListener('click',e=>{const c=e.target.closest('[data-rgcall]');
     S.pendingRoom={code,info:inf,go:false};S.mf.mode='new';setTimeout(()=>go('mgame',{reset:true}),300)}
 })();
 // ao entrar no "Jogar grátis", carrega quantos jogos restam
-const _go=window.go;window.go=function(s,o){if(s==='mgame'&&S.uid)refreshFree().then(()=>{if(S.screen==='mgame')render()});return _go(s,o)};
+const FREE_OK=['welcome','signup','login','checkmail','mgame','groom','partner','psignup'];
+const _go=window.go;window.go=function(s,o){if(S.uid&&S.isFree&&!FREE_OK.includes(s)){toast(R2().locked);s='mgame';o={reset:true}}if(s==='mgame'&&S.uid)refreshFree().then(()=>{if(S.screen==='mgame')render()});return _go(s,o)};
 })();

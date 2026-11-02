@@ -1,0 +1,2 @@
+-- (já aplicado pelo conector) só gasta 1 jogo grátis quando a outra pessoa entra; reaproveita sala esperando.
+-- Ver histórico de migrações do Supabase: 005_jogo_gratis_justo
