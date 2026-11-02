@@ -998,7 +998,7 @@ R.concierge=function(){const C=CT(),c=S.cg;
   <input id="cgct" placeholder="${c.contact==='wa'?C.cgPhonePh:C.cgMailPh}" value="${esc(c.ct)}"></div>
   <textarea id="cgmsg" rows="3" placeholder="${C.cgMsgPh}">${esc(c.msg)}</textarea>
   <button type="button" class="btn pri" data-act="cgsend">${ic('mail',16)} ${C.cgSend}</button></section>`};
-function shPush(key,mode){S.sh.push({key,from:'me',mode});const i=S.sh.length-1;setTimeout(()=>{S.shc[i]=Object.assign(S.shc[i]||{},{them:lang==='pt'?(mode==='sur'?'Fiquei curioso o dia todo 😏':'Bora testar hoje? 😏'):(mode==='sur'?'Me quedé con la intriga todo el día 😏':'¿Lo probamos hoy? 😏')});toast(CT().theyCmt);if(['pre','toys'].includes(S.screen))render()},2600)}
+function shPush(key,mode){S.sh.push({key,from:'me',mode});const i=S.sh.length-1;if(!window.REAL)setTimeout(()=>{S.shc[i]=Object.assign(S.shc[i]||{},{them:lang==='pt'?(mode==='sur'?'Fiquei curioso o dia todo 😏':'Bora testar hoje? 😏'):(mode==='sur'?'Me quedé con la intriga todo el día 😏':'¿Lo probamos hoy? 😏')});toast(CT().theyCmt);if(['pre','toys'].includes(S.screen))render()},2600)}
 R.talk=function(){const G=t().g2,GG=GTX(),k=S.tk;
   const msgs=k.msgs.map(m=>{if(m.kind==='text')return `<div class="bub2 ${m.who}">${esc(m.text)}</div>`;
     if(m.kind==='tease')return `<div class="bub2 ${m.who} special"><span class="po">${ic('heat',12)} ${G.tkTeaseTag}</span>${esc(m.text)}</div>`;
@@ -1020,7 +1020,7 @@ R.diary=function(){const G=t().g2,ids=['mine','shared'];const pn=id=>{const x=PO
   if(S.dtab==='mine'){const ks=Object.keys(S.diary);body=ks.length?ks.map(id=>{const d=S.diary[id];return `<div class="dcard"><div class="dhead"><strong>${pn(id)}</strong><button type="button" class="btn link" style="width:auto" data-act="dopen" data-id="${id}">${G.dyOpen}</button></div>
     <div class="mrow"><span>${G.dyRate}</span>${stars(id,d.rating,true)}</div><textarea id="dn-${id}" data-dn="${id}" rows="2" placeholder="${G.dyNotePh}">${esc(d.note)}</textarea>
     <button type="button" class="btn ${d.shared?'gold':'ghost'} sm" data-act="dshare" data-id="${id}">${ic('both',15)} ${d.shared?G.dyShared:G.dyShare}</button></div>`}).join(''):`<p class="empty">${G.dyEmpty}</p>`}
-  else{const mine=Object.entries(S.diary).filter(([,d])=>d.shared).map(([id,d])=>({id,rating:d.rating,note:d.note,me:true}));const th=PDIARY.map(e=>({id:e.id,rating:e.rating,note:e.note[lang],me:false}));const all=[...mine,...th];
+  else{const mine=Object.entries(S.diary).filter(([,d])=>d.shared).map(([id,d])=>({id,rating:d.rating,note:d.note,me:true}));const th=window.REAL?(S.pdiary||[]):PDIARY.map(e=>({id:e.id,rating:e.rating,note:e.note[lang],me:false}));const all=[...mine,...th];
     body=all.length?all.map(e=>{let cm='';
       if(e.me){const c=S.dpc[e.id];cm=c?`<div class="cmt gold"><span class="po">${G.dyCmtThem}</span>${esc(c)}</div>`:''}
       else{const c=S.dmc[e.id];cm=c?`<div class="cmt"><span class="po">${G.dyCmtYou}</span>${esc(c)}</div>`:`<div class="row" style="flex-wrap:nowrap"><input id="dc-${e.id}" data-dc="${e.id}" placeholder="${G.dyCmtPh}" value="${esc(S.dcDraft[e.id]||'')}"><button type="button" class="btn ghost sm" data-act="dcmt" data-id="${e.id}">${G.dyCmtBtn}</button></div>`}
@@ -1177,14 +1177,14 @@ document.addEventListener('click',e=>{
     case 'tkteasesend':S.tk.msgs.push({who:'me',kind:'tease',text:TEASES[lang][S.tk.sel||0]});S.tk.mode=null;talkReply();break;
     case 'tkrevsend':if(!S.tk.sel)break;S.tk.msgs.push({who:'me',kind:'wish',key:S.tk.sel,text:(S.tkRevDraft||t().g2.tkRevealMsg).trim()});S.tk.mode=null;S.tkRevDraft='';talkReply();break;
     case 'tksend':{const tx=S.tkDraft.trim();if(!tx)break;S.tk.msgs.push({who:'me',kind:'text',text:tx});S.tkDraft='';talkReply();break}
-    case 'dshare':{const id=a.dataset.id,d=S.diary[id];d.shared=!d.shared;render();if(d.shared){toast(t().g2.dySharedToast);if(!S.dpc[id])setTimeout(()=>{S.dpc[id]=lang==='pt'?'Topo repetir essa logo 😏':'Me apunto a repetirla pronto 😏';toast(t().g2.dyTheyCmt);if(S.screen==='diary')render()},2500)}break}
+    case 'dshare':{const id=a.dataset.id,d=S.diary[id];d.shared=!d.shared;render();if(d.shared){toast(t().g2.dySharedToast);if(!S.dpc[id]&&!window.REAL)setTimeout(()=>{S.dpc[id]=lang==='pt'?'Topo repetir essa logo 😏':'Me apunto a repetirla pronto 😏';toast(t().g2.dyTheyCmt);if(S.screen==='diary')render()},2500)}break}
     case 'dcmt':{const id=a.dataset.id,tx=(S.dcDraft[id]||'').trim();if(!tx)break;S.dmc[id]=tx;render();toast(t().g2.dyCmtSent);break}
     case 'dopen':S.pid=a.dataset.id;S.posScroll=0;go('pos');break;
     case 'pretray':{const id=S.pexp,j=S.tray.indexOf(id);j>=0?S.tray.splice(j,1):S.tray.push(id);render();break}
     case 'tropen':S.compose=true;render();requestAnimationFrame(()=>{const c=document.getElementById('comp');if(c)c.scrollIntoView({behavior:'smooth',block:'start'})});break;
     case 'trcancel':S.compose=false;render();break;
     case 'trsend':{S.sh.push({keys:S.tray.map(id=>'pre:'+id),from:'me',mode:S.trMode,msg:S.trMsg.trim()});const i2=S.sh.length-1;const m=S.trMode;S.tray=[];S.trMsg='';S.compose=false;render();toast(m==='sur'?CT().surSent:CT().askSent);
-      setTimeout(()=>{S.shc[i2]=Object.assign(S.shc[i2]||{},{them:lang==='pt'?(m==='sur'?'Fiquei curioso o dia todo 😏':'Pode deixar, vou fazer tudinho 😏'):(m==='sur'?'Me quedé con la intriga todo el día 😏':'Déjamelo a mí, lo haré todo 😏')});toast(CT().theyCmt);if(S.screen==='pre')render()},2600);break}
+      if(!window.REAL)setTimeout(()=>{S.shc[i2]=Object.assign(S.shc[i2]||{},{them:lang==='pt'?(m==='sur'?'Fiquei curioso o dia todo 😏':'Pode deixar, vou fazer tudinho 😏'):(m==='sur'?'Me quedé con la intriga todo el día 😏':'Déjamelo a mí, lo haré todo 😏')});toast(CT().theyCmt);if(S.screen==='pre')render()},2600);break}
     case 'gocg':S.cg.done=false;go('concierge');break;
     case 'toycg':{const id=S.texp;S.cg.sel.has(id)?S.cg.sel.delete(id):S.cg.sel.add(id);render();break}
     case 'cgsend':if(!S.cg.sel.size||!S.cg.ct.trim()){toast(CT().cgErr);break}S.cg.done=true;render();toast(CT().cgDone);break;
@@ -1266,6 +1266,7 @@ render();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="real.js?v=1793634734"></script>
 <script src="realcommunity.js?v=1"></script>
+<script src="realshare.js?v=1"></script>
 <script src="todbank.js?v=1793634734"></script>
 <script src="realgames.js?v=1793634734"></script>
 </body>
