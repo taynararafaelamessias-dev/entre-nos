@@ -1,7 +1,7 @@
 # Web/PWA em vez de app nas lojas
 
 O app é web, instalável como PWA, porque um app nativo esbarra nas regras das lojas sobre conteúdo
-sexual e obriga a cobrança pela compra dentro do app. Um app de loja pode vir depois, numa versão própria.
+sexual e, em regra, obriga a cobrança pela compra dentro do app. Um app de loja pode vir depois, numa versão própria.
 
 ## Considered Options
 Fontes lidas em 2026-11-03.
