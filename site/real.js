@@ -13,11 +13,11 @@ document.documentElement.classList.add('real');
 
 const RX={
  pt:{wait:'Um instante…',confirm:'Enviamos um e-mail de confirmação. Abra o link e depois entre com seu e-mail e senha.',
-  errAuth:'E-mail ou senha incorretos.',errExists:'Este e-mail já tem conta. Toque em “Já tenho conta”.',errGeneric:'Algo deu errado. Tente de novo.',
+  errAuth:'E-mail ou senha incorretos.',errExists:'Não foi possível criar a conta com esse e-mail. Se você já tem conta, toque em “Já tenho conta”.',errGeneric:'Algo deu errado. Tente de novo.',
   pinBad:'PIN incorreto.',invalidInvite:'Este convite não existe ou já foi usado.',wrongEmail:'Este convite foi feito para outro e-mail.',
   saved:'Salvo ✓',offline:'Sem conexão. Tente de novo.',logout:'Sair da conta'},
  es:{wait:'Un momento…',confirm:'Te enviamos un correo de confirmación. Abre el enlace y después entra con tu correo y contraseña.',
-  errAuth:'Correo o contraseña incorrectos.',errExists:'Este correo ya tiene cuenta. Toca “Ya tengo cuenta”.',errGeneric:'Algo salió mal. Inténtalo de nuevo.',
+  errAuth:'Correo o contraseña incorrectos.',errExists:'No se pudo crear la cuenta con ese correo. Si ya tienes cuenta, toca “Ya tengo cuenta”.',errGeneric:'Algo salió mal. Inténtalo de nuevo.',
   pinBad:'PIN incorrecto.',invalidInvite:'Esta invitación no existe o ya se usó.',wrongEmail:'Esta invitación es para otro correo.',
   saved:'Guardado ✓',offline:'Sin conexión. Inténtalo de nuevo.',logout:'Cerrar sesión'}};
 const RT=()=>RX[lang];
