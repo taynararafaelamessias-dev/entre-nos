@@ -12,7 +12,7 @@ A unidade da assinatura: duas pessoas ligadas por um convite aceito.
 _Avoid_: dupla, conta compartilhada
 
 **Dono**:
-A pessoa que criou o casal e convida o parceiro; é quem paga quando o casal tem assinatura.
+A pessoa que criou o casal e convida o parceiro; Quem paga a assinatura ainda não foi decidido.
 _Avoid_: titular, admin, owner
 
 **Parceiro**:

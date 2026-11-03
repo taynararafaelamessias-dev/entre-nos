@@ -8,7 +8,7 @@ produto, não como formulário de cadastro.
 
 ## Consequences
 - O código em `site/` e `supabase/` vira referência de comportamento, não base de código: cada área
-  é repensada (inclusive os desafios novos) num mapa de decisões, uma área por vez, e não portada como está.
+  é repensada (inclusive os desafios novos), uma decisão por área, e não portada como está.
 - O fluxo do onboarding só é fixado depois de um protótipo clicável.
-- As regras de negócio são decididas pelo dono do produto, não pelos agentes que constroem.
+- As regras de negócio são decididas pelo responsável pelo produto, não pelos agentes que constroem.
 - Os dados do Supabase atual são de teste e são descartados; não há migração de dados.

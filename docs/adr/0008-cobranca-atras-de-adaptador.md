@@ -19,6 +19,6 @@ Fontes lidas em 2026-11-03.
 ## Consequences
 - A operação começa só no Brasil, cobrando em BRL. O provedor para fora do Brasil é uma decisão
   futura e entra como um segundo adaptador.
-- Recomendação, a confirmar pelo dono do produto: o Asaas confirma por escrito que aceita o segmento
+- Recomendação, a confirmar pelo responsável pelo produto: o Asaas confirma por escrito que aceita o segmento
   antes do primeiro cliente real. Os termos dele falam de *"obscene or indecent imagery and
   language"* (trecho de busca; a página não abriu).
