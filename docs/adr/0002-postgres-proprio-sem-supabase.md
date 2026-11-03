@@ -7,4 +7,5 @@ sob medida: regras de negócio num backend tipado e testável, não espalhadas e
 ## Consequences
 - Tudo o que o Supabase dava de graça vira decisão nossa: tempo real das salas, rotinas agendadas
   (apagar Conversar em 24 h, perguntas em 90 dias), armazenamento de arquivos, e-mail de autenticação.
-- Autorização sai das políticas RLS e passa a ser responsabilidade do backend.
+- As regras de negócio saem de RLS, RPCs e cliente e vão para o backend. A autorização continua com
+  RLS, como segunda camada (ADR 0005).

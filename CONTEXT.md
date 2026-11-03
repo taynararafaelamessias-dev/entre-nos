@@ -12,7 +12,7 @@ A unidade da assinatura: duas pessoas ligadas por um convite aceito.
 _Avoid_: dupla, conta compartilhada
 
 **Dono**:
-A pessoa do casal que paga a assinatura e convida o parceiro.
+A pessoa que criou o casal e convida o parceiro; é quem paga quando o casal tem assinatura.
 _Avoid_: titular, admin, owner
 
 **Parceiro**:
@@ -42,12 +42,20 @@ A primeira passagem da pessoa pelo app, feita para mostrar o valor da parte da a
 _Avoid_: cadastro, tutorial
 
 **Trava do app**:
-O PIN que bloqueia o app neste aparelho; não é login.
+Bloqueio local do app neste aparelho, separado do login.
 _Avoid_: senha
 
 **Equipe**:
-Pessoas que operam o Gerenciador (moderação, suporte, avisos); a **dona** é a dona do negócio.
+Pessoas do negócio que operam o Gerenciador: moderação, suporte e avisos.
 _Avoid_: admin (como substantivo para usuário do app)
+
+**Responsável da equipe**:
+O membro da equipe que convida e remove os outros membros.
+_Avoid_: dona, dono, owner
+
+**Gerenciador**:
+A área do app restrita à equipe, onde ela opera o negócio.
+_Avoid_: admin, painel
 
 ### Jogos
 
@@ -66,8 +74,8 @@ Sala aberta por conta grátis, com número limitado de jogos e de jogadas.
 A área de desafios do casal, com pódio Ele × Ela.
 
 **Desafio**:
-Uma rodada entre os dois com regra própria: Sequência de fogo, Quem segura mais ou Semana do cuidado.
-<!-- inferido: o "Desafio do casal" antigo é legado; decidir se sobrevive -->
+Uma rodada entre os dois com regra própria. Hoje são Sequência de fogo, Quem segura mais e Semana do
+cuidado; os três serão repensados. O antigo "Desafio do casal" foi aposentado.
 
 **Pódio**:
 O placar de pontos Ele × Ela somado dos desafios.
@@ -75,10 +83,16 @@ O placar de pontos Ele × Ela somado dos desafios.
 ### Casal no dia a dia
 
 **Conversar**:
-Mensagens entre os dois que somem em 24 h; **Com amor** é a mensagem marcada como carinho.
+Mensagens entre os dois que somem em 24 h.
+
+**Com amor**:
+Mensagem do Conversar marcada como carinho.
 
 **Lista de desejos**:
-O que cada um marca que quer; **combinações** são os itens que os dois marcaram.
+O que cada pessoa marca que quer fazer ou ter.
+
+**Combinação**:
+Item da lista de desejos que os dois marcaram.
 
 **Diário das posições**:
 A nota e a avaliação que cada pessoa dá às posições que fez.
@@ -95,7 +109,10 @@ Pedido de atendimento pessoal à equipe.
 ### Comunidade
 
 **Pergunte sem vergonha**:
-O mural anônimo de perguntas; a **audiência** (mulheres, homens ou todos) decide quem vê.
+O mural anônimo de perguntas da comunidade.
+
+**Audiência**:
+Quem pode ver uma pergunta: mulheres, homens ou todos.
 
 **Resposta**:
 Resposta anônima de outro usuário ou da equipe; a pergunta fecha com poucas respostas.
@@ -109,7 +126,7 @@ Sinalização de pergunta ou resposta para a equipe avaliar.
 ### Comunicação
 
 **Aviso**:
-Mensagem da equipe que aparece no sininho.
+Mensagem da equipe para as pessoas que usam o app.
 
 **Novidades**:
 O que mudou para a pessoa desde a última visita.
