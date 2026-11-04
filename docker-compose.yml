@@ -1,0 +1,60 @@
+name: entre-nos
+
+# Senhas sem default: defina no .env (veja .env.example). Gere com `openssl rand -hex 24`.
+x-postgres-password: &postgres-password ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env (openssl rand -hex 24)}
+x-app-db-password: &app-db-password ${APP_DB_PASSWORD:?defina APP_DB_PASSWORD no .env (openssl rand -hex 24)}
+
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: entre_nos
+      POSTGRES_USER: entre_nos
+      POSTGRES_PASSWORD: *postgres-password
+    ports:
+      - "127.0.0.1:${DB_PORT:-5433}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U entre_nos -d entre_nos"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  # One-shot com o dono do banco: aplica as migrations e garante o papel entre_nos_app.
+  # Constrói a imagem; o app reusa a mesma (um build só).
+  migrate:
+    image: entre-nos-app
+    build: .
+    command: ["node", "apps/server/src/db/migrate-cli.ts"]
+    environment:
+      MIGRATION_DATABASE_URL: postgres://entre_nos:${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env (openssl rand -hex 24)}@db:5432/entre_nos
+      APP_DB_PASSWORD: *app-db-password
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # Só serve, com o papel sem bypass de RLS (ADR 0005); nunca vê as credenciais do dono.
+  app:
+    image: entre-nos-app
+    environment:
+      DATABASE_URL: postgres://entre_nos_app:${APP_DB_PASSWORD:?defina APP_DB_PASSWORD no .env (openssl rand -hex 24)}@db:5432/entre_nos
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:

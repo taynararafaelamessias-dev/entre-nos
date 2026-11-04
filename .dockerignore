@@ -1,0 +1,9 @@
+**/node_modules
+**/dist
+.git
+.rumo
+site
+supabase
+docs
+.env
+*.md
