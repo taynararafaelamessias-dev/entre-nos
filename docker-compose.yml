@@ -17,5 +17,22 @@ services:
       timeout: 3s
       retries: 15
 
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgres://entre_nos:${POSTGRES_PASSWORD:-entre_nos_dev}@db:5432/entre_nos
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 volumes:
   db-data:
