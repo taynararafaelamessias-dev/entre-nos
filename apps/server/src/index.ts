@@ -2,16 +2,11 @@ import { fileURLToPath } from 'node:url';
 import { serve } from '@hono/node-server';
 import { createApp } from './http/app.ts';
 import { createDatabase } from './db/client.ts';
-import { runMigrations } from './db/migrate.ts';
+import { requireEnv } from './db/env.ts';
 
-const url = process.env.DATABASE_URL;
-if (!url) {
-  console.error('DATABASE_URL não definida.');
-  process.exit(1);
-}
-
-await runMigrations(url);
-const database = createDatabase(url);
+// Conecta com o papel do app, sem bypass de RLS; as migrations rodam antes, com o dono
+// (serviço `migrate` no compose, ou `pnpm db:migrate`).
+const database = createDatabase(requireEnv('DATABASE_URL'));
 
 const app = createApp({
   pingDatabase: database.ping,
