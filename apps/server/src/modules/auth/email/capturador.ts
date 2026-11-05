@@ -1,12 +1,21 @@
 // Ajuda de teste: lê o link mágico que chegou no capturador local (Mailpit, serviço `mail`).
 
 type ResultadoDaBusca = { messages?: { ID: string; Created: string }[] };
-type Mensagem = { Text?: string };
+type Mensagem = { Text?: string; Subject?: string };
 
 const LINK_MAGICO = /https?:\/\/\S*magic-link\/verify\S*/;
 
 /** Espera chegar um e-mail para `para` e devolve o link mágico dele (o mais recente). */
 export async function esperarLinkDoCapturador(mailpitUrl: string, para: string, timeoutMs = 10000): Promise<string> {
+  return (await esperarEmailDoCapturador(mailpitUrl, para, timeoutMs)).link;
+}
+
+/** Como `esperarLinkDoCapturador`, mas devolve também o assunto do e-mail. */
+export async function esperarEmailDoCapturador(
+  mailpitUrl: string,
+  para: string,
+  timeoutMs = 10000,
+): Promise<{ link: string; assunto: string }> {
   const base = mailpitUrl.replace(/\/$/, '');
   const limite = Date.now() + timeoutMs;
   while (Date.now() < limite) {
@@ -17,7 +26,7 @@ export async function esperarLinkDoCapturador(mailpitUrl: string, para: string, 
       if (maisRecente) {
         const mensagem = (await (await fetch(`${base}/api/v1/message/${maisRecente.ID}`)).json()) as Mensagem;
         const link = mensagem.Text?.match(LINK_MAGICO)?.[0];
-        if (link) return link;
+        if (link) return { link, assunto: mensagem.Subject ?? '' };
       }
     }
     await new Promise((resolve) => setTimeout(resolve, 200));

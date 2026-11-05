@@ -8,7 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { type BancoDeTeste, criarBancoDeTeste } from '../db/banco-de-teste.ts';
 import { createDatabase } from '../db/client.ts';
 import { createAuth } from '../modules/auth/auth.ts';
-import { esperarLinkDoCapturador } from '../modules/auth/email/capturador.ts';
+import { esperarEmailDoCapturador } from '../modules/auth/email/capturador.ts';
 import { criarEnvioSmtp } from '../modules/auth/email/enviar-email.ts';
 import { createApi } from './api.ts';
 import { createApp } from './app.ts';
@@ -48,7 +48,11 @@ afterAll(async () => {
 
 const emailNovo = () => `${randomBytes(6).toString('hex')}@teste.local`;
 
-async function pedirLink(email: string): Promise<string> {
+async function pedirLink(email: string, locale: 'pt' | 'es' = 'pt'): Promise<string> {
+  return (await pedirLinkComAssunto(email, locale)).caminho;
+}
+
+async function pedirLinkComAssunto(email: string, locale: 'pt' | 'es'): Promise<{ caminho: string; assunto: string }> {
   const res = await app.request('/api/auth/sign-in/magic-link', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Origin: BASE_URL },
@@ -56,12 +60,13 @@ async function pedirLink(email: string): Promise<string> {
       email,
       callbackURL: '/',
       errorCallbackURL: '/entrar?erro=link',
-      metadata: { locale: 'pt' },
+      metadata: { locale },
     }),
   });
   expect(res.status).toBe(200);
-  const link = new URL(await esperarLinkDoCapturador(process.env.MAILPIT_URL!, email));
-  return link.pathname + link.search;
+  const { link, assunto } = await esperarEmailDoCapturador(process.env.MAILPIT_URL!, email);
+  const url = new URL(link);
+  return { caminho: url.pathname + url.search, assunto };
 }
 
 function cookieDaSessao(res: Response): string | undefined {
@@ -76,8 +81,8 @@ async function abrirLink(caminho: string) {
   return { res, cookie: cookieDaSessao(res), location: res.headers.get('location') ?? '' };
 }
 
-async function entrar(email = emailNovo()): Promise<{ email: string; cookie: string }> {
-  const { cookie } = await abrirLink(await pedirLink(email));
+async function entrar(email = emailNovo(), locale: 'pt' | 'es' = 'pt'): Promise<{ email: string; cookie: string }> {
+  const { cookie } = await abrirLink(await pedirLink(email, locale));
   expect(cookie).toBeDefined();
   return { email, cookie: cookie! };
 }
@@ -187,5 +192,42 @@ describe('link mágico + sessão + aceite de 18+', () => {
     const depois = await get('/api/eu', cookie);
     expect(depois.status).toBe(401);
     expect(await erroDe(depois)).toBe('sem_sessao');
+  });
+
+  it('o idioma da tela chega ao e-mail: metadata.locale es manda o assunto em espanhol', async () => {
+    const email = emailNovo();
+    const { caminho, assunto } = await pedirLinkComAssunto(email, 'es');
+    expect(assunto).toBe('Tu enlace para entrar');
+    expect((await abrirLink(caminho)).cookie).toBeDefined();
+  });
+
+  it('sessão passada do updateAge é renovada e o cookie novo chega ao navegador', async () => {
+    const { email, cookie } = await entrar();
+    expect((await post('/api/aceite-18', { tenho18: true }, cookie)).status).toBe(204);
+
+    const movidas = await banco.owner`
+      update sessao set expires_at = expires_at - interval '2 days'
+      where user_id = (select id from pessoa where email = ${email})`;
+    expect(movidas.count).toBe(1);
+
+    const res = await get('/api/eu', cookie);
+    expect(res.status).toBe(200);
+    expect(cookieDaSessao(res)).toBeDefined();
+  });
+
+  it('endpoints do Better Auth que o app não usa respondem 404', async () => {
+    const { email, cookie } = await entrar();
+    expect((await post('/api/aceite-18', { tenho18: true }, cookie)).status).toBe(204);
+    const [antes] = await banco.owner<{ name: string }[]>`select name from pessoa where email = ${email}`;
+
+    const atualizar = await post('/api/auth/update-user', { name: 'outro nome' }, cookie);
+    expect(atualizar.status).toBe(404);
+    expect(await erroDe(atualizar)).toBe('nao_encontrado');
+    const [depois] = await banco.owner<{ name: string }[]>`select name from pessoa where email = ${email}`;
+    expect(depois!.name).toBe(antes!.name);
+
+    const sessoes = await get('/api/auth/list-sessions', cookie);
+    expect(sessoes.status).toBe(404);
+    expect(await erroDe(sessoes)).toBe('nao_encontrado');
   });
 });

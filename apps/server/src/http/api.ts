@@ -8,20 +8,41 @@ type Pessoa = { id: string; email: string; name: string };
 
 const erro = (valor: ErroApi['erro']): ErroApi => ({ erro: valor });
 
+// Só o que o app usa: o resto do Better Auth (update-user, list-sessions…) furaria a trava do aceite de 18+.
+const ROTAS_DO_AUTH_USADAS = new Set([
+  'POST /sign-in/magic-link',
+  'GET /magic-link/verify',
+  'GET /get-session',
+  'POST /sign-out',
+]);
+
 /**
- * Rotas de `/api`, nesta ordem: handler do Better Auth → trava (sessão e aceite de 18+) →
+ * Rotas de `/api`, nesta ordem: handler do Better Auth (só as rotas usadas) → trava (sessão e aceite de 18+) →
  * rotas → 404. Sem sessão nada responde; sem aceite de 18+ só o próprio aceite responde.
  */
 export function createApi(deps: { auth: Auth; db: PostgresJsDatabase }): Hono {
   const api = new Hono();
 
-  api.on(['GET', 'POST'], '/auth/*', (c) => deps.auth.handler(c.req.raw));
+  api.on(['GET', 'POST'], '/auth/*', (c) => {
+    const rota = `${c.req.method} ${c.req.path.slice(c.req.path.indexOf('/auth/') + '/auth'.length)}`;
+    if (!ROTAS_DO_AUTH_USADAS.has(rota)) {
+      return c.json(erro('nao_encontrado'), 404);
+    }
+    return deps.auth.handler(c.req.raw);
+  });
 
   // Daqui em diante tudo passa pela trava, que deixa a pessoa da sessão no contexto.
   const protegidas = new Hono<{ Variables: { pessoa: Pessoa } }>();
 
   protegidas.use('*', async (c, next) => {
-    const sessao = await deps.auth.api.getSession({ headers: c.req.raw.headers });
+    const { headers, response: sessao } = await deps.auth.api.getSession({
+      headers: c.req.raw.headers,
+      returnHeaders: true,
+    });
+    // Quando a sessão é renovada (uma vez por dia de uso), o cookie novo segue em qualquer resposta.
+    for (const cookie of headers.getSetCookie()) {
+      c.header('Set-Cookie', cookie, { append: true });
+    }
     if (!sessao) {
       return c.json(erro('sem_sessao'), 401);
     }
