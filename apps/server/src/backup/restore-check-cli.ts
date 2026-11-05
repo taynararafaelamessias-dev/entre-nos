@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import postgres from 'postgres';
 import { ensureAppRole } from '../db/app-role.ts';
 import { requireEnv } from '../db/env.ts';
-import { diffSnapshots, markRestorePoint, takeSnapshot, type DbSnapshot } from './restore-check.ts';
+import { checkAppRole, diffSnapshots, markRestorePoint, takeSnapshot, type DbSnapshot } from './restore-check.ts';
 
 // Roda com o dono do banco, no serviço de backup (ADR 0003): `mark` cria o ponto de
 // restauração na origem e guarda o snapshot; `verify` compara o banco restaurado com ele e
@@ -39,10 +39,15 @@ async function verify(file: string): Promise<number> {
   const password = requireEnv('APP_DB_PASSWORD');
   const source = JSON.parse(readFileSync(file, 'utf8')) as DbSnapshot;
 
-  const restored = await withSql(url, (sql) => takeSnapshot(sql));
+  const { restored, roleProblems } = await withSql(url, async (sql) => ({
+    restored: await takeSnapshot(sql),
+    // Antes do ensureAppRole, que força nobypassrls: é o papel como o backup o trouxe.
+    roleProblems: await checkAppRole(sql, APP_ROLE),
+  }));
   const diff = diffSnapshots(source, restored);
-  for (const line of diff) console.error(line);
-  if (diff.length > 0) return 1;
+  const problems = [...diff, ...roleProblems];
+  for (const line of problems) console.error(line);
+  if (problems.length > 0) return 1;
 
   await withSql(url, (sql) => ensureAppRole(sql, { role: APP_ROLE, password }));
   const appUrl = new URL(url);
@@ -54,7 +59,7 @@ async function verify(file: string): Promise<number> {
     return row;
   });
   if (!me || me.rolsuper !== false || me.rolbypassrls !== false) {
-    console.error(`${APP_ROLE} com superuser ou bypass de RLS no banco restaurado.`);
+    console.error(`${APP_ROLE} com superuser ou bypass de RLS depois de recriado no banco restaurado.`);
     return 1;
   }
 

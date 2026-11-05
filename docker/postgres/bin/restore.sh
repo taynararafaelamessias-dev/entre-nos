@@ -1,6 +1,8 @@
 #!/bin/sh
-# Restaura o último backup base + WAL do bucket num diretório limpo (ADR 0003).
+# Restaura um backup base + WAL do bucket num diretório limpo (ADR 0003).
 #   restore.sh [--target-time T | --target-name N] [--into DIR] [-- cmd ...]
+# Com --target-time T (YYYY-MM-DD HH:MM:SS[.us]+TZ) parte do último backup base terminado antes
+# de T; sem ele, do último backup base.
 # Sem --into: sobe um Postgres descartável na porta 5445, com archive_mode=off (uma
 # restauração de teste nunca empurra uma timeline nova para o bucket), roda cmd (ou espera
 # SIGTERM/SIGINT) e apaga tudo ao sair. Com --into: só prepara DIR para o db subir nele.
@@ -27,6 +29,44 @@ done
 
 if ! gosu postgres wal-g backup-list 2>/dev/null | grep -q 'base_'; then
   die "nenhum backup base; rode backup-push.sh"
+fi
+
+# Lê `wal-g backup-list --detail --json` no stdin e imprime o backup_name com o maior
+# finish_time < T (argv). Compara em microssegundos. Saída 2: T inválido; 3: nenhum anterior.
+# shellcheck disable=SC2016
+PICK_BASE='
+const re = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})(?:\.(\d{1,6})\d*)?\s*(Z|[+-]\d{2}(?::?\d{2})?)$/i;
+const us = (s) => {
+  const m = re.exec(String(s).trim());
+  if (!m) return null;
+  let tz = m[4].toUpperCase();
+  if (tz !== "Z") tz = tz.length === 3 ? tz + ":00" : tz.length === 5 ? tz.slice(0, 3) + ":" + tz.slice(3) : tz;
+  const ms = Date.parse(m[1] + "T" + m[2] + tz);
+  return Number.isNaN(ms) ? null : BigInt(ms) * 1000n + BigInt((m[3] || "").padEnd(6, "0"));
+};
+const t = us(process.argv[process.argv.length - 1]);
+if (t === null) process.exit(2);
+let best = null;
+for (const b of JSON.parse(require("fs").readFileSync(0, "utf8") || "[]")) {
+  const f = us(b.finish_time);
+  if (f !== null && f < t && (best === null || f > best.f)) best = { f, name: b.backup_name };
+}
+if (best === null) process.exit(3);
+console.log(best.name);
+'
+base=LATEST
+if [ -n "$target_time" ]; then
+  list=$(gosu postgres wal-g backup-list --detail --json 2>/dev/null) || die "não consegui listar os backups base"
+  set +e
+  base=$(printf '%s' "$list" | node -e "$PICK_BASE" "$target_time")
+  rc=$?
+  set -e
+  case "$rc" in
+    0) ;;
+    2) die "--target-time inválido: '$target_time' (use YYYY-MM-DD HH:MM:SS[.us]+TZ, ex.: '2026-11-09 14:30:00+00')" ;;
+    3) die "nenhum backup base anterior a $target_time" ;;
+    *) die "falha ao escolher o backup base (saída $rc)" ;;
+  esac
 fi
 
 started=''
@@ -58,9 +98,21 @@ fi
 chown postgres:postgres "$DIR"
 chmod 700 "$DIR"
 
-log "baixando o último backup base para $DIR"
-gosu postgres wal-g backup-fetch "$DIR" LATEST
+if [ "$base" = LATEST ]; then
+  log "baixando o último backup base para $DIR"
+else
+  log "baixando o backup base $base (o último terminado antes de $target_time) para $DIR"
+fi
+gosu postgres wal-g backup-fetch "$DIR" "$base"
 gosu postgres touch "$DIR/recovery.signal"
+# Um base pode carregar alvos de recuperação antigos no auto.conf (ALTER SYSTEM, ou um cluster
+# promovido por restore.sh --into). Dois alvos diferentes = FATAL; tire todos antes de pôr os nossos.
+auto=$DIR/postgresql.auto.conf
+if [ -f "$auto" ]; then
+  # shellcheck disable=SC2016
+  gosu postgres sh -c 'grep -Ev "^[[:space:]]*(restore_command|recovery_target[a-z_]*)[[:space:]]*=" "$1" >"$1.tmp"; [ "$?" -le 1 ] && mv "$1.tmp" "$1"' sh "$auto" \
+    || die "não consegui limpar $auto"
+fi
 {
   echo ""
   echo "# restore.sh $(date -u +%Y-%m-%dT%H:%M:%SZ)"

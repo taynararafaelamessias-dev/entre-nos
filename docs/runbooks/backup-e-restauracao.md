@@ -12,7 +12,9 @@ fora de casa, teste semanal) e ADR 0005 (o app nunca vê credenciais do dono nem
 | Teste de restauração: restaura num Postgres limpo e confere contagens, políticas de RLS e o papel `entre_nos_app` | serviço `backup`, `restore-check.sh` | domingo às 04:30 |
 
 - Retenção: os últimos `BACKUP_RETAIN_FULL` backups base (padrão 14) e todo o WAL desde o mais antigo.
-  Dá para voltar a qualquer instante dentro dessa janela.
+  Dá para voltar a qualquer instante dentro dessa janela: `restore.sh --target-time T` parte do último
+  backup base terminado antes de T e reaplica o WAL até T (o log diz qual base usou). Antes do mais
+  antigo, falha com `nenhum backup base anterior a T`.
 - Se o bucket está vazio quando o serviço `backup` sobe, ele já faz o primeiro backup base.
 - Sem as variáveis do bucket no `.env`, nem o `db` sobe: não existe banco sem backup.
 
@@ -34,7 +36,7 @@ docker compose exec -T backup gosu postgres wal-g backup-list   # backups base n
 
 ## Configuração (`.env`)
 
-Só os nomes; os valores ficam no `.env` da máquina e no gerenciador de senhas do dono.
+Só os nomes; os valores ficam no `.env` da máquina e no gerenciador de senhas de quem opera o servidor.
 
 | Variável | O que é |
 |---|---|
@@ -109,7 +111,7 @@ Em desenvolvimento, sem bucket real: `docker compose --profile local-s3 up -d --
 docker compose run -d --name inspecao -p 127.0.0.1:${RESTORE_DB_PORT:-5445}:5445 backup \
   restore.sh --target-time '2026-11-09 14:30:00+00'
 docker logs -f inspecao          # espere "restore: restaurado; servindo na porta 5445"
-psql -h 127.0.0.1 -p 5445 -U entre_nos -d entre_nos   # senha: POSTGRES_PASSWORD
+psql -h 127.0.0.1 -p "${RESTORE_DB_PORT:-5445}" -U entre_nos -d entre_nos   # senha: POSTGRES_PASSWORD
 docker stop inspecao && docker rm inspecao             # para o servidor e apaga a cópia
 ```
 

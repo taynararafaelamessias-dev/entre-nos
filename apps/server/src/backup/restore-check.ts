@@ -71,3 +71,18 @@ export async function markRestorePoint(sql: Sql, name: string): Promise<DbSnapsh
     return takeSnapshot(tx);
   });
 }
+
+/**
+ * Confere o papel do app como veio no banco restaurado, antes de qualquer `ensureAppRole`
+ * (que força `nobypassrls` e esconderia o problema). Ausente é normal (o migrate recria);
+ * superuser ou bypass de RLS → uma linha em português por problema (ADR 0005).
+ */
+export async function checkAppRole(sql: ISql, role: string): Promise<string[]> {
+  const [row] = await sql<{ rolsuper: boolean; rolbypassrls: boolean }[]>`
+    select rolsuper, rolbypassrls from pg_roles where rolname = ${role}`;
+  if (!row) return [];
+  const out: string[] = [];
+  if (row.rolsuper) out.push(`papel ${role}: é superuser no banco restaurado`);
+  if (row.rolbypassrls) out.push(`papel ${role}: tem bypass de RLS no banco restaurado`);
+  return out;
+}

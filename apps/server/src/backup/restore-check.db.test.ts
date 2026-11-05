@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import postgres from 'postgres';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { diffSnapshots, markRestorePoint, takeSnapshot } from './restore-check.ts';
+import { checkAppRole, diffSnapshots, markRestorePoint, takeSnapshot } from './restore-check.ts';
 
 const baseUrl = process.env.MIGRATION_DATABASE_URL;
 if (!baseUrl) {
@@ -53,5 +53,22 @@ describe('takeSnapshot / markRestorePoint', () => {
     const diff = diffSnapshots(before, after);
     expect(diff).toHaveLength(1);
     expect(diff[0]).toMatch(/t\.a/);
+  });
+});
+
+describe('checkAppRole', () => {
+  it('aponta bypass de RLS no papel do app; sem bypass ou ausente → nenhuma linha', async () => {
+    const role = `t_role_${hex(6)}`;
+    try {
+      expect(await checkAppRole(admin, role)).toEqual([]);
+      await admin.unsafe(`create role "${role}" bypassrls`);
+      const lines = await checkAppRole(admin, role);
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toMatch(/bypass/);
+      await admin.unsafe(`alter role "${role}" nobypassrls`);
+      expect(await checkAppRole(admin, role)).toEqual([]);
+    } finally {
+      await admin.unsafe(`drop role if exists "${role}"`);
+    }
   });
 });
