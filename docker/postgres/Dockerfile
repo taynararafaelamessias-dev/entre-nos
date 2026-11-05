@@ -30,4 +30,5 @@ RUN apk add --no-cache libstdc++
 COPY --from=deps /usr/local/bin/node /usr/local/bin/node
 COPY --from=deps /app /app
 COPY --chmod=755 docker/postgres/bin/ /usr/local/bin/
-CMD ["sleep", "infinity"]
+COPY docker/postgres/crontab /etc/crontabs/root
+CMD ["backup-entrypoint.sh"]
