@@ -1,0 +1,6 @@
+# Rotinas do serviço `backup` (ADR 0003: backup contínuo para fora de casa e teste de
+# restauração semanal). busybox crond, horário UTC. Saída e resultado (OK/FALHOU) de cada
+# job vão para `docker compose logs backup`.
+# min hora dia mês dia-da-semana comando
+0 3 * * * /usr/local/bin/run-job.sh backup-push
+30 4 * * 0 /usr/local/bin/run-job.sh restore-check
