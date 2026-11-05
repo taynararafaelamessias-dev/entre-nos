@@ -1,13 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { Navigate } from '@tanstack/react-router';
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
 import { pedirLink, useEu } from '../auth/sessao.ts';
-import { LanguageToggle } from '../i18n/LanguageToggle.tsx';
 import { useLocale } from '../i18n/LocaleProvider.tsx';
-
-function order(i: number): CSSProperties {
-  return { '--i': i } as CSSProperties;
-}
+import { order, Topo } from './Topo.tsx';
 
 function IconeEnvelope() {
   return (
@@ -35,12 +31,7 @@ export function EntrarPage({ erroDeLink }: { erroDeLink: boolean }) {
 
   return (
     <div className="home">
-      <header className="top reveal" style={order(0)}>
-        <p className="mark">
-          Entre <b>Nós</b>
-        </p>
-        <LanguageToggle />
-      </header>
+      <Topo />
       {enviado ? (
         <main className="hero" key="enviado">
           <span className="reveal" style={order(1)}>

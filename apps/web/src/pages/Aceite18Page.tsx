@@ -1,13 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Navigate, useNavigate } from '@tanstack/react-router';
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
 import { aceitar18, EU_QUERY_KEY, useEu } from '../auth/sessao.ts';
-import { LanguageToggle } from '../i18n/LanguageToggle.tsx';
 import { useLocale } from '../i18n/LocaleProvider.tsx';
-
-function order(i: number): CSSProperties {
-  return { '--i': i } as CSSProperties;
-}
+import { order, Topo } from './Topo.tsx';
 
 export function Aceite18Page() {
   const { t } = useLocale();
@@ -32,12 +28,7 @@ export function Aceite18Page() {
 
   return (
     <div className="home">
-      <header className="top reveal" style={order(0)}>
-        <p className="mark">
-          Entre <b>Nós</b>
-        </p>
-        <LanguageToggle />
-      </header>
+      <Topo />
       <main className="hero">
         <span className="selo reveal" style={order(1)} aria-hidden="true">
           18+
