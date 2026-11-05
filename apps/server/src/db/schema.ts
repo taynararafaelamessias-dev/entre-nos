@@ -4,6 +4,9 @@ import { boolean, index, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 // O adapter mapeia user → pessoa, session → sessao, account → vinculoDeLogin,
 // verification → linkMagico. Sem RLS de propósito: o Better Auth lê sessão e pessoa por token
 // antes de saber quem é a pessoa (RLS chega com as tabelas do casal).
+// Contradiz o ADR 0005 (consulta de dados de usuário numa transação que declara a pessoa) até as
+// tabelas do casal: estas tabelas e aceite_18 são lidas pelo pool comum, porque o Better Auth não
+// abre essa transação e o aceite é checado antes de qualquer dado do casal.
 
 export const pessoa = pgTable('pessoa', {
   id: text('id').primaryKey(),

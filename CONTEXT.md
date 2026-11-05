@@ -7,6 +7,20 @@ e uma comunidade anônima de perguntas. Uma assinatura vale para as duas pessoas
 
 ### Pessoas e acesso
 
+**Pessoa**:
+Quem tem conta no app, identificada pelo e-mail; pode estar ou não num casal.
+
+**Link mágico**:
+O link de uso único, válido por 10 minutos, que chega por e-mail e faz a pessoa entrar sem senha.
+_Avoid_: magic link, token de login
+
+**Sessão**:
+O tempo em que a pessoa fica dentro depois de abrir o link mágico: 7 dias, renovados a cada dia de uso.
+
+**Aceite de 18+**:
+A confirmação de que a pessoa tem 18 anos ou mais, gravada no servidor uma vez; sem ela nenhuma tela do app abre.
+_Avoid_: verificação de idade, termo de uso
+
 **Casal**:
 A unidade da assinatura: duas pessoas ligadas por um convite aceito.
 _Avoid_: dupla, conta compartilhada
