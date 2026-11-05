@@ -12,10 +12,12 @@
     "test": "vitest run --maxWorkers=2",
     "test:db": "vitest run --config apps/server/vitest.db.config.ts --maxWorkers=1",
     "build": "pnpm --filter @entre-nos/web build",
-    "db:migrate": "pnpm --filter @entre-nos/server db:migrate"
+    "db:migrate": "pnpm --filter @entre-nos/server db:migrate",
+    "e2e": "playwright test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^24",
     "eslint": "^10.14.0",
     "globals": "^17.14.0",
