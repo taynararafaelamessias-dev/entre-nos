@@ -42,6 +42,10 @@ services:
     environment:
       DATABASE_URL: postgres://entre_nos_app:${APP_DB_PASSWORD:?defina APP_DB_PASSWORD no .env (openssl rand -hex 24)}@db:5432/entre_nos
       PORT: "3000"
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
+      APP_URL: ${APP_URL:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
@@ -55,6 +59,15 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  # Capturador de e-mail do dev/e2e: recebe o SMTP e mostra os links mágicos (UI e API).
+  # Perfil dev: o `up` de produção nunca o sobe; nomeá-lo explicitamente sobe.
+  mail:
+    image: axllent/mailpit:latest
+    profiles: ["dev"]
+    ports:
+      - "127.0.0.1:${MAIL_SMTP_PORT:-1025}:1025"
+      - "127.0.0.1:${MAIL_UI_PORT:-8025}:8025"
 
 volumes:
   db-data:
