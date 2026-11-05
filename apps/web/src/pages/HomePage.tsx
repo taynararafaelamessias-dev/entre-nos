@@ -1,4 +1,7 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Navigate, useNavigate } from '@tanstack/react-router';
 import type { CSSProperties } from 'react';
+import { sair, useEu } from '../auth/sessao.ts';
 import { useHealth } from '../health/useHealth.ts';
 import { LanguageToggle } from '../i18n/LanguageToggle.tsx';
 import { useLocale } from '../i18n/LocaleProvider.tsx';
@@ -11,7 +14,20 @@ function order(i: number): CSSProperties {
 
 export function HomePage() {
   const { t } = useLocale();
+  const eu = useEu();
   const health = useHealth();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const saida = useMutation({
+    mutationFn: sair,
+    onSettled: async () => {
+      queryClient.clear();
+      await navigate({ to: '/entrar', replace: true });
+    },
+  });
+
+  if (eu.data?.estado === 'fora') return <Navigate to="/entrar" replace />;
+  if (eu.data?.estado === 'aceite_pendente') return <Navigate to="/aceite-18" replace />;
 
   const state: StatusState = !health.data
     ? health.isError
@@ -22,6 +38,7 @@ export function HomePage() {
       : 'down';
 
   const statusText = { checking: t('health.checking'), up: t('health.up'), down: t('health.down') }[state];
+  const pessoa = eu.data?.estado === 'dentro' ? eu.data.pessoa : null;
 
   return (
     <div className="home">
@@ -29,7 +46,14 @@ export function HomePage() {
         <p className="mark">
           Entre <b>Nós</b>
         </p>
-        <LanguageToggle />
+        <div className="top-acoes">
+          <LanguageToggle />
+          {pessoa && (
+            <button type="button" className="ghost sair" onClick={() => saida.mutate()} disabled={saida.isPending}>
+              {t('sair')}
+            </button>
+          )}
+        </div>
       </header>
       <main className="hero">
         <span className="rule reveal" style={order(1)} aria-hidden="true" />
@@ -39,7 +63,12 @@ export function HomePage() {
         <p className="lead reveal" style={order(2)}>
           {t('home.lead')}
         </p>
-        <p className="status reveal" style={order(3)} role="status" data-state={state}>
+        {pessoa && (
+          <p className="quem reveal" style={order(3)}>
+            <span>{t('home.signedInAs')}</span> <strong>{pessoa.email}</strong>
+          </p>
+        )}
+        <p className="status reveal" style={order(4)} role="status" data-state={state}>
           {statusText}
         </p>
       </main>
