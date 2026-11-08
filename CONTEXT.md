@@ -8,11 +8,16 @@ e uma comunidade anônima de perguntas. Uma assinatura vale para as duas pessoas
 ### Pessoas e acesso
 
 **Casal**:
-A unidade da assinatura: duas pessoas ligadas por um convite aceito.
+A unidade da assinatura: duas pessoas ligadas por um convite aceito. Acaba quando qualquer uma
+sai; com outra pessoa é sempre um casal novo.
 _Avoid_: dupla, conta compartilhada
 
+**Sair do casal**:
+O ato de qualquer pessoa do casal, sozinha e sem aceite do outro, que acaba o casal.
+_Avoid_: desfazer, terminar, remover parceiro
+
 **Dono**:
-A pessoa que criou o casal e convida o parceiro. Quem paga a assinatura ainda não foi decidido.
+A pessoa que criou o casal e convida o parceiro. Não é necessariamente o pagante.
 _Avoid_: titular, admin, owner
 
 **Parceiro**:
@@ -24,7 +29,13 @@ O código ou link de uso único com que o dono chama o parceiro para o casal.
 
 **Assinatura**:
 O direito pago do casal, mensal ou anual, que libera a parte da assinatura para as duas pessoas.
+Só um casal formado assina, e um casal tem no máximo uma assinatura que se renova.
 _Avoid_: plano premium, membro, trial
+
+**Pagante**:
+A pessoa do casal, dono ou parceiro, que assinou e paga a assinatura; cada assinatura tem um só.
+A assinatura é dele: se o casal acaba, ela fica com o pagante e só vale de novo num casal novo.
+_Avoid_: titular, assinante, responsável financeiro
 
 **Parte gratuita**:
 O que qualquer pessoa usa sem pagar, incluindo uma amostra do conteúdo e jogos grátis limitados.
