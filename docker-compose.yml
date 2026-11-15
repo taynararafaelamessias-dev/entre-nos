@@ -6,11 +6,17 @@ x-app-db-password: &app-db-password ${APP_DB_PASSWORD:?defina APP_DB_PASSWORD no
 
 services:
   db:
-    image: postgres:18-alpine
+    build: { context: ., dockerfile: docker/postgres/Dockerfile, target: db }
     environment:
       POSTGRES_DB: entre_nos
       POSTGRES_USER: entre_nos
       POSTGRES_PASSWORD: *postgres-password
+      WALG_S3_PREFIX: s3://${BACKUP_S3_BUCKET:?defina BACKUP_S3_BUCKET no .env}/${BACKUP_S3_PATH:-entre-nos}
+      AWS_ENDPOINT: ${BACKUP_S3_ENDPOINT:?defina BACKUP_S3_ENDPOINT no .env}
+      AWS_REGION: ${BACKUP_S3_REGION:-auto}
+      AWS_S3_FORCE_PATH_STYLE: "${BACKUP_S3_FORCE_PATH_STYLE:-true}"
+      AWS_ACCESS_KEY_ID: ${BACKUP_S3_ACCESS_KEY_ID:?defina BACKUP_S3_ACCESS_KEY_ID no .env}
+      AWS_SECRET_ACCESS_KEY: ${BACKUP_S3_SECRET_ACCESS_KEY:?defina BACKUP_S3_SECRET_ACCESS_KEY no .env}
     ports:
       - "127.0.0.1:${DB_PORT:-5433}:5432"
     volumes:
@@ -56,5 +62,67 @@ services:
       timeout: 3s
       retries: 10
 
+  # Backup contínuo (ADR 0003) com o dono do banco; o app nunca vê estas credenciais (ADR 0005).
+  backup:
+    build: { context: ., dockerfile: docker/postgres/Dockerfile, target: backup }
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: entre_nos
+      PGDATABASE: entre_nos
+      PGPASSWORD: *postgres-password
+      PGDATA: /var/lib/postgresql/18/docker
+      APP_DB_PASSWORD: *app-db-password
+      BACKUP_RETAIN_FULL: ${BACKUP_RETAIN_FULL:-14}
+      WALG_S3_PREFIX: s3://${BACKUP_S3_BUCKET:?defina BACKUP_S3_BUCKET no .env}/${BACKUP_S3_PATH:-entre-nos}
+      AWS_ENDPOINT: ${BACKUP_S3_ENDPOINT:?defina BACKUP_S3_ENDPOINT no .env}
+      AWS_REGION: ${BACKUP_S3_REGION:-auto}
+      AWS_S3_FORCE_PATH_STYLE: "${BACKUP_S3_FORCE_PATH_STYLE:-true}"
+      AWS_ACCESS_KEY_ID: ${BACKUP_S3_ACCESS_KEY_ID:?defina BACKUP_S3_ACCESS_KEY_ID no .env}
+      AWS_SECRET_ACCESS_KEY: ${BACKUP_S3_SECRET_ACCESS_KEY:?defina BACKUP_S3_SECRET_ACCESS_KEY no .env}
+    volumes:
+      - db-data:/var/lib/postgresql
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # S3 local, só para provar o backup na máquina de dev (`--profile local-s3`).
+  s3-local:
+    profiles: ["local-s3"]
+    image: rustfs/rustfs:1.0.4
+    environment:
+      RUSTFS_ACCESS_KEY: ${BACKUP_S3_ACCESS_KEY_ID:?defina BACKUP_S3_ACCESS_KEY_ID no .env}
+      RUSTFS_SECRET_KEY: ${BACKUP_S3_SECRET_ACCESS_KEY:?defina BACKUP_S3_SECRET_ACCESS_KEY no .env}
+    ports:
+      - "127.0.0.1:${S3_LOCAL_PORT:-9105}:9000"
+      - "127.0.0.1:${S3_LOCAL_CONSOLE_PORT:-9106}:9001"
+    volumes:
+      - s3-local-data:/data
+
+  # Cria o bucket no S3 local (one-shot).
+  s3-init:
+    profiles: ["local-s3"]
+    image: amazon/aws-cli:2.39.4
+    entrypoint: ["/bin/sh", "-c"]
+    environment:
+      AWS_ACCESS_KEY_ID: ${BACKUP_S3_ACCESS_KEY_ID:?defina BACKUP_S3_ACCESS_KEY_ID no .env}
+      AWS_SECRET_ACCESS_KEY: ${BACKUP_S3_SECRET_ACCESS_KEY:?defina BACKUP_S3_SECRET_ACCESS_KEY no .env}
+      AWS_REGION: us-east-1
+      BUCKET: ${BACKUP_S3_BUCKET:?defina BACKUP_S3_BUCKET no .env}
+    command:
+      - |
+        for i in $$(seq 1 30); do
+          if aws --endpoint-url http://s3-local:9000 s3api head-bucket --bucket "$$BUCKET" 2>/dev/null ||
+             aws --endpoint-url http://s3-local:9000 s3 mb "s3://$$BUCKET"; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "s3-init: bucket $$BUCKET não ficou pronto" >&2
+        exit 1
+    restart: "no"
+
 volumes:
   db-data:
+  s3-local-data:
