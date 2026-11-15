@@ -1,32 +1,25 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { healthResponseSchema } from '@entre-nos/contracts';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { API_PREFIX, healthResponseSchema, type ApiClient } from '@entre-nos/contracts';
+import { createORPCClient } from '@orpc/client';
+import { RPCLink } from '@orpc/client/fetch';
+import { describe, expect, it } from 'vitest';
 import { createApp } from './app.ts';
 
-let webDistDir: string;
-
-beforeAll(async () => {
-  webDistDir = await mkdtemp(join(tmpdir(), 'entre-nos-web-'));
-  await writeFile(join(webDistDir, 'index.html'), '<!doctype html><div id="root"></div>');
-  await mkdir(join(webDistDir, 'assets'));
-  await writeFile(join(webDistDir, 'assets', 'app.js'), 'console.log("app")');
-});
-
-afterAll(async () => {
-  await rm(webDistDir, { recursive: true, force: true });
-});
-
 describe('createApp', () => {
-  const healthy = () => createApp({ pingDatabase: async () => {}, webDistDir });
+  const healthy = () => createApp({ pingDatabase: async () => {} });
   const broken = () =>
     createApp({
       pingDatabase: async () => {
         throw new Error('down');
       },
-      webDistDir,
     });
+
+  const clientOf = (app: ReturnType<typeof createApp>) =>
+    createORPCClient<ApiClient>(
+      new RPCLink({
+        url: 'http://servidor.test' + API_PREFIX,
+        fetch: async (request) => app.request(request),
+      }),
+    );
 
   it('GET /health answers 200 with postgres up', async () => {
     const res = await healthy().request('/health');
@@ -44,21 +37,27 @@ describe('createApp', () => {
     expect(body.postgres.status).toBe('down');
   });
 
-  it('serves index.html at /', async () => {
+  it('GET / não serve front-end: 404 sem HTML', async () => {
     const res = await healthy().request('/');
-    expect(res.status).toBe(200);
-    expect(await res.text()).toContain('<div id="root">');
+    expect(res.status).toBe(404);
+    expect(await res.text()).not.toContain('<');
   });
 
-  it('falls back to index.html for client routes', async () => {
-    const res = await healthy().request('/casal/qualquer-rota');
-    expect(res.status).toBe(200);
-    expect(await res.text()).toContain('<div id="root">');
+  it('o cliente tipado lê a saúde do servidor pela API', async () => {
+    const result = await clientOf(healthy()).health.check();
+    expect(result).toMatchObject({
+      status: 'ok',
+      postgres: { status: 'up', latencyMs: expect.any(Number) },
+    });
   });
 
-  it('serves static assets', async () => {
-    const res = await healthy().request('/assets/app.js');
-    expect(res.status).toBe(200);
-    expect(await res.text()).toContain('console.log');
+  it('o cliente tipado recebe o erro quando o postgres está fora', async () => {
+    const result = await clientOf(broken()).health.check();
+    expect(result).toMatchObject({ status: 'error', postgres: { status: 'down' } });
+  });
+
+  it('POST numa rota inexistente da API responde 404', async () => {
+    const res = await healthy().request(`${API_PREFIX}/nao/existe`, { method: 'POST' });
+    expect(res.status).toBe(404);
   });
 });
