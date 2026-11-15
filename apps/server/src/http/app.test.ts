@@ -60,4 +60,10 @@ describe('createApp', () => {
     const res = await healthy().request(`${API_PREFIX}/nao/existe`, { method: 'POST' });
     expect(res.status).toBe(404);
   });
+
+  it('corpo acima de 64 KiB na API responde 413', async () => {
+    const body = JSON.stringify({ json: 'a'.repeat(70 * 1024) });
+    const res = await healthy().request(`${API_PREFIX}/health/check`, { method: 'POST', body, headers: { 'content-type': 'application/json' } });
+    expect(res.status).toBe(413);
+  });
 });

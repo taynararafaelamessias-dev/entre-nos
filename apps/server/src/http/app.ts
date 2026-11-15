@@ -1,6 +1,7 @@
 import { API_PREFIX } from '@entre-nos/contracts';
 import { RPCHandler } from '@orpc/server/fetch';
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 import { checkHealth, type PingDatabase } from '../modules/health/check-health.ts';
 import { createRouter } from './router.ts';
 
@@ -12,6 +13,7 @@ export function createApp(deps: { pingDatabase: PingDatabase }): Hono {
     return c.json(result, result.status === 'ok' ? 200 : 503);
   });
 
+  app.use(`${API_PREFIX}/*`, bodyLimit({ maxSize: 64 * 1024 }));
   const rpc = new RPCHandler(createRouter(deps));
   app.use(`${API_PREFIX}/*`, async (c, next) => {
     const { matched, response } = await rpc.handle(c.req.raw, { prefix: API_PREFIX, context: {} });

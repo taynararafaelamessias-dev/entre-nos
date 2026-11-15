@@ -8,6 +8,6 @@ function isLocale(value: string | null): value is Locale {
 
 export function resolveInitialLocale(stored: string | null, languages: readonly string[]): Locale {
   if (isLocale(stored)) return stored;
-  const first = languages.find((language) => language.toLowerCase().startsWith('es'));
-  return first ? 'es' : 'pt';
+  const first = languages.map((language) => language.toLowerCase().slice(0, 2)).find(isLocale);
+  return first ?? 'pt';
 }

@@ -29,7 +29,7 @@ export default function Home() {
           <View style={[styles.dot, tone === 'up' && styles.dotUp, tone === 'bad' && styles.dotBad]} />
           <Text
             accessibilityLiveRegion="polite"
-            style={[styles.status, tone === 'up' && styles.statusUp, tone === 'bad' && styles.statusBad]}
+            style={[styles.status, tone !== 'neutral' && styles.statusStrong]}
             testID="health-status"
           >
             {t(`health.${state}`)}
@@ -71,6 +71,5 @@ const styles = StyleSheet.create({
   dotUp: { backgroundColor: '#c8a15a' },
   dotBad: { backgroundColor: '#a01e2b' },
   status: { color: '#a69c99', fontSize: 16, flexShrink: 1 },
-  statusUp: { color: '#f2ebe5' },
-  statusBad: { color: '#f2ebe5' },
+  statusStrong: { color: '#f2ebe5' },
 });

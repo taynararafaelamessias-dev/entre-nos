@@ -8,6 +8,10 @@ describe('resolveInitialLocale', () => {
   it('usa espanhol quando o aparelho pede espanhol', () => {
     expect(resolveInitialLocale(null, ['es-AR', 'pt'])).toBe('es');
   });
+  it('segue o primeiro idioma suportado da lista do aparelho', () => {
+    expect(resolveInitialLocale(null, ['pt-BR', 'es-ES'])).toBe('pt');
+    expect(resolveInitialLocale(null, ['en-US', 'es-MX', 'pt'])).toBe('es');
+  });
   it('cai para português em outros idiomas', () => {
     expect(resolveInitialLocale(null, ['en-US'])).toBe('pt');
   });
