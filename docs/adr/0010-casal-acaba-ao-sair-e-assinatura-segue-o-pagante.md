@@ -1,3 +1,6 @@
+---
+status: amended by ADR-0015
+---
 # O casal acaba quando alguém sai; a assinatura segue o pagante
 
 Qualquer pessoa do casal pode **sair do casal** sozinha, a qualquer hora, sem aceite do outro, e

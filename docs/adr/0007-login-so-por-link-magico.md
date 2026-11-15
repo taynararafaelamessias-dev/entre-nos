@@ -1,3 +1,6 @@
+---
+status: superseded by ADR-0013
+---
 # Login só por link mágico
 
 Ninguém cria senha: a pessoa entra pelo link enviado ao e-mail. Num app íntimo, isso tira o atrito do
