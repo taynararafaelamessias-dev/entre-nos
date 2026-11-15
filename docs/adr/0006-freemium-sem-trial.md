@@ -1,3 +1,6 @@
+---
+status: amended by ADR-0015
+---
 # Freemium: o app é grátis, o melhor é da assinatura
 
 Qualquer pessoa usa o app de graça; a assinatura do casal (mensal ou anual com desconto) libera as

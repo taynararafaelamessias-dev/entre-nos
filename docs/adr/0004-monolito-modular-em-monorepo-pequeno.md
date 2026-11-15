@@ -1,3 +1,6 @@
+---
+status: superseded by ADR-0014
+---
 # Monólito modular num monorepo pequeno
 
 Um único processo servidor (API, tempo real e rotinas) entregue como uma imagem Docker que também

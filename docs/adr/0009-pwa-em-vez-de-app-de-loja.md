@@ -1,3 +1,6 @@
+---
+status: superseded by ADR-0011
+---
 # Web/PWA em vez de app nas lojas
 
 O app é web, instalável como PWA, porque um app nativo esbarra nas regras das lojas sobre conteúdo

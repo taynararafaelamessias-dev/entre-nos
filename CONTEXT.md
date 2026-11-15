@@ -1,6 +1,6 @@
 # Entre Nós
 
-App web para casais, em português e espanhol: conteúdo de intimidade, jogos e desafios a dois,
+App para casais, Android e iOS, em português e espanhol: conteúdo de intimidade, jogos e desafios a dois,
 e uma comunidade anônima de perguntas. Uma assinatura vale para as duas pessoas do casal.
 
 ## Language
@@ -8,11 +8,16 @@ e uma comunidade anônima de perguntas. Uma assinatura vale para as duas pessoas
 ### Pessoas e acesso
 
 **Casal**:
-A unidade da assinatura: duas pessoas ligadas por um convite aceito.
+Duas pessoas ligadas por um convite aceito, que dividem a assinatura e a parte a dois. Acaba quando qualquer uma
+sai; com outra pessoa é sempre um casal novo.
 _Avoid_: dupla, conta compartilhada
 
+**Sair do casal**:
+O ato de qualquer pessoa do casal, sozinha e sem aceite do outro, que acaba o casal.
+_Avoid_: desfazer, terminar, remover parceiro
+
 **Dono**:
-A pessoa que criou o casal e convida o parceiro. Quem paga a assinatura ainda não foi decidido.
+A pessoa que criou o casal e convida o parceiro. Não é necessariamente o pagante.
 _Avoid_: titular, admin, owner
 
 **Parceiro**:
@@ -23,22 +28,36 @@ _Avoid_: par convidado, dependente, "login do parceiro"
 O código ou link de uso único com que o dono chama o parceiro para o casal.
 
 **Assinatura**:
-O direito pago do casal, mensal ou anual, que libera a parte da assinatura para as duas pessoas.
+O direito pago, mensal ou anual, comprado na loja do aparelho, que libera a parte da assinatura.
+Uma pessoa pode assinar antes de ter casal; quando o parceiro entra, ele herda a assinatura. Um
+casal tem no máximo uma assinatura que se renova.
 _Avoid_: plano premium, membro, trial
+
+**Pagante**:
+A pessoa, dono ou parceiro, que assinou e paga a assinatura na loja; cada assinatura tem um só.
+A assinatura é dele: se o casal acaba, ele continua com o que funciona sozinho até cancelar na loja,
+e a parte a dois volta num casal novo.
+_Avoid_: titular, assinante, responsável financeiro
 
 **Parte gratuita**:
 O que qualquer pessoa usa sem pagar, incluindo uma amostra do conteúdo e jogos grátis limitados.
 
 **Parte da assinatura**:
-O que só um casal com assinatura ativa usa.
+O que só quem tem assinatura ativa usa, sozinho ou no casal.
 _Avoid_: premium, conteúdo pago
+
+**Parte a dois**:
+A parte da assinatura que só funciona com casal formado: Esquentar a relação, compartilhado e
+diário das posições.
+_Avoid_: premium do casal
 
 **Conta grátis**:
 Pessoa sem assinatura ativa; usa só a parte gratuita.
 _Avoid_: free user, visitante
 
 **Onboarding**:
-A primeira passagem da pessoa pelo app, feita para mostrar o valor da parte da assinatura antes de pedir o pagamento.
+A primeira passagem da pessoa pelo app, antes de qualquer conta, feita para mostrar o valor da parte
+da assinatura antes de pedir o pagamento.
 _Avoid_: cadastro, tutorial
 
 **Trava do app**:

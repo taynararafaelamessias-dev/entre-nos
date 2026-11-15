@@ -1,3 +1,6 @@
+---
+status: superseded by ADR-0012
+---
 # Cobrança atrás de um adaptador; Asaas no Brasil
 
 O domínio só conhece a **assinatura** do casal; cada provedor de pagamento é um adaptador que cria o
