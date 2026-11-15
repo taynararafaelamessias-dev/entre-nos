@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Entre Nós",
+    "slug": "entre-nos",
+    "scheme": "entrenos",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": { "bundleIdentifier": "com.entrenos.app" },
+    "android": { "package": "com.entrenos.app" },
+    "plugins": ["expo-router", "expo-localization"]
+  }
+}
