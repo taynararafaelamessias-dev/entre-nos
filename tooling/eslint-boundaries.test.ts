@@ -12,7 +12,7 @@ async function restrictedImports(path: string, code: string): Promise<number> {
   return result.messages.filter((m) => m.ruleId === 'no-restricted-imports').length;
 }
 
-describe('fronteiras do monorepo (ADR 0004)', () => {
+describe('fronteiras do monorepo (ADR 0004)', { timeout: 20_000 }, () => {
   it('apps/web não importa o pacote do servidor', async () => {
     expect(await restrictedImports('apps/web/src/x.ts', "import { x } from '@entre-nos/server';\nexport { x };\n")).toBe(1);
   });

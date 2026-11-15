@@ -13,7 +13,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/contracts/package.json packages/contracts/
 COPY apps/server/package.json apps/server/
-COPY apps/web/package.json apps/web/
+COPY packages/i18n/package.json packages/i18n/
+COPY apps/mobile/package.json apps/mobile/
 ENV NODE_ENV=production
 RUN pnpm install --frozen-lockfile --prod --filter @entre-nos/server...
 COPY packages/contracts packages/contracts

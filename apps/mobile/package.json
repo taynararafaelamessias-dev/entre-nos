@@ -1,0 +1,32 @@
+{
+  "name": "@entre-nos/mobile",
+  "private": true,
+  "version": "0.1.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo start --ios",
+    "android": "expo start --android"
+  },
+  "dependencies": {
+    "@entre-nos/contracts": "workspace:*",
+    "@entre-nos/i18n": "workspace:*",
+    "@orpc/client": "^1.16.2",
+    "@orpc/tanstack-query": "^1.16.2",
+    "@tanstack/react-query": "^5.107.1",
+    "expo": "~58.0.25",
+    "expo-constants": "~58.0.16",
+    "expo-linking": "~58.0.17",
+    "expo-localization": "~58.0.5",
+    "expo-router": "~58.0.31",
+    "expo-status-bar": "~58.0.5",
+    "react": "19.3.0",
+    "react-native": "0.88.1",
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-screens": "~4.30.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@types/react": "~19.3.0"
+  }
+}
