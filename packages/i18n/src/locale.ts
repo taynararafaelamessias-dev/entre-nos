@@ -11,7 +11,3 @@ export function resolveInitialLocale(stored: string | null, languages: readonly 
   const first = languages.find((language) => language.toLowerCase().startsWith('es'));
   return first ? 'es' : 'pt';
 }
-
-export function htmlLang(locale: Locale): 'pt-BR' | 'es' {
-  return locale === 'es' ? 'es' : 'pt-BR';
-}

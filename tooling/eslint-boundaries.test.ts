@@ -12,25 +12,35 @@ async function restrictedImports(path: string, code: string): Promise<number> {
   return result.messages.filter((m) => m.ruleId === 'no-restricted-imports').length;
 }
 
-describe('fronteiras do monorepo (ADR 0004)', { timeout: 20_000 }, () => {
-  it('apps/web não importa o pacote do servidor', async () => {
-    expect(await restrictedImports('apps/web/src/x.ts', "import { x } from '@entre-nos/server';\nexport { x };\n")).toBe(1);
+describe('fronteiras do monorepo (ADR 0014)', { timeout: 20_000 }, () => {
+  it('apps/mobile não importa o pacote do servidor', async () => {
+    expect(await restrictedImports('apps/mobile/src/x.ts', "import { x } from '@entre-nos/server';\nexport { x };\n")).toBe(1);
   });
 
-  it('apps/web não importa apps/server por caminho relativo', async () => {
+  it('apps/mobile não importa apps/server por caminho relativo', async () => {
     expect(
-      await restrictedImports('apps/web/src/x.ts', "import { createApp } from '../../server/src/http/app.ts';\nexport { createApp };\n"),
+      await restrictedImports('apps/mobile/src/x.ts', "import { createApp } from '../../server/src/http/app.ts';\nexport { createApp };\n"),
     ).toBe(1);
   });
 
-  it('apps/web pode importar packages/contracts', async () => {
+  it('apps/mobile pode importar packages/contracts', async () => {
     expect(
-      await restrictedImports('apps/web/src/x.ts', "import { healthResponseSchema } from '@entre-nos/contracts';\nexport { healthResponseSchema };\n"),
+      await restrictedImports('apps/mobile/src/x.ts', "import { healthResponseSchema } from '@entre-nos/contracts';\nexport { healthResponseSchema };\n"),
     ).toBe(0);
   });
 
-  it('módulos do domínio no servidor não dependem de HTTP', async () => {
+  it('packages/ não importa o pacote do servidor', async () => {
+    expect(await restrictedImports('packages/contracts/src/x.ts', "import { x } from '@entre-nos/server';\nexport { x };\n")).toBe(1);
+  });
+
+  it('módulos do domínio no servidor não dependem de hono', async () => {
     expect(await restrictedImports('apps/server/src/modules/health/x.ts', "import { Hono } from 'hono';\nexport { Hono };\n")).toBe(1);
+  });
+
+  it('módulos do domínio no servidor não dependem de oRPC', async () => {
+    expect(
+      await restrictedImports('apps/server/src/modules/health/x.ts', "import { implement } from '@orpc/server';\nexport { implement };\n"),
+    ).toBe(1);
   });
 
   it('a camada http do servidor pode usar hono', async () => {

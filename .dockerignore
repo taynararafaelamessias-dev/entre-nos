@@ -2,8 +2,7 @@
 **/dist
 .git
 .rumo
-site
-supabase
+**/.expo
 docs
 .env
 *.md

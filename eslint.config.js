@@ -4,7 +4,16 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['site/**', 'supabase/**', '**/dist/**', 'apps/server/drizzle/**', '.rumo/**', '**/node_modules/**'],
+    ignores: [
+      '**/dist/**',
+      'apps/server/drizzle/**',
+      '.rumo/**',
+      '**/node_modules/**',
+      '**/.expo/**',
+      '**/expo-env.d.ts',
+      'apps/mobile/ios/**',
+      'apps/mobile/android/**',
+    ],
   },
   js.configs.recommended,
   tseslint.configs.recommended,
@@ -14,7 +23,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['apps/web/**/*.{ts,tsx}'],
+    files: ['apps/mobile/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -22,7 +31,23 @@ export default tseslint.config(
           patterns: [
             {
               regex: '^@entre-nos/server(/.*)?$|(^|/)apps/server(/|$)|(^|/)server/src(/|$)',
-              message: 'apps/web não importa apps/server; use packages/ (ADR 0004).',
+              message: 'apps/mobile não importa apps/server; use packages/ (ADR 0014).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['packages/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^@entre-nos/(server|mobile)(/.*)?$|(^|/)apps/',
+              message: 'packages/ não importa apps/ (ADR 0014).',
             },
           ],
         },
@@ -37,8 +62,8 @@ export default tseslint.config(
         {
           patterns: [
             {
-              regex: '^(hono|@hono/.+)(/.*)?$|(^|/)http(/|$)',
-              message: 'Módulos do domínio não dependem de HTTP (ADR 0004).',
+              regex: '^(hono|@hono/.+|@orpc/.+)(/.*)?$|(^|/)http(/|$)',
+              message: 'Módulos do domínio não dependem de HTTP (ADR 0014).',
             },
           ],
         },

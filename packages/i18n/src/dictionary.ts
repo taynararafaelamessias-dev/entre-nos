@@ -8,6 +8,7 @@ const pt = {
   'health.checking': 'Verificando o servidor…',
   'health.up': 'Servidor e banco de dados no ar.',
   'health.down': 'O banco de dados não está respondendo.',
+  'health.unreachable': 'Não foi possível falar com o servidor.',
 } as const;
 
 export type MessageKey = keyof typeof pt;
@@ -20,6 +21,7 @@ const es: Record<MessageKey, string> = {
   'health.checking': 'Verificando el servidor…',
   'health.up': 'Servidor y base de datos en línea.',
   'health.down': 'La base de datos no responde.',
+  'health.unreachable': 'No se pudo conectar con el servidor.',
 };
 
 export const dictionary = { pt, es };

@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { dictionary } from './dictionary.ts';
-import { htmlLang, resolveInitialLocale } from './locale.ts';
+import { dictionary, resolveInitialLocale, translate } from './index.ts';
 
 describe('resolveInitialLocale', () => {
   it('prefere o idioma guardado', () => {
     expect(resolveInitialLocale('es', ['pt-BR'])).toBe('es');
   });
-  it('usa espanhol quando o navegador pede espanhol', () => {
+  it('usa espanhol quando o aparelho pede espanhol', () => {
     expect(resolveInitialLocale(null, ['es-AR', 'pt'])).toBe('es');
   });
   it('cai para português em outros idiomas', () => {
@@ -14,13 +13,6 @@ describe('resolveInitialLocale', () => {
   });
   it('ignora valor guardado inválido', () => {
     expect(resolveInitialLocale('fr', [])).toBe('pt');
-  });
-});
-
-describe('htmlLang', () => {
-  it('mapeia cada idioma', () => {
-    expect(htmlLang('pt')).toBe('pt-BR');
-    expect(htmlLang('es')).toBe('es');
   });
 });
 
@@ -32,5 +24,14 @@ describe('dictionary', () => {
         expect(value).not.toBe('');
       }
     }
+  });
+});
+
+describe('translate', () => {
+  it('traduz a falha de conexão com o servidor em espanhol', () => {
+    expect(translate('es', 'health.unreachable')).toBe('No se pudo conectar con el servidor.');
+  });
+  it('traduz a falha de conexão com o servidor em português', () => {
+    expect(translate('pt', 'health.unreachable')).toBe('Não foi possível falar com o servidor.');
   });
 });

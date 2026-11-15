@@ -9,7 +9,7 @@ Layout: single-context (`CONTEXT.md` + `docs/adr/` at root) unless this repo sho
 monorepo signals (`pnpm-workspace.yaml`, a `workspaces` field, populated `packages/*/src`) —
 then multi-context (root `CONTEXT-MAP.md` + per-package `CONTEXT.md`/`docs/adr/`).
 
-**This repo: single-context, always.** The pnpm monorepo of ADR 0004 is one domain in a modular
+**This repo: single-context, always.** The pnpm monorepo of ADR 0014 is one domain in a modular
 monolith; its workspace files are not a multi-context signal. One root `CONTEXT.md`, one `docs/adr/`.
 
 Use the glossary's terms exactly in output that names a domain concept — no drifting to a
