@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: amended by ADR-0016 and ADR-0017
 ---
 # Servidor próprio como API tipada do app, no mesmo monorepo
 
@@ -21,3 +21,6 @@ dependência de fornecedor. O servidor deixa de servir front-end e vira a API do
   bucket S3-compatível (R2).
 - Hospedagem segue o ADR 0003: m4mini durante a construção, VPS antes do primeiro envio às lojas.
 - O app guarda dados em cache no aparelho, para abrir rápido e mostrar o que já tem sem rede.
+- Revisto em 2026-11-19: os apps são nativos (ADR 0016). O contrato vira um OpenAPI gerado pelo
+  servidor, `packages/` deixa de ser consumido pelos apps e o push sai por APNs/FCM. A hospedagem passa
+  a ser gerenciada antes do primeiro envio às lojas (ADR 0017).

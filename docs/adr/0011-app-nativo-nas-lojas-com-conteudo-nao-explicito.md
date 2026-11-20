@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: amended by ADR-0016
 ---
 # App nativo nas lojas (Android e iOS), com conteúdo não explícito
 
@@ -33,3 +33,7 @@ Fontes lidas em 2026-11-15.
   Relationships", e todo app precisa preencher as novas declarações até 2027-01-12
   (developer.apple.com/news/?id=yxkh08us, 2026-11-02).
 - O catálogo de conteúdo antigo não é portado: cada peça é refeita sob a regra de não ser explícita.
+- Revisto em 2026-11-19 (ADR 0016): a stack Expo deu lugar a dois apps nativos, Swift e Kotlin. A regra
+  do conteúdo não explícito continua. Antes de produzir o catálogo inteiro, um envio de validação à
+  App Review com um recorte mínimo (onboarding, algumas peças, tela de assinatura) testa as regras
+  1.1.4 e 4.3(b). Um app parecido aprovado antes não serve de precedente.

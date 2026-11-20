@@ -11,3 +11,6 @@ single-context. See `docs/agents/domain.md`.
 
 ### Lessons
 Learned rules, read by `/rumo build`'s planner and reviewer. See `docs/agents/lessons.md`.
+
+### Design (Doop)
+Doop canvas first; native apps are built from its frames. See `docs/agents/design.md`.
