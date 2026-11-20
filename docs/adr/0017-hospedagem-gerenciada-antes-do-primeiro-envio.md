@@ -7,7 +7,7 @@ O servidor continua em TypeScript, com Postgres e RLS (ADRs 0002, 0005 e 0014). 
 roda: sai do m4mini em casa para infraestrutura gerenciada, com Postgres gerenciado e restauração no
 tempo, mais um host de containers, antes do primeiro envio às lojas. Isso inclui o envio de validação, porque a
 App Review usa o servidor de verdade. Um app pago nas lojas não pode depender da energia e da internet
-de uma casa. Decidido em 2026-11-19. Muda o ADR 0003.
+de uma casa. Decidido em 2026-11-19. Muda os ADRs 0003 e 0014.
 
 ## Considered Options
 - **Trocar a linguagem do servidor** (Kotlin ou Go): descartado. O que já foi construído e testado
